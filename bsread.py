@@ -65,7 +65,7 @@ class Bsread(object):
             logger.info("Unable to disconnect properly")
 
     def receive(self):
-
+        data = []
         header = self.socket.recv_json()
 
         if (not self.header_hash) and (not self.header_hash == header['hash']):
@@ -82,11 +82,12 @@ class Bsread(object):
         while self.socket.getsockopt(zmq.RCVMORE):
             raw_data = self.socket.recv()
             if raw_data:
-                data = self.receive_functions[counter][1](raw_data)
-                print data
+                data.append(self.receive_functions[counter][1](raw_data))
+                #print data
             counter += 1
 
         # Todo need to add some more error checking
+        return data
 
     def send(self):
         """
@@ -121,6 +122,7 @@ class Bsread(object):
                 value += 0.1
             self.socket.send('')
             pulse_id += 1
+            # Send out every 10ms
             time.sleep(0.01)
 
     def receive_double(self, raw_data):

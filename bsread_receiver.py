@@ -8,5 +8,4 @@ if __name__ == "__main__":
     bsread = bsread.Bsread(mode=zmq.PULL)
     bsread.connect(address="tcp://localhost:9999", conn_type="connect", )
     while True:
-        bsread.receive()
-        print "----"
+        print bsread.receive()
