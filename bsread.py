@@ -12,7 +12,6 @@ logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(name)s - %(me
 
 
 class Bsread(object):
-    """"""
 
     def __init__(self, mode=zmq.PULL):
         """
@@ -28,7 +27,6 @@ class Bsread(object):
         self.data_header = None
         self.header_hash = None
         self.receive_functions = None
-
 
     def connect(self, address="tcp://127.0.0.1:9999", conn_type="connect", timeout=1000, queue_size=4):
         """
@@ -71,7 +69,7 @@ class Bsread(object):
         if (not self.header_hash) and (not self.header_hash == header['hash']):
             # Interpret data header
             self.data_header = self.socket.recv_json()
-            self.receive_functions = self.get_receive_functions(self.data_header)
+            self.receive_functions = get_receive_functions(self.data_header)
             self.header_hash = header['hash']
         else:
             # Skip second header
@@ -134,20 +132,21 @@ class Bsread(object):
             # Send out every 10ms
             time.sleep(0.01)
 
-    def get_receive_functions(self, configuration):
 
-        functions = []
-        for channel in configuration['channels']:
-            if channel['type'].lower() == 'double':
-                functions.append((channel, get_double))
-            if channel['type'].lower() == 'integer':
-                functions.append((channel, get_integer))
-            if channel['type'].lower() == 'long':
-                functions.append((channel, get_long))
-            if channel['type'].lower() == 'string':
-                functions.append((channel, get_string))
+def get_receive_functions(configuration):
 
-        return functions
+    functions = []
+    for channel in configuration['channels']:
+        if channel['type'].lower() == 'double':
+            functions.append((channel, get_double))
+        if channel['type'].lower() == 'integer':
+            functions.append((channel, get_integer))
+        if channel['type'].lower() == 'long':
+            functions.append((channel, get_long))
+        if channel['type'].lower() == 'string':
+            functions.append((channel, get_string))
+
+    return functions
 
 
 def get_double(raw_data):
