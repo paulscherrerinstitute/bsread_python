@@ -24,6 +24,7 @@ class Bsread(object):
         if mode == zmq.SUB:
             self.socket.setsockopt(zmq.SUBSCRIBE, '')
 
+        self.address = None
         self.data_header = None
         self.header_hash = None
         self.receive_functions = None
@@ -49,6 +50,7 @@ class Bsread(object):
 
         self.socket.RCVTIMEO = timeout
         logger.info("Connection done")
+        self.address = address
 
     def disconnect(self):
         """Disconnects and close connection"""
