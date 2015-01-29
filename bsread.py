@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-
-
 import zmq
 import json
 import hashlib
@@ -14,7 +11,7 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(name)s - %(message)s')
 
 
-class BsreadUtil(object):
+class Bsread(object):
     """"""
 
     def __init__(self, mode=zmq.PULL):
@@ -27,6 +24,11 @@ class BsreadUtil(object):
         self.socket = self.context.socket(mode)
         if mode == zmq.SUB:
             self.socket.setsockopt(zmq.SUBSCRIBE, '')
+
+        self.data_header = None
+        self.header_hash = None
+        self.receive_functions = None
+
 
     def connect(self, address="tcp://127.0.0.1:9999", conn_type="connect", timeout=1000, queue_size=4):
         """
@@ -46,6 +48,7 @@ class BsreadUtil(object):
                 self.socket.bind(address)
         except:
             logger.error("Unable to connect to server. Hint: check IP address")
+
         self.socket.RCVTIMEO = timeout
         logger.info("Connection done")
 
@@ -63,19 +66,27 @@ class BsreadUtil(object):
 
     def receive(self):
 
-        # if self.socket.getsockopt(zmq.RCVMORE):
-        self.header = self.socket.recv_json()
+        header = self.socket.recv_json()
 
-        # Todo Only do this if hash changes
-        # if self.socket.getsockopt(zmq.RCVMORE):
-        self.data_header = self.socket.recv_json()
+        if (not self.header_hash) and (not self.header_hash == header['hash']):
+            # Interpret data header
+            self.data_header = self.socket.recv_json()
+            self.receive_functions = self.get_receive_functions(self.data_header)
+            self.header_hash = header['hash']
+        else:
+            # Skip second header
+            self.socket.recv()
 
         # Receiving data
+        counter = 0
         while self.socket.getsockopt(zmq.RCVMORE):
             raw_data = self.socket.recv()
-            if raw_data :
-                data = struct.unpack('d', raw_data)
+            if raw_data:
+                data = self.receive_functions[counter][1](raw_data)
                 print data
+            counter += 1
+
+        # Todo need to add some more error checking
 
     def send(self):
         """
@@ -110,52 +121,24 @@ class BsreadUtil(object):
                 value += 0.1
             self.socket.send('')
             pulse_id += 1
-            time.sleep(0.1)
+            time.sleep(0.01)
 
-    def receive_double(self):
-        return self.receive_double_array()[0]
+    def receive_double(self, raw_data):
+        return self.receive_double_array(raw_data)[0]
 
-    def receive_double_array(self):
-        raw_data = self.socket.recv()
+    def receive_double_array(self, raw_data):
         return struct.unpack('d', raw_data)
 
-    def receive_string(self):
-        raw_data = self.socket.recv()
+    def receive_string(self, raw_data):
         return struct.unpack('s', raw_data)
 
+    def get_receive_functions(self, configuration):
 
-    def generate_receive_function(self, configuration):
-        """
-        Generate the most efficient receive sequence for the data part of the message
-        :return:    Returns the very optimised receive function for the data part
-        """
-        import types
-
-        # http://stackoverflow.com/questions/10303248/true-dynamic-and-anonymous-functions-possible-in-python
-
-        function_string = ""
-        function_string += "data = dict()\n"
-
-        # Todo ...
-        #### Probably this hast to be a list of function pointers =(
+        functions = []
         for channel in configuration['channels']:
-            print channel
-            function_string += "raw_data = self.socket.recv()\n"
             if channel['type'] == 'double':
-                function_string += "data['"+channel['name']+"'] = struct.unpack('d', raw_data)\n"
+                functions.append((channel, self.receive_double))
             if channel['type'] == 'string':
-                function_string += "data['"+channel['name']+"'] = struct.unpack('s', raw_data)\n"
+                functions.append((channel, self.receive_string))
 
-        # This is the last empty message
-        function_string += "self.socket.recv()\n"
-        function_string += "return data\n"
-
-        # Generate function
-        return types.FunctionType(compile(function_string, 'read.py', 'exec'), {})
-        # return function_string
-
-if __name__ == "__main__":
-    # Startup test sender
-    bsread = BsreadUtil(mode=zmq.PUSH)
-    bsread.connect(address="tcp://*:9999", conn_type="bind", )
-    bsread.send()
+        return functions
