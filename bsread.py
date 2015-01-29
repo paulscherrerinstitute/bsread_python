@@ -104,6 +104,12 @@ class Bsread(object):
             channel['name'] = "CHANNEL-%d" % index
             channel['type'] = "double"
             channels.append(channel)
+
+        channel = dict()
+        channel['name'] = "CHANNEL-STRING"
+        channel['type'] = "string"
+        channels.append(channel)
+
         data_header['channels'] = channels
 
         data_header_json = json.dumps(data_header)
@@ -120,27 +126,53 @@ class Bsread(object):
             for index in range(0, 4):
                 self.socket.send(struct.pack('d', value), zmq.SNDMORE)  # Data
                 value += 0.1
+
+            self.socket.send("hello-%d" % value, zmq.SNDMORE)  # Data
+
             self.socket.send('')
             pulse_id += 1
             # Send out every 10ms
             time.sleep(0.01)
 
-    def receive_double(self, raw_data):
-        return self.receive_double_array(raw_data)[0]
-
-    def receive_double_array(self, raw_data):
-        return struct.unpack('d', raw_data)
-
-    def receive_string(self, raw_data):
-        return struct.unpack('s', raw_data)
-
     def get_receive_functions(self, configuration):
 
         functions = []
         for channel in configuration['channels']:
-            if channel['type'] == 'double':
-                functions.append((channel, self.receive_double))
-            if channel['type'] == 'string':
-                functions.append((channel, self.receive_string))
+            if channel['type'].lower() == 'double':
+                functions.append((channel, get_double))
+            if channel['type'].lower() == 'integer':
+                functions.append((channel, get_integer))
+            if channel['type'].lower() == 'long':
+                functions.append((channel, get_long))
+            if channel['type'].lower() == 'string':
+                functions.append((channel, get_string))
 
         return functions
+
+
+def get_double(raw_data):
+    value = struct.unpack('d', raw_data)
+    if len(value) > 1:
+        return value
+    else:
+        return value[0]
+
+
+def get_integer(raw_data):
+    value = struct.unpack('i', raw_data)
+    if len(value) > 1:
+        return value
+    else:
+        return value[0]
+
+
+def get_long(raw_data):
+    value = struct.unpack('l', raw_data)
+    if len(value) > 1:
+        return value
+    else:
+        return value[0]
+
+
+def get_string(raw_data):
+    return raw_data
