@@ -3,7 +3,7 @@ Python utility classes for working with BSREAD.
 It offers am easy way to receive an BSREAD stream as well as simulating an BSREAD source.
 
 The format of the streams are specified
-[https://docs.google.com/document/d/1BynCjz5Ax-onDW0y8PVQnYmSssb6fAyHkdDl1zh21yY/edit#heading=h.ugxijco36cap][here].
+[here](https://docs.google.com/document/d/1BynCjz5Ax-onDW0y8PVQnYmSssb6fAyHkdDl1zh21yY/edit#heading=h.ugxijco36cap).
 
 # Examples
 
