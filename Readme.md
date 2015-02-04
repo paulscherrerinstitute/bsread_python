@@ -5,6 +5,9 @@ It offers am easy way to receive an BSREAD stream as well as simulating an BSREA
 The format of the streams are specified
 [here](https://docs.google.com/document/d/1BynCjz5Ax-onDW0y8PVQnYmSssb6fAyHkdDl1zh21yY/edit#heading=h.ugxijco36cap).
 
+# Dependencies
+This code builds on [anaconda](http://continuum.io/downloads).
+
 # Examples
 
 ## Receive a Stream
