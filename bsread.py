@@ -29,7 +29,7 @@ class Bsread(object):
         self.header_hash = None
         self.receive_functions = None
 
-    def connect(self, address="tcp://127.0.0.1:9999", conn_type="connect", timeout=1000, queue_size=4):
+    def connect(self, address="tcp://127.0.0.1:9999", conn_type="connect", timeout=None, queue_size=4):
         """
         Establish ZMQ connection
         timeout: connection timeout (default: 1000)
@@ -48,7 +48,9 @@ class Bsread(object):
         except:
             logger.error("Unable to connect to server. Hint: check IP address")
 
-        self.socket.RCVTIMEO = timeout
+        if timeout:
+            self.socket.RCVTIMEO = timeout
+
         logger.info("Connection done")
         self.address = address
 
