@@ -7,4 +7,4 @@ The format of the streams are specified
 [here](https://docs.google.com/document/d/1BynCjz5Ax-onDW0y8PVQnYmSssb6fAyHkdDl1zh21yY/edit#heading=h.ugxijco36cap).
 
 # Dependencies
-This code builds on [anaconda](http://continuum.io/downloads).
+This code just runs in an [Anaconda](http://continuum.io/downloads) environment.
