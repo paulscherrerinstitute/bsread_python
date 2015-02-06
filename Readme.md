@@ -7,4 +7,8 @@ The format of the streams are specified
 [here](https://docs.google.com/document/d/1BynCjz5Ax-onDW0y8PVQnYmSssb6fAyHkdDl1zh21yY/edit#heading=h.ugxijco36cap).
 
 # Dependencies
-This code just runs in an [Anaconda](http://continuum.io/downloads) environment.
+
+* Python 2.7
+* [pyzmq](http://zeromq.github.io/pyzmq/)
+
+*This code just runs fine in an [Anaconda](http://continuum.io/downloads) environment.*
