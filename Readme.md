@@ -12,3 +12,23 @@ The format of the streams are specified
 * [pyzmq](http://zeromq.github.io/pyzmq/)
 
 *This code just runs fine in an [Anaconda](http://continuum.io/downloads) environment.*
+
+## Anaconda
+
+If this is the initial checkout of this project create an Anaconda environment for the project
+
+```
+conda create --yes -n bsread anaconda
+```
+
+To activate this environment, use:
+
+```
+source activate bsread
+```
+
+To deactivate this environment, use:
+
+```
+source deactivate
+```

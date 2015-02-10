@@ -89,7 +89,7 @@ class Bsread(object):
             counter += 1
 
         # Todo need to add some more error checking
-        return data
+        return {"data": data, "header": header}
 
     def send(self):
         """
