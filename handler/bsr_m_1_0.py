@@ -7,9 +7,10 @@ class Handler:
     def __init__(self):
         self.header_hash = None
         self.receive_functions = None
-        self.data_header_handler = None
 
     def receive(self, socket, header):
+        return_value = {}
+
         data = []
         if socket.getsockopt(zmq.RCVMORE) and (not self.header_hash) and (not self.header_hash == header['hash']):
             # Interpret data header
@@ -17,9 +18,7 @@ class Handler:
             self.receive_functions = get_receive_functions(data_header)
             self.header_hash = header['hash']
 
-            # If there is a data header handler registered, call that function
-            if self.data_header_handler:
-                self.data_header_handler(data_header)
+            return_value['data_header'] = data_header
         else:
             # Skip second header
             socket.recv()
@@ -33,7 +32,10 @@ class Handler:
             counter += 1
 
         # Todo need to add some more error checking
-        return {"data": data, "header": header}
+
+        return_value['header'] = header
+        return_value['data'] = data
+        return return_value
 
 
 # Supporting functions ...

@@ -10,8 +10,10 @@ def handle_data_header(header):
 
 if __name__ == "__main__":
     receiver = bsread.Bsread(mode=zmq.PULL)
-    receiver.connect(address="tcp://localhost:9999", conn_type="connect", )
-    receiver.set_data_header_handler(handle_data_header)
+    bsread.connect(address="tcp://localhost:9999", conn_type="connect", )
 
     while True:
-        print receiver.receive()
+        message_data = bsread.receive()
+        if "data_header" in message_data:
+            print "Data Header: ", message_data['data_header']
+        print message_data['data']

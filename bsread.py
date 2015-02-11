@@ -125,5 +125,3 @@ class Bsread(object):
 
     def set_data_header_handler(self, handler):
         self.data_header_handler = handler
-
-
