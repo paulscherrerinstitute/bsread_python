@@ -126,5 +126,3 @@ class Bsread(object):
             # Send out every 10ms
             time.sleep(0.01)
 
-    def set_data_header_handler(self, handler):
-        self.data_header_handler = handler
