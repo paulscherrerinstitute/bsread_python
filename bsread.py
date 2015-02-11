@@ -27,8 +27,7 @@ class Bsread(object):
         self.address = None
         self.data_header = None
         self.header_hash = None
-        self.receive_functions = None
-        self.data_header_handler = None
+        self.header_type = None
         self.receive_handler = None
 
     def connect(self, address="tcp://127.0.0.1:9999", conn_type="connect", timeout=None, queue_size=4):
@@ -74,7 +73,11 @@ class Bsread(object):
         if not self.receive_handler:
             # There is currently no receive handler defined, try to create one based on htype information
             import handler
-            self.receive_handler = handler.load(header['htype'])
+            self.header_type = header['htype']
+            self.receive_handler = handler.load(self.header_type)
+
+        if self.header_type != header['htype']:
+            raise RuntimeError('htype changed')
 
         return self.receive_handler.receive(self.socket, header)
 
