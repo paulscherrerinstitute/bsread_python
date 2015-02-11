@@ -28,6 +28,7 @@ class Bsread(object):
         self.data_header = None
         self.header_hash = None
         self.receive_functions = None
+        self.data_header_handler = None
 
     def connect(self, address="tcp://127.0.0.1:9999", conn_type="connect", timeout=None, queue_size=4):
         """
@@ -75,6 +76,10 @@ class Bsread(object):
             self.data_header = self.socket.recv_json()
             self.receive_functions = get_receive_functions(self.data_header)
             self.header_hash = header['hash']
+
+            # If there is a data header handler registered, call that function
+            if self.data_header_handler:
+                self.data_header_handler(self.data_header)
         else:
             # Skip second header
             self.socket.recv()
@@ -135,6 +140,9 @@ class Bsread(object):
             pulse_id += 1
             # Send out every 10ms
             time.sleep(0.01)
+
+    def set_data_header_handler(self, handler):
+        self.data_header_handler = handler
 
 
 def get_receive_functions(configuration):
