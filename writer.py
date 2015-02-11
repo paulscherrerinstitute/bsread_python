@@ -23,13 +23,14 @@ class Writer:
         self.file = h5py.File(file_name, "w")
 
     def close_file(self):
-        # Todo: Clear buffers
+        self.compact_data()
 
         logger.info('Close file '+self.file.name)
         self.file.close()
 
-    def add_dataset(self, dataset_name, shape=(10,), dtype="i8", maxshape=None, **kwargs):
-        dataset = self.file.require_dataset(dataset_name, shape, dtype=dtype, maxshape=maxshape, **kwargs)  # chunks=True, shuffle=True, compression="lzf")
+        def add_dataset(self, dataset_name, shape=(1,), dtype="i8", maxshape=(None,), **kwargs):
+        dataset = self.file.require_dataset(dataset_name, shape, dtype=dtype, maxshape=maxshape, **kwargs)
+        # chunks=True, shuffle=True, compression="lzf")
         self.datasets.append(Dataset(dataset_name, dataset))
 
     def write(self, data):
@@ -44,9 +45,9 @@ class Writer:
         # Write to dataset
         for index, dataset in enumerate(self.datasets):
             required_size = dataset.count + 1
-            if dataset.shape[0] < required_size:
-                dataset.resize(dataset.count + 1000, axis=0)
-            dataset[dataset.count] = data[index]
+            if dataset.reference.shape[0] < required_size:
+                dataset.reference.resize(dataset.count + 1000, axis=0)
+            dataset.reference[dataset.count] = data[index]
             dataset.count += 1
 
     def compact_data(self):
@@ -54,6 +55,7 @@ class Writer:
         for dataset in self.datasets:
             # Compact if count is smaller than actual size
             if dataset.count < dataset.reference.shape[0]:
+                logger.info('Compact data for dataset '+dataset.name + ' from '+str(dataset.reference.shape[0])+' to ' + str(dataset.count))
                 dataset.reference.resize(dataset.count, axis=0)
 
 
