@@ -28,7 +28,7 @@ class Writer:
         logger.info('Close file '+self.file.name)
         self.file.close()
 
-        def add_dataset(self, dataset_name, shape=(1,), dtype="i8", maxshape=(None,), **kwargs):
+    def add_dataset(self, dataset_name, shape=(1,), dtype="i8", maxshape=(None,), **kwargs):
         dataset = self.file.require_dataset(dataset_name, shape, dtype=dtype, maxshape=maxshape, **kwargs)
         # chunks=True, shuffle=True, compression="lzf")
         self.datasets.append(Dataset(dataset_name, dataset))
