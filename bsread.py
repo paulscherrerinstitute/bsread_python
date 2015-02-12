@@ -2,6 +2,7 @@ import zmq
 import json
 import hashlib
 import struct
+import array
 import time
 import logging
 
@@ -161,13 +162,12 @@ def get_receive_functions(configuration):
     return functions
 
 
-def get_double(raw_data):
-    value = struct.unpack('d', raw_data)
-    if len(value) > 1:
-        return value
-    else:
-        return value[0]
 
+def get_double(raw_data):    
+    data = array.array('d')
+    data.fromstring(raw_data)
+    return data;
+    
 
 def get_integer(raw_data):
     value = struct.unpack('i', raw_data)
