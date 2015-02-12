@@ -29,9 +29,23 @@ class Writer:
         self.file.close()
 
     def add_dataset(self, dataset_name, shape=(1,), dtype="i8", maxshape=(None,), **kwargs):
+        """
+        Add and create a dataset to the writer.
+        :param dataset_name:
+        :param shape:
+        :param dtype:   b1, i1, i2, i4, i8, u1, u2, u4, u8, f2, f4, f8, c8, c16
+                        http://docs.scipy.org/doc/numpy/user/basics.types.html
+                        http://docs.scipy.org/doc/numpy/user/basics.rec.html#defining-structured-arrays
+        :param maxshape:
+        :param kwargs:
+        :return:
+        """
         dataset = self.file.require_dataset(dataset_name, shape, dtype=dtype, maxshape=maxshape, **kwargs)
         # chunks=True, shuffle=True, compression="lzf")
         self.datasets.append(Dataset(dataset_name, dataset))
+
+    def add_dataset_stub(self):
+        self.datasets.append(None)
 
     def write(self, data):
         """
@@ -44,11 +58,12 @@ class Writer:
 
         # Write to dataset
         for index, dataset in enumerate(self.datasets):
-            required_size = dataset.count + 1
-            if dataset.reference.shape[0] < required_size:
-                dataset.reference.resize(dataset.count + 1000, axis=0)
-            dataset.reference[dataset.count] = data[index]
-            dataset.count += 1
+            if dataset:  # Check for dataset stub, i.e. None
+                required_size = dataset.count + 1
+                if dataset.reference.shape[0] < required_size:
+                    dataset.reference.resize(dataset.count + 1000, axis=0)
+                dataset.reference[dataset.count] = data[index]
+                dataset.count += 1
 
     def compact_data(self):
         """Compact datasets, i.e. shrink them to actual size"""
