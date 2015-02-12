@@ -86,13 +86,23 @@ class Bsread(object):
             self.socket.recv()
 
         # Receiving data
+        
         counter = 0
-        while self.socket.getsockopt(zmq.RCVMORE):
+        while self.socket.getsockopt(zmq.RCVMORE):            
             raw_data = self.socket.recv()
             if raw_data:
-                data.append(self.receive_functions[counter][1](raw_data))
+                ##Super inefficient with multiple string table lookups, this has to cached for production ver
+                data_type = self.data_header["channels"][counter]["type"]
+                
+                if(data_type=="String"):
+                    data.append(get_string(raw_data))
+                elif(data_type=="Double"):
+                    data.append(get_double(raw_data))
+
+                #data.append(self.receive_functions[counter][1](raw_data))
+                counter += 1
                 #print data
-            counter += 1
+            
 
         # Todo need to add some more error checking
         return {"data": data, "header": header}
@@ -184,6 +194,11 @@ def get_long(raw_data):
     else:
         return value[0]
 
-
+##String are arrays as well
+##Todo: null terminate strings
 def get_string(raw_data):
-    return raw_data
+    print(raw_data)
+    data = array.array('c')
+    data.fromstring(raw_data)
+    return data;
+    
