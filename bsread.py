@@ -2,6 +2,7 @@ import zmq
 import json
 import hashlib
 import struct
+import array
 import time
 import logging
 
@@ -70,6 +71,7 @@ class Bsread(object):
     def receive(self):
         header = self.socket.recv_json()
 
+
         if not self.receive_handler:
             # There is currently no receive handler defined, try to create one based on htype information
             import handler
@@ -136,4 +138,3 @@ class Bsread(object):
             pulse_id += 1
             # Send out every 10ms
             time.sleep(0.01)
-
