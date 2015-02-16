@@ -102,6 +102,12 @@ class Bsread(object):
         channel['type'] = "string"
         channels.append(channel)
 
+        channel = dict()
+        channel['name'] = "CHANNEL-ARRAY_1"
+        channel['type'] = "integer"
+        channel['shape'] = [2]
+        channels.append(channel)
+
         data_header['channels'] = channels
 
         data_header_json = json.dumps(data_header)
@@ -120,6 +126,11 @@ class Bsread(object):
                 value += 0.1
 
             self.socket.send("hello-%d" % value, zmq.SNDMORE)  # Data
+            msg = bytearray()
+            msg.extend(struct.pack('i', pulse_id))
+            msg.extend(struct.pack('i', pulse_id+1000))
+
+            self.socket.send(msg, zmq.SNDMORE)  # Data
 
             self.socket.send('')
             pulse_id += 1

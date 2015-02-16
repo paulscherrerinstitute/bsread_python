@@ -31,7 +31,12 @@ if __name__ == "__main__":
                         writer.add_dataset_stub()
                         continue
 
-                    writer.add_dataset('/'+channel['name']+'/data', dtype=dtype)
+                    if 'shape' in channel:
+                        shape = [1] + channel['shape']
+                        maxshape = [None] + channel['shape']
+                        writer.add_dataset('/'+channel['name']+'/data', shape=shape, maxshape=maxshape, dtype=dtype)
+                    else:
+                        writer.add_dataset('/'+channel['name']+'/data', dtype=dtype)
 
             data = message_data['data']
             print data

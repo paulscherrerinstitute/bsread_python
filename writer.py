@@ -68,10 +68,11 @@ class Writer:
     def compact_data(self):
         """Compact datasets, i.e. shrink them to actual size"""
         for dataset in self.datasets:
-            # Compact if count is smaller than actual size
-            if dataset.count < dataset.reference.shape[0]:
-                logger.info('Compact data for dataset '+dataset.name + ' from '+str(dataset.reference.shape[0])+' to ' + str(dataset.count))
-                dataset.reference.resize(dataset.count, axis=0)
+            if dataset:  # Check for dataset stub, i.e. None
+                # Compact if count is smaller than actual size
+                if dataset.count < dataset.reference.shape[0]:
+                    logger.info('Compact data for dataset '+dataset.name + ' from '+str(dataset.reference.shape[0])+' to ' + str(dataset.count))
+                    dataset.reference.resize(dataset.count, axis=0)
 
 
 class Dataset:

@@ -1,5 +1,5 @@
 import zmq
-import struct
+import numpy
 
 
 class Handler:
@@ -57,7 +57,7 @@ def get_receive_functions(configuration):
 
 
 def get_double(raw_data):
-    value = struct.unpack('d', raw_data)
+    value = numpy.fromstring(raw_data, dtype='f8')
     if len(value) > 1:
         return value
     else:
@@ -65,7 +65,7 @@ def get_double(raw_data):
 
 
 def get_integer(raw_data):
-    value = struct.unpack('i', raw_data)
+    value = numpy.fromstring(raw_data, dtype='i4')
     if len(value) > 1:
         return value
     else:
@@ -73,7 +73,7 @@ def get_integer(raw_data):
 
 
 def get_long(raw_data):
-    value = struct.unpack('l', raw_data)
+    value = numpy.fromstring(raw_data, dtype='i8')
     if len(value) > 1:
         return value
     else:
