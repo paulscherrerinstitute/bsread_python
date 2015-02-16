@@ -62,6 +62,7 @@ class Writer:
                 required_size = dataset.count + 1
                 if dataset.reference.shape[0] < required_size:
                     dataset.reference.resize(dataset.count + 1000, axis=0)
+                # TODO need to add an None check - i.e. for different frequencies
                 dataset.reference[dataset.count] = data[index]
                 dataset.count += 1
 

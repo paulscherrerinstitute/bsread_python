@@ -7,7 +7,8 @@ import writer as wr
 
 if __name__ == "__main__":
     receiver = bsread.Bsread(mode=zmq.PULL)
-    receiver.connect(address="tcp://localhost:9999", conn_type="connect", )
+    # receiver.connect(address="tcp://localhost:9999", conn_type="connect", )
+    receiver.connect(address="tcp://gfa-lc6-64:9999", conn_type="connect", )
 
     writer = wr.Writer()
     writer.open_file('test.h5')

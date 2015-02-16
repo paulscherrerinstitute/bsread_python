@@ -6,7 +6,8 @@ import zmq
 
 if __name__ == "__main__":
     receiver = bsread.Bsread(mode=zmq.PULL)
-    receiver.connect(address="tcp://localhost:9999", conn_type="connect", )
+    receiver.connect(address="tcp://gfa-lc6-64:9999", conn_type="connect", )
+    #receiver.connect(address="tcp://localhost:9999", conn_type="connect", )
 
     while True:
         message_data = receiver.receive()
