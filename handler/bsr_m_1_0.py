@@ -12,6 +12,7 @@ class Handler:
         return_value = {}
 
         data = []
+        timestamps = []
         if socket.getsockopt(zmq.RCVMORE) and (not self.header_hash or not self.header_hash == header['hash']):
             # Interpret data header
             data_header = socket.recv_json()
@@ -29,8 +30,13 @@ class Handler:
             raw_data = socket.recv()
             if raw_data:
                 data.append(self.receive_functions[counter][1](raw_data))
+
+                if socket.getsockopt(zmq.RCVMORE):
+                    raw_timestamp = socket.recv()
+                    timestamps.append(None) # Todo: Add readback value
             else:
                 data.append(None)
+                timestamps.append(None)
             counter += 1
 
         # pop the last None value because of the last empty submessage that terminates the message
@@ -39,6 +45,7 @@ class Handler:
 
         return_value['header'] = header
         return_value['data'] = data
+        return_value['timestamps'] = timestamps
         return return_value
 
 

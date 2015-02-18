@@ -90,6 +90,7 @@ class Bsread(object):
 
         data_header = dict()
         data_header['htype'] = "bsr_d-1.0"
+        data_header['encoding'] = "little"
         channels = []
         for index in range(0, 4):
             channel = dict()
@@ -123,14 +124,17 @@ class Bsread(object):
             self.socket.send_string(data_header_json, zmq.SNDMORE)  # Data header
             for index in range(0, 4):
                 self.socket.send(struct.pack('d', value), zmq.SNDMORE)  # Data
+                self.socket.send(struct.pack('q', 0), zmq.SNDMORE)  # Timestamp
                 value += 0.1
 
             self.socket.send("hello-%d" % value, zmq.SNDMORE)  # Data
+            self.socket.send(struct.pack('q', 0), zmq.SNDMORE)  # Timestamp
             msg = bytearray()
             msg.extend(struct.pack('i', pulse_id))
             msg.extend(struct.pack('i', pulse_id+1000))
 
             self.socket.send(msg, zmq.SNDMORE)  # Data
+            self.socket.send(struct.pack('q', 0), zmq.SNDMORE)  # Timestamp
 
             self.socket.send('')
             pulse_id += 1
