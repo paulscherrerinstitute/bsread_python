@@ -33,7 +33,10 @@ class Handler:
 
                 if socket.getsockopt(zmq.RCVMORE):
                     raw_timestamp = socket.recv()
-                    timestamps.append(None) # Todo: Add readback value
+                    timestamp = numpy.fromstring(raw_timestamp, dtype='u8')
+                    # secPastEpoch = value[0]
+                    # nsec = value[1]
+                    timestamps.append(timestamp)
             else:
                 data.append(None)
                 timestamps.append(None)
@@ -41,6 +44,8 @@ class Handler:
 
         # pop the last None value because of the last empty submessage that terminates the message
         data.pop()
+        timestamps.pop()
+
         # Todo need to add some more error checking
 
         return_value['header'] = header
