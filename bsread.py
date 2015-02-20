@@ -120,21 +120,22 @@ class Bsread(object):
 
         while True:
             main_header['pulse_id'] = pulse_id
+            main_header['global_timestamp'] = {"epoch": pulse_id, "ns": pulse_id}
             self.socket.send_json(main_header, zmq.SNDMORE)  # Main header
             self.socket.send_string(data_header_json, zmq.SNDMORE)  # Data header
             for index in range(0, 4):
                 self.socket.send(struct.pack('d', value), zmq.SNDMORE)  # Data
-                self.socket.send(struct.pack('q', 0), zmq.SNDMORE)  # Timestamp
+                self.socket.send(struct.pack('q', 0) + struct.pack('q', 0), zmq.SNDMORE)  # Timestamp
                 value += 0.1
 
             self.socket.send("hello-%d" % value, zmq.SNDMORE)  # Data
-            self.socket.send(struct.pack('q', 0), zmq.SNDMORE)  # Timestamp
+            self.socket.send(struct.pack('q', 0) + struct.pack('q', 0), zmq.SNDMORE)  # Timestamp
             msg = bytearray()
             msg.extend(struct.pack('i', pulse_id))
             msg.extend(struct.pack('i', pulse_id+1000))
 
             self.socket.send(msg, zmq.SNDMORE)  # Data
-            self.socket.send(struct.pack('q', 0), zmq.SNDMORE)  # Timestamp
+            self.socket.send(struct.pack('q', 0) + struct.pack('q', 0), zmq.SNDMORE)  # Timestamp
 
             self.socket.send('')
             pulse_id += 1
