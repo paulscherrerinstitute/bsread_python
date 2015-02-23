@@ -12,9 +12,13 @@ Example BSREAD source. By starting the script via `python bsread_sender.py` you 
 specification compliant data stream.
 
 ## bsread_receiver.py
-This script dumps all messages received from a BSREAD stream to standard out.
-Before running the script you eventually have to change the URL to connect to (default tcp://localhost:9999). 
-(this will change in future for sure!)
+This script dumps all messages received from a BSREAD stream to standard out. The usage is as follows:
+
+```
+receiver.py -s <source> -f <output_file>
+```
+
+The _source_ parameter is specified as this: `tcp://localhost:9999` (default value)
 
 
 ## receiver.py
