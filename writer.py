@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(name)s - %(mes
 class Writer:
     def __init__(self):
         self.file = None
-        self.datasets = []
+        self.dataset_groups = {}
 
     def open_file(self, file_name):
 
@@ -28,7 +28,7 @@ class Writer:
         logger.info('Close file '+self.file.name)
         self.file.close()
 
-    def add_dataset(self, dataset_name, shape=(1,), dtype="i8", maxshape=(None,), **kwargs):
+    def add_dataset(self, dataset_name, dataset_group_name='data', shape=(1,), dtype="i8", maxshape=(None,), **kwargs):
         """
         Add and create a dataset to the writer.
         :param dataset_name:
@@ -40,24 +40,37 @@ class Writer:
         :param kwargs:
         :return:
         """
+
+        if dataset_group_name not in self.dataset_groups:
+            self.dataset_groups[dataset_group_name] = DatasetGroup()
+
         dataset = self.file.require_dataset(dataset_name, shape, dtype=dtype, maxshape=maxshape, **kwargs)
         # chunks=True, shuffle=True, compression="lzf")
-        self.datasets.append(Dataset(dataset_name, dataset))
+        self.dataset_groups[dataset_group_name].datasets.append(Dataset(dataset_name, dataset))
 
-    def add_dataset_stub(self):
-        self.datasets.append(None)
+    def add_dataset_stub(self, dataset_group_name='data'):
 
-    def write(self, data):
+        if dataset_group_name not in self.dataset_groups:
+            self.dataset_groups[dataset_group_name] = DatasetGroup()
+
+        self.dataset_groups[dataset_group_name].datasets.append(None)
+
+    def write(self, data, dataset_group_name='data'):
         """
         Write data to datasets. It is mandatory that the size of the data list is the same as the datasets
         :param data: List of values to write to the configured datasets
         """
 
-        if len(data) != len(self.datasets):
+        if dataset_group_name not in self.dataset_groups:
+            raise RuntimeError('Cannot write data, dataset group '+dataset_group_name+' does not exist')
+
+        dataset_group = self.dataset_groups[dataset_group_name]
+
+        if len(data) != len(dataset_group.datasets):
             raise RuntimeError('The size of the passed data object does not match the size of datasets configured')
 
         # Write to dataset
-        for index, dataset in enumerate(self.datasets):
+        for index, dataset in enumerate(dataset_group.datasets):
             if dataset:  # Check for dataset stub, i.e. None
                 required_size = dataset.count + 1
                 if dataset.reference.shape[0] < required_size:
@@ -68,12 +81,14 @@ class Writer:
 
     def compact_data(self):
         """Compact datasets, i.e. shrink them to actual size"""
-        for dataset in self.datasets:
-            if dataset:  # Check for dataset stub, i.e. None
-                # Compact if count is smaller than actual size
-                if dataset.count < dataset.reference.shape[0]:
-                    logger.info('Compact data for dataset '+dataset.name + ' from '+str(dataset.reference.shape[0])+' to ' + str(dataset.count))
-                    dataset.reference.resize(dataset.count, axis=0)
+
+        for key, dataset_group in self.dataset_groups.iteritems():
+            for dataset in dataset_group.datasets:
+                if dataset:  # Check for dataset stub, i.e. None
+                    # Compact if count is smaller than actual size
+                    if dataset.count < dataset.reference.shape[0]:
+                        logger.info('Compact data for dataset '+dataset.name + ' from '+str(dataset.reference.shape[0])+' to ' + str(dataset.count))
+                        dataset.reference.resize(dataset.count, axis=0)
 
 
 class Dataset:
@@ -81,3 +96,8 @@ class Dataset:
         self.name = name
         self.count = count
         self.reference = dataset_reference
+
+
+class DatasetGroup:
+    def __init__(self):
+        self.datasets = []
