@@ -17,6 +17,15 @@ Before running the script you eventually have to change the URL to connect to (d
 (this will change in future for sure!)
 
 
+## receiver.py
+Receive and write BSREAD data into a HDF5 file. The usage is as follows:
+
+```
+receiver.py -s <source> -f <output_file>
+```
+
+The _source_ parameter is specified as this: `tcp://localhost:9999` (default value)
+
 # Dependencies
 
 * Python 2.7

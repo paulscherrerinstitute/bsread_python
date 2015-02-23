@@ -3,15 +3,20 @@
 import bsread
 import zmq
 import writer as wr
+import logging
+
+# Logger configuration
+logger = logging.getLogger(__name__)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(name)s - %(message)s')
 
 
-if __name__ == "__main__":
+def receive(source, file_name):
     receiver = bsread.Bsread(mode=zmq.PULL)
-    receiver.connect(address="tcp://localhost:9999", conn_type="connect", )
-    # receiver.connect(address="tcp://gfa-lc6-64:9999", conn_type="connect", )
+    receiver.connect(address=source, conn_type="connect", )
 
     writer = wr.Writer()
-    writer.open_file('test.h5')
+    writer.open_file(file_name)
 
     try:
         while True:
@@ -50,7 +55,7 @@ if __name__ == "__main__":
                     writer.add_dataset('/'+channel['name']+'/pulse_id', dataset_group_name='pulse_ids', dtype='i8')
 
             data = message_data['data']
-            print data
+            logger.debug(data)
 
             writer.write(message_data['pulse_id_array'], dataset_group_name='pulse_id_array')
 
@@ -61,3 +66,31 @@ if __name__ == "__main__":
 
     finally:
         writer.close_file()
+
+
+if __name__ == "__main__":
+    import sys
+    import getopt
+
+    source_ = 'tcp://localhost:9999'  # 'tcp://gfa-lc6-64:9999'
+    file_name_ = 'test.h5'
+
+    arguments = sys.argv[1:]
+    usage = sys.argv[0]+' -s <source> -f <output_file>'
+
+    try:
+        opts, args = getopt.getopt(arguments, "hs:f:", ["source=", "file="])
+    except getopt.GetoptError:
+        print usage
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt == '-h':
+            print usage
+            sys.exit()
+        elif opt in ("-s", "--source"):
+            source_ = arg
+        elif opt in ("-f", "--file"):
+            file_name_ = arg
+
+    receive(source_, file_name_)
