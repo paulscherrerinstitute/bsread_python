@@ -35,7 +35,11 @@ The _source_ parameter is specified as this: `tcp://localhost:9999` (default val
 * Python 2.7
 * [pyzmq](http://zeromq.github.io/pyzmq/)
 
-*This code just runs fine in an [Anaconda](http://continuum.io/downloads) environment.*
+Optional
+* [cachannel](https://bitbucket.org/xwang/cachannel/src/d8cba8b4b525e960497f539f92a7481cc1ab99e3?at=default) 2.4.0
+
+*This code just runs fine in an [Anaconda](http://continuum.io/downloads) environment if you don't need the bsread configuration scripts.
+ Otherwise you also have to install cachannel from the PSI anaconda repository*
 
 ## Anaconda
 
