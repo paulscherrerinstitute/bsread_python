@@ -25,23 +25,13 @@ def receive(source, file_name):
                 data_header = message_data['data_header']
                 print "Data Header: ", data_header
 
-                # Define endianness of data
-                # > - big endian
-                # < - little endian
-                endianness = '<' # default little endian
-                if 'encoding' in data_header and data_header['encoding'] == 'big':
-                    endianness = '>'
-                print "Using endianness: "+endianness
-
-                writer.add_dataset('/pulse_id', dataset_group_name='pulse_id_array', dtype='i8')
-
                 # Interpret the data header and add required datasets
                 for channel in data_header['channels']:
-                    dtype = endianness+'f8'
+                    dtype = 'f8'
                     if channel['type'].lower() == 'integer':
-                        dtype = endianness+'i4'
+                        dtype = 'i4'
                     elif channel['type'].lower() == 'long':
-                        dtype = endianness+'i8'
+                        dtype = 'i8'
                     elif channel['type'].lower() == 'string':
                         # we are skipping strings as they are not supported ...
                         writer.add_dataset_stub(dataset_group_name='data')
