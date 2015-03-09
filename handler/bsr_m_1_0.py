@@ -7,6 +7,7 @@ class Handler:
     def __init__(self):
         self.header_hash = None
         self.receive_functions = None
+        self.endianness = None
 
     def receive(self, socket, header):
         return_value = {}
@@ -26,6 +27,14 @@ class Handler:
             self.receive_functions = get_receive_functions(data_header)
             self.header_hash = header['hash']
 
+            # Define endianness of data
+            # > - big endian
+            # < - little endian
+            self.endianness = '<'  # default little endian
+            if 'encoding' in data_header and data_header['encoding'] == 'big':
+                self.endianness = '>'
+            print "Using endianness: "+self.endianness
+
             return_value['data_header'] = data_header
         else:
             # Skip second header
@@ -36,7 +45,7 @@ class Handler:
         while socket.getsockopt(zmq.RCVMORE):
             raw_data = socket.recv()
             if raw_data:
-                data.append(self.receive_functions[counter][1](raw_data))
+                data.append(self.receive_functions[counter][1](raw_data, endianness=self.endianness))
 
                 if socket.getsockopt(zmq.RCVMORE):
                     raw_timestamp = socket.recv()
@@ -69,16 +78,15 @@ class Handler:
         return_value['timestamp_offset'] = timestamp_offset
         return_value['pulse_ids'] = pulse_ids
 
-
         return return_value
 
 
 # Supporting functions ...
 
-def get_receive_functions(configuration):
+def get_receive_functions(data_header):
 
     functions = []
-    for channel in configuration['channels']:
+    for channel in data_header['channels']:
         if channel['type'].lower() == 'double':
             functions.append((channel, get_double))
         if channel['type'].lower() == 'integer':
@@ -91,29 +99,30 @@ def get_receive_functions(configuration):
     return functions
 
 
-def get_double(raw_data):
-    value = numpy.fromstring(raw_data, dtype='f8')
+def get_double(raw_data, endianness='<'):
+    value = numpy.fromstring(raw_data, dtype=endianness+'f8')
     if len(value) > 1:
         return value
     else:
         return value[0]
 
 
-def get_integer(raw_data):
-    value = numpy.fromstring(raw_data, dtype='i4')
+def get_integer(raw_data, endianness='<'):
+    value = numpy.fromstring(raw_data, dtype=endianness+'i4')
     if len(value) > 1:
         return value
     else:
         return value[0]
 
 
-def get_long(raw_data):
-    value = numpy.fromstring(raw_data, dtype='i8')
+def get_long(raw_data, endianness='<'):
+    value = numpy.fromstring(raw_data, dtype=endianness+'i8')
     if len(value) > 1:
         return value
     else:
         return value[0]
 
 
-def get_string(raw_data):
+def get_string(raw_data, endianness='<'):
+    # endianness does not make sens in this function
     return raw_data
