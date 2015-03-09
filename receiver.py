@@ -25,6 +25,8 @@ def receive(source, file_name):
                 data_header = message_data['data_header']
                 print "Data Header: ", data_header
 
+                writer.add_dataset('/pulse_id', dataset_group_name='pulse_id_array', dtype='i8')
+
                 # Interpret the data header and add required datasets
                 for channel in data_header['channels']:
                     dtype = 'f8'
