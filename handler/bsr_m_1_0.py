@@ -45,7 +45,7 @@ class Handler:
         while socket.getsockopt(zmq.RCVMORE):
             raw_data = socket.recv()
             if raw_data:
-                data.append(self.receive_functions[counter][1](raw_data, endianness=self.endianness))
+                data.append(self.receive_functions[counter][1].get_value(raw_data, endianness=self.endianness))
 
                 if socket.getsockopt(zmq.RCVMORE):
                     raw_timestamp = socket.recv()
@@ -88,72 +88,40 @@ def get_receive_functions(data_header):
     functions = []
     for channel in data_header['channels']:
         if channel['type'].lower() == 'double':
-            functions.append((channel, get_double))
+            functions.append((channel, NumberProvider('f8')))
         if channel['type'].lower() == 'integer':
-            functions.append((channel, get_integer))
+            functions.append((channel, NumberProvider('i4')))
         if channel['type'].lower() == 'long':
-            functions.append((channel, get_long))
+            functions.append((channel, NumberProvider('i4')))
         if channel['type'].lower() == 'ulong':
-            functions.append((channel, get_ulong))
+            functions.append((channel, NumberProvider('u4')))
         if channel['type'].lower() == 'short':
-            functions.append((channel, get_short))
+            functions.append((channel, NumberProvider('i2')))
         if channel['type'].lower() == 'ushort':
-            functions.append((channel, get_ushort))
+            functions.append((channel, NumberProvider('u2')))
         if channel['type'].lower() == 'string':
-            functions.append((channel, get_string))
+            functions.append((channel, StringProvider()))
 
     return functions
 
+
 # numpy type definitions can be found at: http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html
+class NumberProvider:
+    def __init__(self, dtype):
+        self.dtype = dtype
 
-def get_double(raw_data, endianness='<'):
-    value = numpy.fromstring(raw_data, dtype=endianness+'f8')
-    if len(value) > 1:
-        return value
-    else:
-        return value[0]
-
-
-def get_integer(raw_data, endianness='<'):
-    value = numpy.fromstring(raw_data, dtype=endianness+'i4')
-    if len(value) > 1:
-        return value
-    else:
-        return value[0]
+    def get_value(self, raw_data, endianness='<'):
+        value = numpy.fromstring(raw_data, dtype=endianness+self.dtype)
+        if len(value) > 1:
+            return value
+        else:
+            return value[0]
 
 
-def get_long(raw_data, endianness='<'):
-    value = numpy.fromstring(raw_data, dtype=endianness+'i4')
-    if len(value) > 1:
-        return value
-    else:
-        return value[0]
+class StringProvider:
+    def __init__(self):
+        pass
 
-
-def get_ulong(raw_data, endianness='<'):
-    value = numpy.fromstring(raw_data, dtype=endianness+'u4')
-    if len(value) > 1:
-        return value
-    else:
-        return value[0]
-
-
-def get_short(raw_data, endianness='<'):
-    value = numpy.fromstring(raw_data, dtype=endianness+'i2')
-    if len(value) > 1:
-        return value
-    else:
-        return value[0]
-
-
-def get_ushort(raw_data, endianness='<'):
-    value = numpy.fromstring(raw_data, dtype=endianness+'u2')
-    if len(value) > 1:
-        return value
-    else:
-        return value[0]
-
-
-def get_string(raw_data, endianness='<'):
-    # endianness does not make sens in this function
-    return raw_data
+    def get_value(self, raw_data, endianness='<'):
+        # endianness does not make sens in this function
+        return raw_data
