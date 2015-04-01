@@ -93,11 +93,18 @@ def get_receive_functions(data_header):
             functions.append((channel, get_integer))
         if channel['type'].lower() == 'long':
             functions.append((channel, get_long))
+        if channel['type'].lower() == 'ulong':
+            functions.append((channel, get_ulong))
+        if channel['type'].lower() == 'short':
+            functions.append((channel, get_short))
+        if channel['type'].lower() == 'ushort':
+            functions.append((channel, get_ushort))
         if channel['type'].lower() == 'string':
             functions.append((channel, get_string))
 
     return functions
 
+# numpy type definitions can be found at: http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html
 
 def get_double(raw_data, endianness='<'):
     value = numpy.fromstring(raw_data, dtype=endianness+'f8')
@@ -116,7 +123,31 @@ def get_integer(raw_data, endianness='<'):
 
 
 def get_long(raw_data, endianness='<'):
-    value = numpy.fromstring(raw_data, dtype=endianness+'i8')
+    value = numpy.fromstring(raw_data, dtype=endianness+'i4')
+    if len(value) > 1:
+        return value
+    else:
+        return value[0]
+
+
+def get_ulong(raw_data, endianness='<'):
+    value = numpy.fromstring(raw_data, dtype=endianness+'u4')
+    if len(value) > 1:
+        return value
+    else:
+        return value[0]
+
+
+def get_short(raw_data, endianness='<'):
+    value = numpy.fromstring(raw_data, dtype=endianness+'i2')
+    if len(value) > 1:
+        return value
+    else:
+        return value[0]
+
+
+def get_ushort(raw_data, endianness='<'):
+    value = numpy.fromstring(raw_data, dtype=endianness+'u2')
     if len(value) > 1:
         return value
     else:
