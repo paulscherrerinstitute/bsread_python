@@ -68,6 +68,11 @@ class Bsread(object):
             logger.info("Unable to disconnect properly")
 
     def receive(self):
+        """
+        Receive a message
+        :return: map holding the data, timestamp, data and main header
+        """
+
         header = self.socket.recv_json()
 
         if not self.receive_handler:

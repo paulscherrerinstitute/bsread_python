@@ -49,7 +49,7 @@ class Handler:
 
                 if socket.getsockopt(zmq.RCVMORE):
                     raw_timestamp = socket.recv()
-                    timestamp_array = numpy.fromstring(raw_timestamp, dtype='u8')
+                    timestamp_array = numpy.fromstring(raw_timestamp, dtype=self.endianness+'u8')
                     # secPastEpoch = value[0]
                     # nsec = value[1]
                     timestamp.append(timestamp_array[0])
