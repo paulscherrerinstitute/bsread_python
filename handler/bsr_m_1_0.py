@@ -89,6 +89,8 @@ def get_receive_functions(data_header):
     for channel in data_header['channels']:
         if channel['type'].lower() == 'double':
             functions.append((channel, NumberProvider('f8')))
+        if channel['type'].lower() == 'float':
+            functions.append((channel, NumberProvider('f4')))
         if channel['type'].lower() == 'integer':
             functions.append((channel, NumberProvider('i4')))
         if channel['type'].lower() == 'long':
