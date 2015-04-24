@@ -87,22 +87,25 @@ def get_receive_functions(data_header):
 
     functions = []
     for channel in data_header['channels']:
-        if channel['type'].lower() == 'double':
+        if 'type' in channel:
+            if channel['type'].lower() == 'double':
+                functions.append((channel, NumberProvider('f8')))
+            if channel['type'].lower() == 'float':
+                functions.append((channel, NumberProvider('f4')))
+            if channel['type'].lower() == 'integer':
+                functions.append((channel, NumberProvider('i4')))
+            if channel['type'].lower() == 'long':
+                functions.append((channel, NumberProvider('i4')))
+            if channel['type'].lower() == 'ulong':
+                functions.append((channel, NumberProvider('u4')))
+            if channel['type'].lower() == 'short':
+                functions.append((channel, NumberProvider('i2')))
+            if channel['type'].lower() == 'ushort':
+                functions.append((channel, NumberProvider('u2')))
+            if channel['type'].lower() == 'string':
+                functions.append((channel, StringProvider()))
+        else:
             functions.append((channel, NumberProvider('f8')))
-        if channel['type'].lower() == 'float':
-            functions.append((channel, NumberProvider('f4')))
-        if channel['type'].lower() == 'integer':
-            functions.append((channel, NumberProvider('i4')))
-        if channel['type'].lower() == 'long':
-            functions.append((channel, NumberProvider('i4')))
-        if channel['type'].lower() == 'ulong':
-            functions.append((channel, NumberProvider('u4')))
-        if channel['type'].lower() == 'short':
-            functions.append((channel, NumberProvider('i2')))
-        if channel['type'].lower() == 'ushort':
-            functions.append((channel, NumberProvider('u2')))
-        if channel['type'].lower() == 'string':
-            functions.append((channel, StringProvider()))
 
     return functions
 
