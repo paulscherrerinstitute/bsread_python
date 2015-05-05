@@ -4,18 +4,18 @@ import os
 import sys
 import re
 
-# Utility class to generate a bsread configuration string and push it to an IOC
 
-
-def configure_ioc(ioc_name, input_provider):
+def configure_ioc(ioc_name):
 
     # we use an input_provider class instead of a list of lines as we
     # want to be able to have interactive input as well
 
     configuration = Configuration()
-    input_provider.open()
     while True:
-        line = input_provider.read()
+        line = sys.stdin.readline()
+        # ignore comments
+        if re.match("^[ ,\t]*#", line):
+            continue
         line = line.strip()
         if not len(line):
             break
@@ -35,9 +35,7 @@ def configure_ioc(ioc_name, input_provider):
         except ValueError:
             print "Frequency (float) or offset (int) specified in wrong type - ignoring channel: "+name
 
-    input_provider.close()
-
-    configuration_string = json.dumps(configuration, default=lambda o: o.__dict__)
+    configuration_string = configuration.json()
     print "Configuration String: "
     print configuration_string
 
@@ -54,6 +52,9 @@ class Configuration:
     def __init__(self):
         self.channels = []
 
+    def json(self):
+        return json.dumps(self, default=lambda o: o.__dict__)
+
 
 class Channel:
     def __init__(self, name, frequency=None, offset=None):
@@ -64,22 +65,31 @@ class Channel:
             self.offset = offset
 
 
-class InputProvider:
-
-    def __init__(self):
-        pass
-
-    def open(self):
-        pass
-
-    def read(self):
-        # Default implementation
-        return sys.stdin.readline()
-
-    def close(self):
-        pass
-
-
 if __name__ == '__main__':
+    """
+    This utility script parses standard input and creates a BSREAD configuration
+    and uploads it to the specified IOC.
+
+    It also provides utility classes to easily assemble a configuration (e.g. interactively on an
+    ipython shell)
+
+    Example:
+    configuration = Configuration()
+    configuration.channels = Channel("name", frequency=100, offset=0)
+    configuration.json()
+
+    Usage:
+    bsread_client.py [ioc]
+
+    The script reads from standard input and terminates on EOF or empty lines
+
+    An input line looks like this:
+    <channel> frequency(optional, type=float ) offset(optional, type=int)
+    Note that only the channel name is mandatory.
+
+    Configuration can also be piped from any other process. This is done like this:
+    echo -e "one\ntwo\nthree" | python bsread_client.py
+    """
+
     ioc = "PC7920"
-    configure_ioc(ioc, InputProvider())
+    configure_ioc(ioc)

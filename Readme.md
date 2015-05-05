@@ -7,6 +7,34 @@ The format of the stream is specified
 [here](https://docs.google.com/document/d/1BynCjz5Ax-onDW0y8PVQnYmSssb6fAyHkdDl1zh21yY/edit#heading=h.ugxijco36cap).
 
 # Scripts
+
+## bsread_client.py
+Utility script to generate and upload a BSREAD ioc configuration. The script reads from standard input.
+Therefore input can also be piped into the program.
+
+Usage:
+
+```
+python bsread_client.py [ioc]
+```
+
+The script reads from standard input and terminates on EOF or empty lines
+
+An input line looks like this:
+
+```
+<channel> frequency(optional, type=float ) offset(optional, type=int)
+```
+
+Note that only the channel name is mandatory.
+
+Configuration can also be piped from any other process. This is done like this:
+
+```bash
+echo -e "one\ntwo\nthree" | python bsread_client.py
+```
+    
+
 ## bsread_sender.py
 Example BSREAD source. By starting the script via `python bsread_sender.py` you will generate a BSREAD data source serving
 specification compliant data stream.
