@@ -92,4 +92,7 @@ if __name__ == '__main__':
     """
 
     ioc = "PC7920"
+    if len(sys.argv) > 0:
+        ioc = sys.argv[0]
+
     configure_ioc(ioc)
