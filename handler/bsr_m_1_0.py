@@ -62,12 +62,6 @@ class Handler:
                 pulse_ids.append(None)
             counter += 1
 
-        # pop the last None value because of the last empty submessage that terminates the message
-        data.pop()
-        timestamp.pop()
-        timestamp_offset.pop()
-        pulse_ids.pop()
-
         # Todo need to add some more error checking
 
         return_value['header'] = header
