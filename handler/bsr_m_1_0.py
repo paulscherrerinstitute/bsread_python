@@ -24,6 +24,22 @@ class Handler:
         if socket.getsockopt(zmq.RCVMORE) and (not self.header_hash or not self.header_hash == header['hash']):
             # Interpret data header
             data_header = socket.recv_json()
+            
+            # If a message with ho channel information is received,
+            # ignore it and return from function with no data.
+            if not data_header['channels']: 
+                while socket.getsockopt(zmq.RCVMORE):
+                    raw_data = socket.recv()
+                return_value['header'] = header
+                return_value['pulse_id_array'] = pulse_id_array
+
+                return_value['data'] = 'No channel'
+                return_value['timestamp'] = None
+                return_value['timestamp_offset'] = None
+                return_value['pulse_ids'] = None
+
+                return return_value
+
             self.receive_functions = get_receive_functions(data_header)
             self.header_hash = header['hash']
 
