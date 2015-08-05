@@ -84,21 +84,25 @@ def get_receive_functions(data_header):
         if 'type' in channel:
             if channel['type'].lower() == 'double':
                 functions.append((channel, NumberProvider('f8')))
-            if channel['type'].lower() == 'float':
+            elif channel['type'].lower() == 'float':
                 functions.append((channel, NumberProvider('f4')))
-            if channel['type'].lower() == 'integer':
+            elif channel['type'].lower() == 'integer':
                 functions.append((channel, NumberProvider('i4')))
-            if channel['type'].lower() == 'long':
+            elif channel['type'].lower() == 'long':
                 functions.append((channel, NumberProvider('i4')))
-            if channel['type'].lower() == 'ulong':
+            elif channel['type'].lower() == 'ulong':
                 functions.append((channel, NumberProvider('u4')))
-            if channel['type'].lower() == 'short':
+            elif channel['type'].lower() == 'short':
                 functions.append((channel, NumberProvider('i2')))
-            if channel['type'].lower() == 'ushort':
+            elif channel['type'].lower() == 'ushort':
                 functions.append((channel, NumberProvider('u2')))
-            if channel['type'].lower() == 'string':
+            elif channel['type'].lower() == 'string':
                 functions.append((channel, StringProvider()))
+            else:
+                print "Unknown data type. Trying to parse as 64-bit floating-point number."
+                functions.append((channel, NumberProvider('f8')))
         else:
+            print "'type' channel field not found. Trying to parse as 64-bit floating-point number."
             functions.append((channel, NumberProvider('f8')))
 
     return functions
