@@ -24,6 +24,22 @@ class Handler:
         if socket.getsockopt(zmq.RCVMORE) and (not self.header_hash or not self.header_hash == header['hash']):
             # Interpret data header
             data_header = socket.recv_json()
+            
+            # If a message with ho channel information is received,
+            # ignore it and return from function with no data.
+            if not data_header['channels']: 
+                while socket.getsockopt(zmq.RCVMORE):
+                    raw_data = socket.recv()
+                return_value['header'] = header
+                return_value['pulse_id_array'] = pulse_id_array
+
+                return_value['data'] = 'No channel'
+                return_value['timestamp'] = None
+                return_value['timestamp_offset'] = None
+                return_value['pulse_ids'] = None
+
+                return return_value
+
             self.receive_functions = get_receive_functions(data_header)
             self.header_hash = header['hash']
 
@@ -62,12 +78,6 @@ class Handler:
                 pulse_ids.append(None)
             counter += 1
 
-        # pop the last None value because of the last empty submessage that terminates the message
-        data.pop()
-        timestamp.pop()
-        timestamp_offset.pop()
-        pulse_ids.pop()
-
         # Todo need to add some more error checking
 
         return_value['header'] = header
@@ -90,21 +100,25 @@ def get_receive_functions(data_header):
         if 'type' in channel:
             if channel['type'].lower() == 'double':
                 functions.append((channel, NumberProvider('f8')))
-            if channel['type'].lower() == 'float':
+            elif channel['type'].lower() == 'float':
                 functions.append((channel, NumberProvider('f4')))
-            if channel['type'].lower() == 'integer':
+            elif channel['type'].lower() == 'integer':
                 functions.append((channel, NumberProvider('i4')))
-            if channel['type'].lower() == 'long':
+            elif channel['type'].lower() == 'long':
                 functions.append((channel, NumberProvider('i4')))
-            if channel['type'].lower() == 'ulong':
+            elif channel['type'].lower() == 'ulong':
                 functions.append((channel, NumberProvider('u4')))
-            if channel['type'].lower() == 'short':
+            elif channel['type'].lower() == 'short':
                 functions.append((channel, NumberProvider('i2')))
-            if channel['type'].lower() == 'ushort':
+            elif channel['type'].lower() == 'ushort':
                 functions.append((channel, NumberProvider('u2')))
-            if channel['type'].lower() == 'string':
+            elif channel['type'].lower() == 'string':
                 functions.append((channel, StringProvider()))
+            else:
+                print "Unknown data type. Trying to parse as 64-bit floating-point number."
+                functions.append((channel, NumberProvider('f8')))
         else:
+            print "'type' channel field not found. Trying to parse as 64-bit floating-point number."
             functions.append((channel, NumberProvider('f8')))
 
     return functions
