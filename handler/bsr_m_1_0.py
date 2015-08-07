@@ -7,7 +7,6 @@ class Handler:
     def __init__(self):
         self.header_hash = None
         self.receive_functions = None
-        self.endianness = None
 
     def receive(self, socket, header):
         return_value = {}
@@ -43,14 +42,6 @@ class Handler:
             self.receive_functions = get_receive_functions(data_header)
             self.header_hash = header['hash']
 
-            # Define endianness of data
-            # > - big endian
-            # < - little endian
-            self.endianness = '<'  # default little endian
-            if 'encoding' in data_header and data_header['encoding'] == 'big':
-                self.endianness = '>'
-            print "Using endianness: "+self.endianness
-
             return_value['data_header'] = data_header
         else:
             # Skip second header
@@ -61,11 +52,12 @@ class Handler:
         while socket.getsockopt(zmq.RCVMORE):
             raw_data = socket.recv()
             if raw_data:
-                data.append(self.receive_functions[counter][1].get_value(raw_data, endianness=self.endianness))
+                endianness = self.receive_functions[counter][0]["encoding"];
+                data.append(self.receive_functions[counter][1].get_value(raw_data, endianness=endianness))
 
                 if socket.getsockopt(zmq.RCVMORE):
                     raw_timestamp = socket.recv()
-                    timestamp_array = numpy.fromstring(raw_timestamp, dtype=self.endianness+'u8')
+                    timestamp_array = numpy.fromstring(raw_timestamp, dtype=endianness+'u8')
                     # secPastEpoch = value[0]
                     # nsec = value[1]
                     timestamp.append(timestamp_array[0])
@@ -120,6 +112,14 @@ def get_receive_functions(data_header):
         else:
             print "'type' channel field not found. Trying to parse as 64-bit floating-point number."
             functions.append((channel, NumberProvider('f8')))
+
+        # Define endianness of data
+        # > - big endian
+        # < - little endian
+        if 'encoding' in channel and channel['encoding'] == 'big':
+            channel["encoding"] = '>'
+        else:
+            channel["encoding"] = '<'  # default little endian
 
     return functions
 
