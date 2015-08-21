@@ -98,20 +98,22 @@ class Bsread(object):
 
         data_header = dict()
         data_header['htype'] = "bsr_d-1.0"
-        data_header['encoding'] = "little"
         channels = []
         for index in range(0, 4):
             channel = dict()
+            channel['encoding'] = "little"
             channel['name'] = "CHANNEL-%d" % index
             channel['type'] = "double"
             channels.append(channel)
 
         channel = dict()
+        channel['encoding'] = "little"
         channel['name'] = "CHANNEL-STRING"
         channel['type'] = "string"
         channels.append(channel)
 
         channel = dict()
+        channel['encoding'] = "little"
         channel['name'] = "CHANNEL-ARRAY_1"
         channel['type'] = "integer"
         channel['shape'] = [2]

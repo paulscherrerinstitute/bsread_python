@@ -23,8 +23,9 @@ if __name__ == "__main__":
     import sys
     import getopt
 
-    source_ = 'tcp://localhost:9999'  # 'tcp://gfa-lc6-64:9999'
-    source_ = 'tcp://pineapple.psi.ch:50138'
+    # source_ = 'tcp://gfa-lc6d-64:9999'  # 'tcp://gfa-lc6-64:9999'
+    source_ = 'tcp://129.129.137.142:9999'  # 'tcp://gfa-lc6-64:9999'
+    # source_ = 'tcp://pineapple.psi.ch:50138'
 
     arguments = sys.argv[1:]
     usage = sys.argv[0]+' -s <source>'
