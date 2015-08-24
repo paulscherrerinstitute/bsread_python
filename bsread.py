@@ -129,7 +129,7 @@ class Bsread(object):
         value = 0.0
 
         while True:
-            current_timestamp = int(time.time() * 1000)  # current timestamp in milliseconds
+            current_timestamp = int(time.time())  # current timestamp in seconds
             main_header['pulse_id'] = pulse_id
             main_header['global_timestamp'] = {"epoch": current_timestamp, "ns": pulse_id}
             self.socket.send_json(main_header, zmq.SNDMORE)  # Main header
