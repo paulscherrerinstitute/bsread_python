@@ -4,12 +4,15 @@ import hashlib
 import struct
 import time
 import logging
+from collections import namedtuple
+
 
 # Logger configuration
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(name)s - %(message)s')
 
+BSDataChannel = namedtuple('BSDataChannel',['name','val','timestamp','pulseid'])
 
 class Bsread(object):
 
@@ -85,6 +88,43 @@ class Bsread(object):
             raise RuntimeError('htype changed')
 
         return self.receive_handler.receive(self.socket, header)
+
+    def recive_message(self):
+        """ 
+        Receive message in form of a dict holding 
+        bsdata channels (as named tuples)
+        """
+
+        header = self.socket.recv_json()
+
+        if not self.receive_handler:
+            # There is currently no receive handler defined, try to create one based on htype information
+            import handler
+            self.header_type = header['htype']
+            self.receive_handler = handler.load(self.header_type)
+
+        if self.header_type != header['htype']:
+            raise RuntimeError('htype changed')
+
+        data = self.receive_handler.receive(self.socket, header)
+
+        if 'data_header' in data:
+            self.data_header = data['data_header']
+
+        message = {}
+
+        i=0;
+        for channel in self.data_header['channels']:
+            name = channel['name']
+            val = data['data'][i]
+            timestamp = data['timestamp'][i]
+            message[name]=BSDataChannel(name,val,timestamp,header['pulse_id'])
+            i=i+1
+
+
+        return message
+
+
 
     def send(self):
         """
