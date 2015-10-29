@@ -34,6 +34,11 @@ Configuration can also be piped from any other process. This is done like this:
 echo -e "one\ntwo\nthree" | python bsread_client.py
 ```
     
+## bsread_util.py
+
+simple receiver that operates similar to camon. Script can be used to verify correct operation of bsread senders. 
+
+see bsread_util.py -h 
 
 ## bsread_sender.py
 Example BSREAD source. By starting the script via `python bsread_sender.py` you will generate a BSREAD data source serving
