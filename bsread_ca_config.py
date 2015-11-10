@@ -21,19 +21,19 @@ def configure_ioc(ioc_name):
             break
         line = re.split("[ ,\t]+", line)
         name = line[0]
-        frequency = None
+        modulo = None
 
         try:
             if len(line) > 1:
-                frequency = float(line[1])
+                modulo = float(line[1])
 
             offset = None
             if len(line) > 2:
                 offset = int(line[2])
 
-            configuration.channels.append(Channel(name, frequency=frequency, offset=offset))
+            configuration.channels.append(Channel(name, modulo=modulo, offset=offset))
         except ValueError:
-            print "Frequency (float) or offset (int) specified in wrong type - ignoring channel: "+name
+            print "modulo (float) or offset (int) specified in wrong type - ignoring channel: "+name
 
     configuration_string = configuration.json()
     print "Configuration String: "
@@ -57,10 +57,10 @@ class Configuration:
 
 
 class Channel:
-    def __init__(self, name, frequency=None, offset=None):
+    def __init__(self, name, modulo=None, offset=None):
         self.name = name
-        if frequency is not None:
-            self.frequency = frequency
+        if modulo is not None:
+            self.modulo = modulo
         if offset is not None:
             self.offset = offset
 
@@ -75,7 +75,7 @@ if __name__ == '__main__':
 
     Example:
     configuration = Configuration()
-    configuration.channels = Channel("name", frequency=100, offset=0)
+    configuration.channels = Channel("name", modulo=100, offset=0)
     configuration.json()
 
     Usage:
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     The script reads from standard input and terminates on EOF or empty lines
 
     An input line looks like this:
-    <channel> frequency(optional, type=float ) offset(optional, type=int)
+    <channel> modulo(optional, type=float ) offset(optional, type=int)
     Note that only the channel name is mandatory.
 
     Configuration can also be piped from any other process. This is done like this:
