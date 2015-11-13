@@ -38,7 +38,38 @@ echo -e "one\ntwo\nthree" | python bsread_client.py
 
 simple receiver that operates similar to camon. Script can be used to verify correct operation of bsread senders. 
 
-see bsread_util.py -h 
+### Example usage
+
+Confirm that all received bsread packates have monotonically increasing BunchID number: 
+
+		bsread_util.py tcp://localhost:9991 -n 10 -l test.log
+
+Above command will connect to BSREAD server on localhost on port 9991 (default for IOCs is 9999) and will display contents of every 10nth message (-n 10) and log any anomalies into a log file test.log (-l test.log)
+
+
+### Built in help
+
+		usage: bsread_util.py [-h] [-m] [-n N] [-l LOG] address
+
+		BSREAD receiving utility
+
+		positional arguments:
+		  address            source address, has to be in formatP
+		                     "tcp://<address>:<port>"
+
+		optional arguments:
+		  -h, --help         show this help message and exit
+		  -m, --monitor      Enable monitor mode, this will clear the screen on every
+		                     message to allow easier monitoring.
+		  -n N               Limit message priniting to every n messages, this will
+		                     reduce CPU load. Note that all messages are still
+		                     recevied, but are not displayed. If -n 0 is passed
+		                     message display is disabled
+		  -l LOG, --log LOG  Enable logging. All errors (BunchID cnt skip, etc..) will
+		                     be logged in file specifed
+
+
+
 
 ## bsread_sender.py
 Example BSREAD source. By starting the script via `python bsread_sender.py` you will generate a BSREAD data source serving
