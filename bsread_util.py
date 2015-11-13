@@ -1,5 +1,6 @@
 import bsread
 import zmq
+import time
 import datetime
 import argparse
 
@@ -94,6 +95,11 @@ if __name__ == "__main__":
     bsread_util_log("Connection opened")
 
     i = 0
+
+    #Bandwitdh calcucaltions
+    time_bw = time.time()
+    received_bw = 0
+    i_prev = 0
     while True:
 
         message = receiver.recive_message()
@@ -103,6 +109,23 @@ if __name__ == "__main__":
 
         if( args.n != 0 and (i % args.n) == 0):
             print_message(message, args.monitor)
+
+            if(args.monitor):
+                now = time.time()
+                rx_bw = (receiver.received_b - received_bw) / (now - time_bw)
+                message_rate = (i - i_prev) / (now - time_bw)
+
+                time_bw = now
+                received_bw = receiver.received_b
+                i_prev = i
+
+                print("_"*90)
+                print("STATS:\n")
+                print("Received {} messages".format(i))
+                print("Avg message rate {} Hz".format(message_rate))
+                print("Received {} Mb of payload data".format(receiver.received_b/1024/1024))
+                print("Received rate {} Mbps".format(rx_bw/1024/1024*8))
+
 
         i = i+1
 

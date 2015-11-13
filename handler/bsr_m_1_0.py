@@ -49,8 +49,11 @@ class Handler:
 
         # Receiving data
         counter = 0
+        msg_data_size = 0
         while socket.getsockopt(zmq.RCVMORE):
-            raw_data = socket.recv()
+            raw_data = socket.recv()            
+            msg_data_size = msg_data_size + len(raw_data)
+
             if raw_data:
                 endianness = self.receive_functions[counter][0]["encoding"];
                 data.append(self.receive_functions[counter][1].get_value(raw_data, endianness=endianness))
@@ -79,6 +82,7 @@ class Handler:
         return_value['timestamp'] = timestamp
         return_value['timestamp_offset'] = timestamp_offset
         return_value['pulse_ids'] = pulse_ids
+        return_value['size'] = msg_data_size
 
         return return_value
 

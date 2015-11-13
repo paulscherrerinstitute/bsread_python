@@ -32,6 +32,7 @@ class Bsread(object):
         self.header_hash = None
         self.header_type = None
         self.receive_handler = None
+        self.received_b = 0 #Size of received payload in bytes
 
     def connect(self, address="tcp://127.0.0.1:9999", conn_type="connect", timeout=None, queue_size=4):
         """
@@ -120,6 +121,9 @@ class Bsread(object):
             timestamp = data['timestamp'][i]
             message[name]=BSDataChannel(name,val,timestamp,header['pulse_id'])
             i=i+1
+
+
+        self.received_b = self.received_b + data['size']
 
 
         return message
