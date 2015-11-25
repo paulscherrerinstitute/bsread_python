@@ -1,0 +1,22 @@
+package:
+    name: bsread
+    version: 1.0.0
+source:
+    git_tag: 1.0.0
+    git_url: https://github.psi.ch/scm/st/bsread_python.git
+
+requirements:
+    build:
+        - python
+        - setuptools
+    run:
+        - python
+
+# build:
+  # entry_points:
+  #   - pylauncher = pylauncher.launcher:main
+  #   - pylauncher-convert = pylauncher.convert.convert:main
+
+about:
+    home: https://github.psi.ch/projects/ST/repos/bsread_python/browse
+    summary: "BSREAD Python library."
