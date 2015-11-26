@@ -12,10 +12,10 @@ requirements:
     run:
         - python
 
-# build:
-  # entry_points:
-  #   - pylauncher = pylauncher.launcher:main
-  #   - pylauncher-convert = pylauncher.convert.convert:main
+build:
+  entry_points:
+    - bstat = bsread.bsread_util:main
+    # - pylauncher-convert = pylauncher.convert.convert:main
 
 about:
     home: https://github.psi.ch/projects/ST/repos/bsread_python/browse
