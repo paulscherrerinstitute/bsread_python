@@ -52,16 +52,22 @@ def consistency_check(message):
 
     if not last_id:
         last_id = current_id
-        return True
+        return 0
+        # return True
 
     if last_id + 1 != current_id:
         bsread_util_log("Skipped message detected, expecteted {} but received {}".format(last_id+1, current_id))
-        last_id = 0 ##Reset last id
-        return False
+        # last_id = 0 ##Reset last id
+        missed = current_id - last_id - 1 
+        last_id = current_id
+        return missed
+        # return False
 
     last_id = current_id
 
-    return True
+    return 0
+    # return True
+
 
 
 def main():
@@ -96,6 +102,8 @@ def main():
 
     i = 0
 
+    messages_missed = 0
+
     #Bandwitdh calcucaltions
     time_bw = time.time()
     received_bw = 0
@@ -104,7 +112,7 @@ def main():
 
         message = receiver.recive_message()
 
-        consistency_check(message)
+        messages_missed = messages_missed + consistency_check(message)
 
 
         if( args.n != 0 and (i % args.n) == 0):
@@ -125,6 +133,7 @@ def main():
                 print("Avg message rate {} Hz".format(message_rate))
                 print("Received {} Mb of payload data".format(receiver.received_b/1024/1024))
                 print("Received rate {} Mbps".format(rx_bw/1024/1024*8))
+                print("Messages missed {} ".format(messages_missed))
 
 
         i = i+1
