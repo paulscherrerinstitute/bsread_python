@@ -56,7 +56,7 @@ def consistency_check(message):
 
     if last_id + 1 != current_id:
         bsread_util_log("Skipped message detected, expecteted {} but received {}".format(last_id+1, current_id))
-        last_id = 0 ##Reset last id        
+        last_id = 0 ##Reset last id
         return False
 
     last_id = current_id
@@ -64,7 +64,7 @@ def consistency_check(message):
     return True
 
 
-if __name__ == "__main__":
+def main():
 
     # Argument parsing
 
@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
 
     args = parser.parse_args()
-    
+
     address = args.address
 
 
@@ -105,7 +105,7 @@ if __name__ == "__main__":
         message = receiver.recive_message()
 
         consistency_check(message)
-            
+
 
         if( args.n != 0 and (i % args.n) == 0):
             print_message(message, args.monitor)
@@ -131,3 +131,6 @@ if __name__ == "__main__":
 
 
     bsread_util_log("Shutting down!")
+
+if __name__ == "__main__":
+    main()
