@@ -23,10 +23,10 @@ class Handler:
         if socket.getsockopt(zmq.RCVMORE) and (not self.header_hash or not self.header_hash == header['hash']):
             # Interpret data header
             data_header = socket.recv_json()
-            
+
             # If a message with ho channel information is received,
             # ignore it and return from function with no data.
-            if not data_header['channels']: 
+            if not data_header['channels']:
                 while socket.getsockopt(zmq.RCVMORE):
                     raw_data = socket.recv()
                 return_value['header'] = header
@@ -51,7 +51,7 @@ class Handler:
         counter = 0
         msg_data_size = 0
         while socket.getsockopt(zmq.RCVMORE):
-            raw_data = socket.recv()            
+            raw_data = socket.recv()
             msg_data_size = msg_data_size + len(raw_data)
 
             if raw_data:
@@ -108,8 +108,31 @@ def get_receive_functions(data_header):
                 functions.append((channel, NumberProvider('i2')))
             elif channel['type'].lower() == 'ushort':
                 functions.append((channel, NumberProvider('u2')))
+
             elif channel['type'].lower() == 'string':
                 functions.append((channel, StringProvider()))
+
+            elif channel['type'].lower() == 'int8':
+                functions.append((channel, NumberProvider('i')))
+            elif channel['type'].lower() == 'uint8':
+                functions.append((channel, NumberProvider('u')))
+            elif channel['type'].lower() == 'int16':
+                functions.append((channel, NumberProvider('i2')))
+            elif channel['type'].lower() == 'uint16':
+                functions.append((channel, NumberProvider('u2')))
+            elif channel['type'].lower() == 'int32':
+                functions.append((channel, NumberProvider('i4')))
+            elif channel['type'].lower() == 'uint32':
+                functions.append((channel, NumberProvider('u4')))
+            elif channel['type'].lower() == 'int64':
+                functions.append((channel, NumberProvider('i8')))
+            elif channel['type'].lower() == 'uint64':
+                functions.append((channel, NumberProvider('u8')))
+            elif channel['type'].lower() == 'float32':
+                functions.append((channel, NumberProvider('f4')))
+            elif channel['type'].lower() == 'float64':
+                functions.append((channel, NumberProvider('f8')))
+
             else:
                 print "Unknown data type. Trying to parse as 64-bit floating-point number."
                 functions.append((channel, NumberProvider('f8')))
