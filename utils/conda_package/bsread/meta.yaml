@@ -14,8 +14,7 @@ requirements:
 
 build:
   entry_points:
-    - bstat = bsread.bsread_util:main
-    # - pylauncher-convert = pylauncher.convert.convert:main
+    - bstat = bsread.statistics:main
 
 about:
     home: https://github.psi.ch/projects/ST/repos/bsread_python/browse
