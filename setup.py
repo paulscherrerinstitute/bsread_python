@@ -16,5 +16,6 @@ setup(
     author_email='im@psi.ch',
     url='https://github.psi.ch/projects/ST/repos/bsread_python/browse',
     packages=['bsread', 'bsread.handler'],
+    requires=['numpy', 'zmq'],
 
 )

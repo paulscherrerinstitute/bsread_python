@@ -52,7 +52,7 @@ class Handler:
         msg_data_size = 0
         while socket.getsockopt(zmq.RCVMORE):
             raw_data = socket.recv()
-            msg_data_size = msg_data_size + len(raw_data)
+            msg_data_size += len(raw_data)
 
             if raw_data:
                 endianness = self.receive_functions[counter][0]["encoding"];

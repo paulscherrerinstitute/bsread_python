@@ -12,7 +12,8 @@ logger = logging.getLogger(__name__)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(name)s - %(message)s')
 
-BSDataChannel = namedtuple('BSDataChannel',['name','val','timestamp','pulseid'])
+BSDataChannel = namedtuple('BSDataChannel', ['name', 'val', 'timestamp', 'pulseid'])
+
 
 class Bsread(object):
 
@@ -32,7 +33,7 @@ class Bsread(object):
         self.header_hash = None
         self.header_type = None
         self.receive_handler = None
-        self.received_b = 0 #Size of received payload in bytes
+        self.received_b = 0  # Size of received payload in bytes
 
     def connect(self, address="tcp://127.0.0.1:9999", conn_type="connect", timeout=None, queue_size=4):
         """
