@@ -15,6 +15,8 @@ requirements:
 build:
   entry_points:
     - bstat = bsread.statistics:main
+    - bconfig = bsread.configuration:main
+    - breceive = bsread.receive:main
 
 about:
     home: https://github.psi.ch/projects/ST/repos/bsread_python/browse
