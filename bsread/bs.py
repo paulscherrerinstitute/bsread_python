@@ -14,7 +14,9 @@ def usage():
     print 'Run \'bs COMMAND --help\' for more information on a command.'
     print ''
 
-if __name__ == "__main__":
+
+def main():
+
     import sys
 
     # Remove the first two arguments (i.e. script name and command)
@@ -37,3 +39,8 @@ if __name__ == "__main__":
         exit(-1)
 
     command_script.main()
+
+
+if __name__ == "__main__":
+
+    main()
