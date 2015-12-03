@@ -1,6 +1,6 @@
 package:
     name: bsread
-    version: 0.0.5
+    version: 0.0.6
 source:
     git_tag: 0.0.4
     git_url: https://github.psi.ch/scm/st/bsread_python.git

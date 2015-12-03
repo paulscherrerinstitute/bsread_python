@@ -47,7 +47,6 @@ class Handler:
             return_value['data_header'] = data_header
         else:
             # Skip second header
-            print '>>>> SKIP HEADER '
             socket.recv()
 
         # Receiving data
