@@ -21,6 +21,11 @@ def receive(source, file_name):
     try:
         while True:
             message_data = receiver.receive()
+
+            if message_data['header']['hash'] == '':
+                print 'SKIPPING FIRST MESSAGE !!!!'
+                continue
+
             if "data_header" in message_data:
                 data_header = message_data['data_header']
                 print "Data Header: ", data_header
@@ -30,11 +35,45 @@ def receive(source, file_name):
                 # Interpret the data header and add required datasets
                 for channel in data_header['channels']:
                     dtype = 'f8'
-                    if channel['type'].lower() == 'integer':
+
+                    if channel['type'].lower() == 'double':
+                        dtype = 'f8'
+                    elif channel['type'].lower() == 'float':
+                        dtype = 'f4'
+                    elif channel['type'].lower() == 'integer':
                         dtype = 'i4'
                     elif channel['type'].lower() == 'long':
+                        dtype = 'i4'
+                    elif channel['type'].lower() == 'ulong':
+                        dtype = 'u4'
+                    elif channel['type'].lower() == 'short':
+                        dtype = 'i2'
+                    elif channel['type'].lower() == 'ushort':
+                        dtype = 'u2'
+
+                    # elif channel['type'].lower() == 'int8':
+                    #     dtype = 'i1'
+                    # elif channel['type'].lower() == 'uint8':
+                    #     dtype = 'u1'
+                    elif channel['type'].lower() == 'int16':
+                        dtype = 'i2'
+                    elif channel['type'].lower() == 'uint16':
+                        dtype = 'u2'
+                    elif channel['type'].lower() == 'int32':
+                        dtype = 'i4'
+                    elif channel['type'].lower() == 'uint32':
+                        dtype = 'u4'
+                    elif channel['type'].lower() == 'int64':
                         dtype = 'i8'
-                    elif channel['type'].lower() == 'string':
+                    elif channel['type'].lower() == 'uint64':
+                        dtype = 'u8'
+                    elif channel['type'].lower() == 'float32':
+                        dtype = 'f4'
+                    elif channel['type'].lower() == 'float64':
+                        dtype = 'f8'
+
+                    elif channel['type'].lower() == 'string' or channel['type'].lower() == 'int8' or \
+                                                    channel['type'].lower() == 'uint8':
                         # we are skipping strings as they are not supported ...
                         writer.add_dataset_stub(dataset_group_name='data')
                         writer.add_dataset_stub(dataset_group_name='timestamp')
@@ -45,6 +84,7 @@ def receive(source, file_name):
                     if 'shape' in channel:
                         shape = [1] + channel['shape']
                         maxshape = [None] + channel['shape']
+                        print shape, "  ", maxshape, channel['name']
                         writer.add_dataset('/'+channel['name']+'/data', dataset_group_name='data', shape=shape, maxshape=maxshape, dtype=dtype)
                     else:
                         writer.add_dataset('/'+channel['name']+'/data', dataset_group_name='data', dtype=dtype)
@@ -68,29 +108,17 @@ def receive(source, file_name):
         writer.close_file()
 
 
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description='BSREAD hdf5 utility')
+
+    parser.add_argument('address', type=str, help='Source address - format "tcp://<address>:<port>"')
+    parser.add_argument('file', type=str, help='Destination file')
+
+    arguments = parser.parse_args()
+
+    receive(arguments.address, arguments.file)
+
+
 if __name__ == "__main__":
-    import sys
-    import getopt
-
-    source_ = 'tcp://localhost:9999'  # 'tcp://gfa-lc6-64:9999'
-    file_name_ = 'test.h5'
-
-    arguments = sys.argv[1:]
-    usage = sys.argv[0]+' -s <source> -f <output_file>'
-
-    try:
-        opts, args = getopt.getopt(arguments, "hs:f:", ["source=", "file="])
-    except getopt.GetoptError:
-        print usage
-        sys.exit(2)
-
-    for opt, arg in opts:
-        if opt == '-h':
-            print usage
-            sys.exit()
-        elif opt in ("-s", "--source"):
-            source_ = arg
-        elif opt in ("-f", "--file"):
-            file_name_ = arg
-
-    receive(source_, file_name_)
+    main()

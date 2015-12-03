@@ -20,7 +20,10 @@ class Handler:
         pulse_id = header['pulse_id']
         pulse_id_array.append(pulse_id)
 
-        if socket.getsockopt(zmq.RCVMORE) and (not self.header_hash or not self.header_hash == header['hash']):
+        if socket.getsockopt(zmq.RCVMORE) and (self.header_hash is None or not self.header_hash == header['hash']):
+
+            self.header_hash = header['hash']
+
             # Interpret data header
             data_header = socket.recv_json()
 
@@ -40,11 +43,11 @@ class Handler:
                 return return_value
 
             self.receive_functions = get_receive_functions(data_header)
-            self.header_hash = header['hash']
 
             return_value['data_header'] = data_header
         else:
             # Skip second header
+            print '>>>> SKIP HEADER '
             socket.recv()
 
         # Receiving data

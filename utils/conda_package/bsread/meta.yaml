@@ -1,8 +1,8 @@
 package:
     name: bsread
-    version: 0.0.3
+    version: 0.0.4
 source:
-    git_tag: 0.0.3
+    git_tag: 0.0.4
     git_url: https://github.psi.ch/scm/st/bsread_python.git
 
 requirements:
@@ -11,12 +11,12 @@ requirements:
         - setuptools
     run:
         - python
+        - numpy
+        - zmq
 
 build:
   entry_points:
-    - bstat = bsread.statistics:main
-    - bconfig = bsread.configuration:main
-    - breceive = bsread.receive:main
+    - bs = bsread.bs:main
 
 about:
     home: https://github.psi.ch/projects/ST/repos/bsread_python/browse
