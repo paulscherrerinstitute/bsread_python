@@ -51,8 +51,6 @@ def main():
         if environment_var_config in os.environ:
             print 'Using config ' + os.environ[environment_var_config]
             sys.argv.append(os.environ[environment_var_config])
-    elif command == 'ioc':
-        pass
     else:
         if command == 'h5' and environment_var_source in os.environ:
             sys.argv.insert(-1, os.environ[environment_var_source])
