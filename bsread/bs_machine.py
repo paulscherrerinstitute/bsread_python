@@ -9,19 +9,32 @@ def main():
     parser_env = subparsers.add_parser('env')
     parser_env.add_argument('ioc', type=str, help='ioc name')
     parser_env.add_argument('port', type=str, default='9999', nargs='?', help='port number of stream')
+    subparsers.add_parser('clear_env')
 
     arguments = parser.parse_args()
 
     if arguments.subparser == 'env':
-        print '#Use eval "$(bs-machine env '+arguments.ioc+' '+arguments.port+')"'
-        print '#To set the environment automatically'
+        print ''
+        print '# To set the environment automatically use:'
+        print '# eval "$(bs-machine env '+arguments.ioc+' '+arguments.port+')"'
         print ''
         print 'export BS_SOURCE=tcp://'+arguments.ioc+':%d' % int(arguments.port)
         print 'export BS_CONFIG=tcp://'+arguments.ioc+':%d' % (int(arguments.port)+1)
+        print ''
         exit(0)
 
     if arguments.subparser == 'create':
         pass
+
+    if arguments.subparser == 'clear_env':
+        print ''
+        print '# To unset the environment use:'
+        print '# eval "$(bs-machine clear_env)"'
+
+        print 'unset BS_SOURCE'
+        print 'unset BS_CONFIG'
+        print ''
+        exit(0)
 
 
 if __name__ == "__main__":
