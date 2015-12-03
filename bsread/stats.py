@@ -84,6 +84,17 @@ def main():
     arguments = parser.parse_args()
     address = arguments.address
 
+    import re
+    if not re.match('^tcp://', address):
+        print 'Protocol not defined for address - Using tcp://'
+        address = 'tcp://' + address
+    if not re.match('.*:[0-9]+$', address):
+        print 'Port not defined for address - Using 9999'
+        address += ':9999'
+    if not re.match('^tcp://[a-zA-Z\.-]+:[0-9]+$', address):
+        print 'Invalid URI - ' + address
+        exit(-1)
+
     if arguments.log:
         handler = logging.FileHandler(arguments.log)
         handler.setLevel(logging.DEBUG)
