@@ -29,14 +29,16 @@ def main():
 
     command = sys.argv[0]
 
+    import importlib
     try:
-        import importlib
         command_script = importlib.import_module(command)
     except:
-
-        print command + ' - Command not found'
-        usage()
-        exit(-1)
+        try:
+            command_script = importlib.import_module('bsread.'+command)
+        except:
+            print command + ' - Command not found'
+            usage()
+            exit(-1)
 
     command_script.main()
 
