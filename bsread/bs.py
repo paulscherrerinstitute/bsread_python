@@ -10,8 +10,6 @@ def usage():
     print ' stats           - Show receiving statistics'
     print ' receive         - Basic receiver'
     print ' h5              - Dump stream into HDF5 file'
-    print ' ioc             - Display environment variables for given ioc'
-    print '                   eval(bs ioc <iocname>)'
     print ''
     print 'Run \'bs COMMAND --help\' for more information on a command.'
     print ''

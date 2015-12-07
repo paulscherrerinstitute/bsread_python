@@ -17,7 +17,7 @@ requirements:
 build:
   entry_points:
     - bs = bsread.bs:main
-    - bs-machine = bsread.bs_machine:main
+    - bs-source = bsread.bs_source:main
 
 about:
     home: https://github.psi.ch/projects/ST/repos/bsread_python/browse
