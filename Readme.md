@@ -10,6 +10,8 @@ __Note:__ For the time being, to be able to use the commands from GFA machines y
 export PATH=/opt/gfa/python-2.7/latest/bin:$PATH
 ```
 
+__Warning / Attention:__ Please ensure that you don't connect to a production IOC nor that you connect twice to a single IOC unless you are knowing what you are doing! Due to the current data delivery scheme (PUSH/PULL) data might be lost otherwise! If you are in doubt please ask for assistance from the Controls HA group.
+
 
 # bs-source
 __bs-source__ provides an easy way to create a test IOC for testing as well as setting environment variables that facilitates the usage of the __bs__ command.
@@ -263,6 +265,20 @@ optional arguments:
                         Source address - format "tcp://<address>:<port>"
 ```
 
+__bs h5__ produces a very simple HDF5 structure. For each channel received there is a group which holds the actual channel data, timestamp, timestamp_offset as well as the pulse_id.
+
+```
+ SIMI-TEST-FAKEDATA:TEST_WVF-DOUBLE
+     timestamp [int64]
+     data [float64]
+     pulse_id [int64]
+     timestamp_offset [int64]
+ SIMI-TEST-FAKEDATA:TEST_WVF-LONG
+     timestamp [int64]
+     data [int32]
+     pulse_id [int64]
+     timestamp_offset [int64]
+```
 
 # Development
 
