@@ -64,11 +64,73 @@ export BS_CONFIG=tcp://sf-lc6-64:7778
 iocsh startup.cmd
 ```
 
+All the required commands are displayed to set your client environment as well as starting the test IOC.
+
 ## Set environment
 
+To set the client side environment for easy __bs__ command usage you can use
 
+```bash
+bs-source env -h
+usage: bs-source env [-h] ioc [port]
+
+positional arguments:
+  ioc         ioc name
+  port        port number of stream
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
+
+If the command is executed the environment settings are just displayed. To also set environment follow the instructions shown at the start of the output.
+
+### Example
+
+```bash
+bs-source env sf-lc 9999
+
+# To set the environment automatically use:
+# eval "$(bs-source env sf-lc 9999)"
+
+export BS_SOURCE=tcp://sf-lc:9999
+export BS_CONFIG=tcp://sf-lc:10000
+```
+
+As mentioned before to also set the environment use the command displayed at the beginning of the output:
+
+```bash
+eval "$(bs-source env sf-lc 9999)"
+```
 
 ## Clear environment
+
+To clear the client side environment use:
+
+```bash
+bs-source clear_env -h
+usage: bs-source clear_env [-h]
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
+
+The command just displayed the commands needed to clear the client side environment. To also set environment follow the instructions shown at the start of the output.
+
+### Example
+```
+bs-source clear_env
+
+# To unset the environment use:
+# eval "$(bs-source clear_env)"
+unset BS_SOURCE
+unset BS_CONFIG
+```
+
+To immediately unset the environment without copy/paste the output use
+
+```bash
+eval "$(bs-source clear_env)"
+```
 
 # bs
 
