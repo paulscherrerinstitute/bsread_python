@@ -270,15 +270,18 @@ optional arguments:
                         Source address - format "tcp://<address>:<port>"
 ```
 
-__bs h5__ produces a very simple HDF5 structure. For each channel received there is a group which holds the actual channel data, timestamp, timestamp_offset as well as the pulse_id.
+__bs h5__ produces a very simple HDF5 structure. Each channel in the stream gets into a own group which holds the actual channel data, timestamp, timestamp_offset as well as the pulse_id of the channel.
+data, timestamp, etc. within a channel group are arrays of the size of pulse_id/messages received.
+The same index of the arrays corresponds to the same pulse_id which stored in the pulse_id dataset at the same index.
+
 
 ```
- SIMI-TEST-FAKEDATA:TEST_WVF-DOUBLE
+ IOC-TEST-FAKEDATA:TEST_WVF-DOUBLE
      timestamp [int64]
      data [float64]
      pulse_id [int64]
      timestamp_offset [int64]
- SIMI-TEST-FAKEDATA:TEST_WVF-LONG
+ IOC-TEST-FAKEDATA:TEST_WVF-INT
      timestamp [int64]
      data [int32]
      pulse_id [int64]
