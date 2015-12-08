@@ -49,6 +49,8 @@ optional arguments:
   -h, --help  show this help message and exit
 ```
 
+After creating the configuration files with the command use `iocsh startup.cmd` to start the IOC.
+
 ### Example
 
 ```bash
@@ -134,6 +136,9 @@ eval "$(bs-source clear_env)"
 
 # bs
 
+The __bs__ command provides some client side utilities to receive beam synchronous data from an IOC as well as configuring the IOC (which channels are recorded via bsread)
+
+Therefore the command provides several subcommands with options.
 
 ```bash
 Usage: bs [OPTIONS] COMMAND [arg...]
@@ -147,3 +152,47 @@ Commands:
 
 Run 'bs COMMAND --help' for more information on a command.
 ```
+
+## bs config
+__bs config__ configures a bsread enabled ioc. It generates and upload a BSREAD configuration to the specified IOC. The script reads from standard input. Therefore the input can also be piped into the program.
+
+```
+usage: config [-h] [-c CHANNEL] [-a]
+
+BSREAD configuration utility
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CHANNEL, --channel CHANNEL
+                        Address to configure, has to be in format
+                        "tcp://<address>:<port>"
+  -a, --all             Stream all channels of the IOC
+```
+
+The script reads from standard input and terminates on EOF or empty lines
+
+An input line looks like this:
+
+```
+<channel> frequency(optional, type=float ) offset(optional, type=int)
+```
+
+Note that only the channel name is mandatory.
+
+If the client side environment was not set via the `bs-source env` command you have to specify the IOC configuration channel via the __-c__ option. If the environment was set this option can be omitted.
+__Note:__ The configuration channel port is the ONE port above the data port. i.e. if the data port is 9999 the configuration port is 10000.
+
+
+As mentioned before the configuration can also be piped from any other process. This is can be done like this:
+
+```bash
+echo -e "one\ntwo\nthree" | bs config -c tcp://ioc:port
+```
+
+or
+
+```bash
+cat myconfig | bs config
+```
+
+__Note:__ In the last example the environment was set via `bs-source env`
