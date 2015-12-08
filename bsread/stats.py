@@ -69,10 +69,10 @@ def consistency_check(message):
 def main():
 
     # Argument parsing
-
+    from cli_utils import EnvDefault
     parser = argparse.ArgumentParser(description='BSREAD receiving utility')
 
-    parser.add_argument('address', type=str, help='source address, has to be in format "tcp://<address>:<port>"')
+    parser.add_argument('-s', '--source', action=EnvDefault, envvar='BS_SOURCE', type=str, help='source address, has to be in format "tcp://<address>:<port>"')
     parser.add_argument('-m', '--monitor', action='count',
                         help='Enable monitor mode, this will clear the screen on every message to allow easier monitoring.')
     parser.add_argument('-n', default=1, type=int,
@@ -82,7 +82,7 @@ def main():
 
     # Parse arguments
     arguments = parser.parse_args()
-    address = arguments.address
+    address = arguments.source
 
     import re
     if not re.match('^tcp://', address):
@@ -91,7 +91,7 @@ def main():
     if not re.match('.*:[0-9]+$', address):
         print 'Port not defined for address - Using 9999'
         address += ':9999'
-    if not re.match('^tcp://[a-zA-Z\.-]+:[0-9]+$', address):
+    if not re.match('^tcp://[a-zA-Z\.\-0-9]+:[0-9]+$', address):
         print 'Invalid URI - ' + address
         exit(-1)
 

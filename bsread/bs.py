@@ -40,22 +40,6 @@ def main():
             usage()
             exit(-1)
 
-    # Check whether there are BS environment variables set
-    # Some hacking because not all command can be handled the same way - i.e. config, h5
-    import os
-    environment_var_config = 'BS_CONFIG'
-    environment_var_source = 'BS_SOURCE'
-    if command == 'config':
-        if environment_var_config in os.environ:
-            print 'Using config ' + os.environ[environment_var_config]
-            sys.argv.append(os.environ[environment_var_config])
-    else:
-        if command == 'h5' and environment_var_source in os.environ:
-            sys.argv.insert(-1, os.environ[environment_var_source])
-        elif environment_var_source in os.environ:
-            print 'Using source ' + os.environ[environment_var_source]
-            sys.argv.append(os.environ[environment_var_source])
-
     command_script.main()
 
 

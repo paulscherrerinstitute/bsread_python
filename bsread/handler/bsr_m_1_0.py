@@ -159,11 +159,14 @@ class NumberProvider:
         self.dtype = dtype
 
     def get_value(self, raw_data, endianness='<'):
-        value = numpy.fromstring(raw_data, dtype=endianness+self.dtype)
-        if len(value) > 1:
-            return value
-        else:
-            return value[0]
+        try:
+            value = numpy.fromstring(raw_data, dtype=endianness+self.dtype)
+            if len(value) > 1:
+                return value
+            else:
+                return value[0]
+        except:
+            return None
 
 
 class StringProvider:

@@ -109,15 +109,16 @@ def receive(source, file_name):
 
 
 def main():
+    from cli_utils import EnvDefault
     import argparse
     parser = argparse.ArgumentParser(description='BSREAD hdf5 utility')
 
-    parser.add_argument('address', type=str, help='Source address - format "tcp://<address>:<port>"')
+    parser.add_argument('-s', '--source', action=EnvDefault, envvar='BS_SOURCE', type=str, help='Source address - format "tcp://<address>:<port>"')
     parser.add_argument('file', type=str, help='Destination file')
 
     arguments = parser.parse_args()
 
-    address = arguments.address
+    address = arguments.source
 
     import re
     if not re.match('^tcp://', address):
@@ -126,7 +127,7 @@ def main():
     if not re.match('.*:[0-9]+$', address):
         print 'Port not defined for address - Using 9999'
         address += ':9999'
-    if not re.match('^tcp://[a-zA-Z\.-]+:[0-9]+$', address):
+    if not re.match('^tcp://[a-zA-Z\.\-0-9]+:[0-9]+$', address):
         print 'Invalid URI - ' + address
         exit(-1)
 

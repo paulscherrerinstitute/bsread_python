@@ -2,7 +2,7 @@
 def create_test_ioc_config(ioc_prefix, port):
 
     startup_script = """require "bsread"
-runScript $(bsread_DIR)/bsread_sim.cmd, "SYS=${prefix},BSREAD_PORT={port}"
+runScript $(bsread_DIR)/bsread_sim.cmd, "SYS={prefix},BSREAD_PORT={port}"
 dbLoadRecords("bsread_test.template","P={prefix}-FAKEDATA")
     """.format(port=port, prefix=ioc_prefix.upper())
     # print startup_script
@@ -20,15 +20,20 @@ dbLoadRecords("bsread_test.template","P={prefix}-FAKEDATA")
     with open("bsread_test.template", 'w') as f:
         f.write(template)
 
+    print 'To start the test ioc use '
+    print 'iocsh startup.cmd'
+
     # Print environment variables to be set to access this ioc
     import socket
     print_set_environment(socket.gethostname(), port)
 
 
+
+
 def print_set_environment(ioc, port):
     print ''
     print '# To set the environment automatically use:'
-    print '# eval "$(bs-machine env '+ioc+' %d)"' % int(port)
+    print '# eval "$(bs-source env '+ioc+' %d)"' % int(port)
     print ''
     print 'export BS_SOURCE=tcp://'+ioc+':%d' % int(port)
     print 'export BS_CONFIG=tcp://'+ioc+':%d' % (int(port)+1)
@@ -47,6 +52,7 @@ def print_unset_environment():
 
 def main():
     import argparse
+
     parser = argparse.ArgumentParser(description='BSREAD utility')
 
     subparsers = parser.add_subparsers(title='subcommands', description='Subcommands', help='additional help',
@@ -58,6 +64,7 @@ def main():
     parser_env = subparsers.add_parser('env')
     parser_env.add_argument('ioc', type=str, help='ioc name')
     parser_env.add_argument('port', type=str, default='9999', nargs='?', help='port number of stream')
+
     subparsers.add_parser('clear_env')
 
     arguments = parser.parse_args()
