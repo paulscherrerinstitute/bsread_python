@@ -35,7 +35,10 @@ def print_message(message, clear=True):
 
         # Format timestamp
         if c.timestamp is not None:
-            date = datetime.datetime.fromtimestamp(c.timestamp)
+            try:
+                date = datetime.datetime.fromtimestamp(c.timestamp)
+            except:
+                date = "None"
         else:
             date = "None"
 
