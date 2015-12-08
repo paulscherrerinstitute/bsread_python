@@ -20,14 +20,14 @@ dbLoadRecords("bsread_test.template","P={prefix}-FAKEDATA")
     with open("bsread_test.template", 'w') as f:
         f.write(template)
 
-    print 'To start the test ioc use '
-    print 'iocsh startup.cmd'
-
     # Print environment variables to be set to access this ioc
     import socket
     print_set_environment(socket.gethostname(), port)
 
-
+    print ''
+    print '# To start the test ioc use '
+    print 'iocsh startup.cmd'
+    print ''
 
 
 def print_set_environment(ioc, port):
@@ -53,19 +53,19 @@ def print_unset_environment():
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description='BSREAD utility')
+    parser = argparse.ArgumentParser(description='bsread source utility')
 
     subparsers = parser.add_subparsers(title='subcommands', description='Subcommands', help='additional help',
                                        dest='subparser')
-    parser_create = subparsers.add_parser('create')
+    parser_create = subparsers.add_parser('create', help="Create configuration files for a test ioc")
     parser_create.add_argument('prefix', type=str, help='ioc prefix')
     parser_create.add_argument('port', type=int, help='ioc stream port')
 
-    parser_env = subparsers.add_parser('env')
+    parser_env = subparsers.add_parser('env', help='Display environment variable for easy use of bs command')
     parser_env.add_argument('ioc', type=str, help='ioc name')
     parser_env.add_argument('port', type=str, default='9999', nargs='?', help='port number of stream')
 
-    subparsers.add_parser('clear_env')
+    subparsers.add_parser('clear_env', help='Display how to clear environmentvariables')
 
     arguments = parser.parse_args()
 
