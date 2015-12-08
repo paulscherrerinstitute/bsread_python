@@ -196,3 +196,61 @@ cat myconfig | bs config
 ```
 
 __Note:__ In the last example the environment was set via `bs-source env`
+
+## bs receive
+
+__bs receive__ can be used to receive and display bsread data from an IOC. If the client environment was set the __-s__ option can be omitted.
+
+```bash
+usage: receive [-h] [-s SOURCE] [-m]
+
+BSREAD receive utility
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s SOURCE, --source SOURCE
+                        Source address - format "tcp://<address>:<port>"
+  -m, --monitor         Monitor mode / clear the screen on every message
+```
+
+## bs stats
+
+__bs stats -m__ provides you with some basic statistics about the messages received. Also a basic check whether pulse_ids were missing in the stream is performed.
+
+```bash
+usage: stats [-h] [-s SOURCE] [-m] [-n N] [-l LOG]
+
+BSREAD receiving utility
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s SOURCE, --source SOURCE
+                        source address, has to be in format
+                        "tcp://<address>:<port>"
+  -m, --monitor         Enable monitor mode, this will clear the screen on
+                        every message to allow easier monitoring.
+  -n N                  Limit message printing to every n messages, this will
+                        reduce CPU load. Note that all messages are still
+                        received, but are not displayed. If -n 0 is passed
+                        message display is disabled
+  -l LOG, --log LOG     Enable logging. All errors (pulse_id skip, etc..) will
+                        be logged in file specified
+```
+
+## bs h5
+
+__bs h5__ will dump the incoming stream into an hdf5 file for later analysis. As with the other commands, if the environment was set via `bs-source env` the __-s__ option can be omitted.
+
+```bash
+usage: h5 [-h] [-s SOURCE] file
+
+BSREAD hdf5 utility
+
+positional arguments:
+  file                  Destination file
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s SOURCE, --source SOURCE
+                        Source address - format "tcp://<address>:<port>"
+```

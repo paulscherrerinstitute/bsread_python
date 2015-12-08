@@ -75,13 +75,14 @@ def main():
     from cli_utils import EnvDefault
     parser = argparse.ArgumentParser(description='BSREAD receiving utility')
 
-    parser.add_argument('-s', '--source', action=EnvDefault, envvar='BS_SOURCE', type=str, help='source address, has to be in format "tcp://<address>:<port>"')
+    parser.add_argument('-s', '--source', action=EnvDefault, envvar='BS_SOURCE', type=str,
+                        help='source address, has to be in format "tcp://<address>:<port>"')
     parser.add_argument('-m', '--monitor', action='count',
                         help='Enable monitor mode, this will clear the screen on every message to allow easier monitoring.')
     parser.add_argument('-n', default=1, type=int,
-        help='Limit message priniting to every n messages, this will reduce CPU load. Note that all messages are still recevied, but are not displayed. If -n 0 is passed message display is disabled')
+                        help='Limit message printing to every n messages, this will reduce CPU load. Note that all messages are still received, but are not displayed. If -n 0 is passed message display is disabled')
     parser.add_argument('-l', '--log', type=str,
-        help='Enable logging. All errors (pulse_id skip, etc..) will be logged in file specified')
+                        help='Enable logging. All errors (pulse_id skip, etc..) will be logged in file specified')
 
     # Parse arguments
     arguments = parser.parse_args()
