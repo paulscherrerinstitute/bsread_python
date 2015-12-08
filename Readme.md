@@ -4,14 +4,19 @@ The __bs-source__ command facilitates the easy setup of an test IOC as well as s
 
 The format of the stream is specified [here](https://docs.google.com/document/d/1BynCjz5Ax-onDW0y8PVQnYmSssb6fAyHkdDl1zh21yY/edit#heading=h.ugxijco36cap).
 
+----
+
 __Note:__ For the time being, to be able to use the commands from GFA machines you need to add the central GFA Python environment to you path. This can be done by executing following command:
 
 ```
 export PATH=/opt/gfa/python-2.7/latest/bin:$PATH
 ```
 
+----
+
 __Warning / Attention:__ Please ensure that you don't connect to a production IOC nor that you connect twice to a single IOC unless you are knowing what you are doing! Due to the current data delivery scheme (PUSH/PULL) data might be lost otherwise! If you are in doubt please ask for assistance from the Controls HA group.
 
+----
 
 # bs-source
 __bs-source__ provides an easy way to create a test IOC for testing as well as setting environment variables that facilitates the usage of the __bs__ command.
