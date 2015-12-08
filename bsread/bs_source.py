@@ -43,7 +43,7 @@ def print_set_environment(ioc, port):
 def print_unset_environment():
     print ''
     print '# To unset the environment use:'
-    print '# eval "$(bs-machine clear_env)"'
+    print '# eval "$(bs-source clear_env)"'
 
     print 'unset BS_SOURCE'
     print 'unset BS_CONFIG'

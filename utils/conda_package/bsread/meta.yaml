@@ -1,8 +1,8 @@
 package:
     name: bsread
-    version: 0.0.10
+    version: 0.0.12
 source:
-    git_tag: 0.0.10
+    git_tag: 0.0.12
     git_url: https://github.psi.ch/scm/st/bsread_python.git
 
 requirements:
