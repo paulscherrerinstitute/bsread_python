@@ -24,6 +24,39 @@ class Channel:
             self.offset = offset
 
 
+def bsread_zmq_rpc(address,request):
+    ctx = zmq.Context()
+    sock = zmq.Socket(ctx, zmq.REQ)
+    sock.connect(address)
+
+    ##Normal strings indicate that the request is already JSON encoded
+    if(type(request)==str):
+        sock.send_string(request)
+    else:
+        sock.send_string(json.dumps(request))
+    
+    response = sock.recv_json()
+
+    sock.close()
+    ctx.destroy()
+
+    return response
+
+def get_introspect(address):
+    request = {"cmd":"introspect"}
+    response = bsread_zmq_rpc(address, json.dumps(request))
+    
+    print("Available channels: ")
+    for channel in response["channels"]:
+        print("\t{}".format(channel))
+
+    print("\nCurrent configuration")
+    for channel in response["config"]["channels"]:
+        print("\t{:50.50} MOD:{:3} OFF:{}".format(channel["name"],channel["modulo"],channel["offset"]))
+
+    return response
+
+
 def configure(address, configuration_string):
     """
     Configures address with the passed configuration
@@ -37,15 +70,7 @@ def configure(address, configuration_string):
     logger.info("Configuring: ", address)
     logger.info("Configuration: ", configuration_string)
 
-    ctx = zmq.Context()
-    sock = zmq.Socket(ctx, zmq.REQ)
-    sock.connect(address)
-
-    sock.send_string(configuration_string)
-    response = sock.recv_json()
-
-    sock.close()
-    ctx.destroy()
+    response = bsread_zmq_rpc(address, configuration_string)
 
     return response
 
@@ -90,6 +115,7 @@ def main():
     parser = argparse.ArgumentParser(description='BSREAD configuration utility')
     parser.add_argument('-c', '--channel', type=str, action=EnvDefault, envvar='BS_CONFIG', help='Address to configure, has to be in format "tcp://<address>:<port>"')
     parser.add_argument('-a', '--all', action='count', help='Stream all channels of the IOC')
+    parser.add_argument('-i', '--introspect', action='count', help='Request introspection from IOC')
 
     arguments = parser.parse_args()
     address = arguments.channel
@@ -105,15 +131,20 @@ def main():
         print 'Invalid URI - ' + address
         exit(-1)
 
+    
+    # Introspect mode? 
+    if arguments.introspect:
+        response=get_introspect(address)
     # Check if to configure all channels
-    if arguments.all:
+    elif arguments.all:
         # Sending special JSON to the IOC to configure all channels to be streamed out
         configuration_string = json.dumps({"grep": 2})
+        response = configure(address, configuration_string)
+    #Normal config
     else:
         configuration_string = read_configuration()
+        response = configure(address, configuration_string)
 
-
-    response = configure(address, configuration_string)
 
     print(response)
 
