@@ -20,5 +20,5 @@ build:
     - bs-source = bsread.bs_source:main
 
 about:
-    home: https://github.psi.ch/projects/ST/repos/bsread_python/browse
+    home: git@git.psi.ch:sf_daq/bsread_python.git
     summary: "BSREAD Python library."
