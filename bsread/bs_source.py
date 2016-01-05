@@ -1,4 +1,77 @@
 
+template = """
+# Macros
+# P  -  Record prefix, e.g. TEST-BSREAD
+
+
+record(calc, "$(P):TEST_1") {
+	field(VAL,"0")
+	field(INPA,"$(P):TEST_1")
+	field(CALC,"A+1")
+	field(SCAN,".1 second")
+}
+
+record(ai, "$(P):TEST_1-AI"){
+	field(INP, "$(P):TEST_1")
+	field(SCAN,".1 second")
+}
+
+record(bi, "$(P):TEST_1-BI"){
+	field(INP, "$(P):TEST_1")
+	field(SCAN,".1 second")
+}
+
+record(longin, "$(P):TEST_1-LI"){
+	field(INP, "$(P):TEST_1")
+	field(SCAN,".1 second")
+}
+
+record(calc, "$(P):TEST_2") {
+	field(VAL,"0")
+	field(INPA,"$(P):TEST_2")
+	field(CALC,"A+0.1")
+	field(SCAN,".1 second")
+}
+record(calc, "$(P):TEST_3") {
+	field(VAL,"0")
+	field(INPA,"$(P):TEST_3")
+	field(CALC,"A+0.01")
+	field(SCAN,".1 second")
+}
+record(calc, "$(P):TEST_4") {
+	field(VAL,"0")
+	field(INPA,"$(P):TEST_4")
+	field(CALC,"A+10")
+	field(SCAN,".1 second")
+}
+
+record(stringin, "$(P):TEST_STRING") {
+        field(VAL,"Hello world")
+ }
+
+
+record(waveform, "$(P):TEST_WVF-DOUBLE")
+{
+	field(SCAN, "Passive")
+	field(NELM, "10")
+	field(FTVL, "DOUBLE")
+}
+
+record(waveform, "$(P):TEST_WVF-LONG")
+{
+	field(SCAN, "Passive")
+	field(NELM, "10")
+	field(FTVL, "LONG")
+}
+
+record(waveform, "$(P):TEST_WVF-SHORT")
+{
+	field(SCAN, "Passive")
+	field(NELM, "10")
+	field(FTVL, "SHORT")
+}
+"""
+
 def create_test_ioc_config(ioc_prefix, port):
 
     startup_script = """require "bsread"
@@ -12,9 +85,9 @@ dbLoadRecords("bsread_test.template","P={prefix}-FAKEDATA")
 
     # Get test template from Git server
     # https://github.psi.ch/projects/ST/repos/bsread/browse/example/bsread_test.template?&raw
-    import urllib2
-    response = urllib2.urlopen('https://github.psi.ch/projects/ST/repos/bsread/browse/example/bsread_test.template?&raw')
-    template = response.read()
+    # import urllib2
+    # response = urllib2.urlopen('https://github.psi.ch/projects/ST/repos/bsread/browse/example/bsread_test.template?&raw')
+    # template = response.read()
     # print template
 
     with open("bsread_test.template", 'w') as f:
