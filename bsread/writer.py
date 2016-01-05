@@ -101,3 +101,16 @@ class Dataset:
 class DatasetGroup:
     def __init__(self):
         self.datasets = []
+
+
+# Example writer
+if __name__ == "__main__":
+    writer = Writer()
+
+    writer.open_file('test.h5')
+    writer.add_dataset('/test/data')
+
+    for number in range(0, 100):
+        writer.write([number])
+
+    writer.close_file()

@@ -12,10 +12,10 @@ setup(
     description="BSREAD for Python",
     # long_description=open('Readme.rst', 'r').read(),
     long_description="BSREAD for Python",
-    author='PSI',
-    author_email='im@psi.ch',
-    url='https://github.psi.ch/projects/ST/repos/bsread_python/browse',
+    author='Paul Scherrer Institute',
+    author_email='psi@psi.ch',
+    url='https://git.psi.ch/sf_daq/bsread_python',
     packages=['bsread', 'bsread.handler'],
-    requires=['numpy', 'zmq'],
+    requires=['mflow', 'numpy', 'zmq'],
 
 )

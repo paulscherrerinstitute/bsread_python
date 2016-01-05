@@ -72,12 +72,14 @@ record(waveform, "$(P):TEST_WVF-SHORT")
 }
 """
 
+
 def create_test_ioc_config(ioc_prefix, port):
 
     startup_script = """require "bsread"
 runScript $(bsread_DIR)/bsread_sim.cmd, "SYS={prefix},BSREAD_PORT={port}"
 dbLoadRecords("bsread_test.template","P={prefix}-FAKEDATA")
     """.format(port=port, prefix=ioc_prefix.upper())
+
     # print startup_script
 
     with open("startup.cmd", 'w') as f:

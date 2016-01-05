@@ -24,13 +24,13 @@ class Channel:
             self.offset = offset
 
 
-def bsread_zmq_rpc(address,request):
+def zmq_rpc(address, request):
     ctx = zmq.Context()
     sock = zmq.Socket(ctx, zmq.REQ)
     sock.connect(address)
 
-    ##Normal strings indicate that the request is already JSON encoded
-    if(type(request)==str):
+    # Normal strings indicate that the request is already JSON encoded
+    if type(request) == str:
         sock.send_string(request)
     else:
         sock.send_string(json.dumps(request))
@@ -42,9 +42,10 @@ def bsread_zmq_rpc(address,request):
 
     return response
 
+
 def get_introspect(address):
     request = {"cmd":"introspect"}
-    response = bsread_zmq_rpc(address, json.dumps(request))
+    response = zmq_rpc(address, json.dumps(request))
     
     print("Available channels: ")
     for channel in response["channels"]:
@@ -70,7 +71,7 @@ def configure(address, configuration_string):
     logger.info("Configuring: ", address)
     logger.info("Configuration: ", configuration_string)
 
-    response = bsread_zmq_rpc(address, configuration_string)
+    response = zmq_rpc(address, configuration_string)
 
     return response
 
@@ -131,16 +132,15 @@ def main():
         print 'Invalid URI - ' + address
         exit(-1)
 
-    
     # Introspect mode? 
     if arguments.introspect:
-        response=get_introspect(address)
+        response = get_introspect(address)
     # Check if to configure all channels
     elif arguments.all:
         # Sending special JSON to the IOC to configure all channels to be streamed out
         configuration_string = json.dumps({"grep": 2})
         response = configure(address, configuration_string)
-    #Normal config
+    # Normal config
     else:
         configuration_string = read_configuration()
         response = configure(address, configuration_string)

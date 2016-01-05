@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 
-import bsread
+# import bsread
+import mflow
+import mflow.handlers.bsr_m_1_0
 import zmq
 
 
 def receive(source, clear=False):
-    receiver = bsread.Bsread(mode=zmq.PULL)
-    receiver.connect(address=source, conn_type="connect", )
+    receiver = mflow.connect(source, conn_type="connect", mode=zmq.PULL)
 
     while True:
-        message = receiver.receive()
+        message = receiver.receive(handler=mflow.handlers.bsr_m_1_0.Handler().receive)
+        message = message.data  # As the rest of the code is only interested in the message data, not statistics
 
         # if message_data['header']['pulse_id'] % 10 == 0:
         #     sys.stderr.write("\x1b[2J\x1b[H")
