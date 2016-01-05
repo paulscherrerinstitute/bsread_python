@@ -9,7 +9,7 @@ The format of the stream is specified [here](https://docs.google.com/document/d/
 __Note:__ For the time being, to be able to use the commands from GFA machines you need to add the central GFA Python environment to you path. This can be done by executing following command:
 
 ```
-export PATH=/opt/gfa/python-2.7/latest/bin:$PATH
+source /opt/gfa/python 2.7
 ```
 
 ----
@@ -64,24 +64,16 @@ optional arguments:
   -h, --help  show this help message and exit
 ```
 
-After creating the configuration files with the command use `iocsh startup.cmd` to start the IOC.
+After creating the configuration files with the command use `iocsh startup.cmd` to start the IOC. All the required commands are displayed to set your client environment as well as starting the test IOC.
 
-### Example
+
+The creation and start of the test ioc can be done in one go with following command:
 
 ```bash
-bs-source create TOCK 7777
-
-# To set the environment automatically use:
-# eval "$(bs-source env sf-lc6-64 7777)"
-
-export BS_SOURCE=tcp://sf-lc6-64:7777
-export BS_CONFIG=tcp://sf-lc6-64:7778
-
-# To start the test ioc use
-iocsh startup.cmd
+eval "$(bs-source create TOCK 7777)"
 ```
 
-All the required commands are displayed to set your client environment as well as starting the test IOC.
+
 
 ## Set environment
 
