@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import bsread
+import mflow
+import mflow.handlers.bsr_m_1_0
 import zmq
 import writer as wr
 import logging
@@ -12,15 +13,16 @@ logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(name)s - %(me
 
 
 def receive(source, file_name):
-    receiver = bsread.Bsread(mode=zmq.PULL)
-    receiver.connect(address=source, conn_type="connect", )
+    receiver = mflow.connect(source, conn_type="connect", mode=zmq.PULL)
+    handler = mflow.handlers.bsr_m_1_0.Handler()
 
     writer = wr.Writer()
     writer.open_file(file_name)
 
     try:
         while True:
-            message_data = receiver.receive()
+            message_data = receiver.receive(handler=handler.receive)
+            message_data = message_data.data
 
             if message_data['header']['hash'] == '':
                 print 'SKIPPING FIRST MESSAGE !!!!'

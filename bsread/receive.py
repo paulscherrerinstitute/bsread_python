@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-# import bsread
 import mflow
 import mflow.handlers.bsr_m_1_0
 import zmq
@@ -8,9 +7,10 @@ import zmq
 
 def receive(source, clear=False):
     receiver = mflow.connect(source, conn_type="connect", mode=zmq.PULL)
+    handler = mflow.handlers.bsr_m_1_0.Handler()
 
     while True:
-        message = receiver.receive(handler=mflow.handlers.bsr_m_1_0.Handler().receive)
+        message = receiver.receive(handler=handler.receive)
         message = message.data  # As the rest of the code is only interested in the message data, not statistics
 
         # if message_data['header']['pulse_id'] % 10 == 0:
@@ -33,7 +33,7 @@ def receive(source, clear=False):
 def main():
     from cli_utils import EnvDefault
     import argparse
-    parser = argparse.ArgumentParser(description='BSREAD receive utility')
+    parser = argparse.ArgumentParser(description='bsread receive utility')
 
     parser.add_argument('-s', '--source', action=EnvDefault, envvar='BS_SOURCE', type=str, help='Source address - format "tcp://<address>:<port>"')
     parser.add_argument('-m', '--monitor', action='count', help='Monitor mode / clear the screen on every message')
