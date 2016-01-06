@@ -19,6 +19,8 @@ def receive(source, file_name):
     writer = wr.Writer()
     writer.open_file(file_name)
 
+    first_iteration = True
+
     try:
         while True:
             message_data = receiver.receive(handler=handler.receive)
@@ -28,9 +30,10 @@ def receive(source, file_name):
                 print 'SKIPPING FIRST MESSAGE !!!!'
                 continue
 
-            if "data_header" in message_data:
+            if first_iteration and "data_header" in message_data:
                 data_header = message_data['data_header']
                 print "Data Header: ", data_header
+                first_iteration = False
 
                 writer.add_dataset('/pulse_id', dataset_group_name='pulse_id_array', dtype='i8')
 

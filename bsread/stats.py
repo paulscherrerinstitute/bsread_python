@@ -1,4 +1,5 @@
-import bsread
+import mflow
+import mflow.handlers.bsr_m_1_0
 import zmq
 import time
 import datetime
@@ -7,55 +8,77 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-message_print_format = "{:30.30}| {:25.25} [{:7.7}] {:20.20}"
+message_print_format = "{:30.30}| {:25.25} {:30.30}"
 
 previous_pulse_id = 0
+first_iteration = True
+data_header = None
 
 
 def print_header(clear=True):
     if clear:
         print(chr(27) + "[2J")
 
-    print(message_print_format.format("NAME", "VAL", "PULSEID", "TIMESTAMP"))
+    print(message_print_format.format("NAME", "VAL", "TIMESTAMP"))
     print("_"*90)
 
 
-def print_message(message, clear=True):
+def print_message_data(message_data, clear=True):
+
+    global first_iteration
+    global data_header
 
     if clear:
         print_header(True)
 
-    for c in message.itervalues():
+    if first_iteration and 'data_header' in message_data:
+        data_header = message_data['data_header']
+        first_iteration = False
 
-        # Array/Waveform handling
-        # Check if the message data is scalar
-        # l = 1
-        # if hasattr(c.val, "__len__"):
-        #     l = len(c.val)
+    global_timestamp = message_data['header']['global_timestamp']['epoch']
+    global_timestamp_ns = message_data['header']['global_timestamp']['ns']
+    pulse_id = message_data['header']['pulse_id']
 
-        # Format timestamp
-        if c.timestamp is not None:
-            try:
-                date = datetime.datetime.fromtimestamp(c.timestamp)
-            except:
-                date = "None"
-        else:
-            date = "None"
+    try:
+        date_g = datetime.datetime.fromtimestamp(global_timestamp + float(global_timestamp_ns)/1e9)
+    except:
+        date_g = 'None'
 
-        print message_print_format.format(c.name, str(c.val), str(c.pulseid), str(date))
+    for i, c in enumerate(data_header['channels']):
+        channel_name = c['name']
+        channel_value = message_data['data'][i]
+        # pulse_id = message_data['pulse_ids'][i]
+        timestamp = message_data['timestamp'][i]
+        timestamp_ns = message_data['timestamp_offset'][i]
+        # global_timestamp = message_data['header']['global_timestamp']['epoch']
+        # global_timestamp_ns = message_data['header']['global_timestamp']['ns']
+
+        try:
+            date = datetime.datetime.fromtimestamp(timestamp + float(timestamp_ns)/1e9)
+            # date_g = datetime.datetime.fromtimestamp(global_timestamp + float(global_timestamp_ns)/1e9)
+        except:
+            date = 'None'
+            # date_g = 'None'
+
+        print message_print_format.format(channel_name, str(channel_value), str(date))
+
+    print("_"*90)
+    print("pulse_id: %d" % pulse_id)
+    print("global_timestamp: %s" % str(date_g))
 
 
-def consistency_check(message):
+
+def data_consistency_check(message_data):
     """
     Check 'consistency' of messages, i.e. whether pulse_id increases by one
     Args:
-        message: Current message
+        message_data: Current message
 
     Returns: Messages missed between last and current message - i.e. lost/missed messages
 
     """
     global previous_pulse_id
-    current_pulse_id = message.items()[0][1].pulseid
+    current_pulse_id = message_data['header']['pulse_id']
 
     messages_missed = 0
 
@@ -105,8 +128,8 @@ def main():
         logger.addHandler(handler)
 
     logger.info("Connecting to {} type PULL".format(address))
-    receiver = bsread.Bsread(mode=zmq.PULL)
-    receiver.connect(address=address, conn_type="connect", )
+    receiver = mflow.connect(address, conn_type="connect", mode=zmq.PULL)
+    handler = mflow.handlers.bsr_m_1_0.Handler()
     logger.info("Connection opened")
 
     messages_received = 0
@@ -118,15 +141,15 @@ def main():
 
     while True:
 
-        message = receiver.recive_message()
-        total_bytes_received = receiver.received_b
+        message = receiver.receive(handler=handler.receive)
+        total_bytes_received = message.statistics.total_bytes_received
 
         # Check consistency
-        messages_missed += consistency_check(message)
+        messages_missed += data_consistency_check(message.data)
 
         if arguments.n != 0 and (messages_received % arguments.n) == 0:
 
-            print_message(message, arguments.monitor)
+            print_message_data(message.data, arguments.monitor)
 
             if arguments.monitor:
                 now = time.time()
@@ -141,7 +164,6 @@ def main():
                 previous_time = now
 
                 print("_"*90)
-                print("STATS:\n")
                 print("Messages Received: {}".format(messages_received))
                 print("Message Rate: {} Hz".format(message_rate))
                 print("Data Received: {} Mb".format(total_bytes_received/1024.0/1024.0))
