@@ -15,7 +15,7 @@ setup(
     author='Paul Scherrer Institute',
     author_email='psi@psi.ch',
     url='https://git.psi.ch/sf_daq/bsread_python',
-    packages=['bsread', 'bsread.handler'],
+    packages=['bsread'],
     requires=['mflow', 'numpy', 'zmq'],
 
 )
