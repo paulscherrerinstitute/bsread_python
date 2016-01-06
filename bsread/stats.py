@@ -1,5 +1,5 @@
 import mflow
-import mflow.handlers.bsr_m_1_0
+from handlers.bsr_m_1_0 import Handler
 import zmq
 import time
 import datetime
@@ -129,7 +129,7 @@ def main():
 
     logger.info("Connecting to {} type PULL".format(address))
     receiver = mflow.connect(address, conn_type="connect", mode=zmq.PULL)
-    handler = mflow.handlers.bsr_m_1_0.Handler()
+    handler = Handler()
     logger.info("Connection opened")
 
     messages_received = 0

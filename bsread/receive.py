@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 import mflow
-import mflow.handlers.bsr_m_1_0
+from handlers.bsr_m_1_0 import Handler
 import zmq
 
 
 def receive(source, clear=False):
     receiver = mflow.connect(source, conn_type="connect", mode=zmq.PULL)
-    handler = mflow.handlers.bsr_m_1_0.Handler()
+    handler = Handler()
 
     while True:
         message = receiver.receive(handler=handler.receive)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import mflow
-import mflow.handlers.bsr_m_1_0
+from handlers.bsr_m_1_0 import Handler
 import zmq
 import writer as wr
 import logging
@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(name)s - %(me
 
 def receive(source, file_name):
     receiver = mflow.connect(source, conn_type="connect", mode=zmq.PULL)
-    handler = mflow.handlers.bsr_m_1_0.Handler()
+    handler = Handler()
 
     writer = wr.Writer()
     writer.open_file(file_name)
