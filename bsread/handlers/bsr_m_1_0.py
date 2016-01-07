@@ -86,7 +86,7 @@ class Handler:
         return_value['timestamp'] = timestamp
         return_value['timestamp_offset'] = timestamp_offset
         return_value['pulse_ids'] = pulse_ids
-        return_value['size'] = msg_data_size
+        # return_value['size'] = msg_data_size
 
         return return_value
 
