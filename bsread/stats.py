@@ -16,20 +16,19 @@ data_header = None
 
 
 def print_header(clear=True):
-    if clear:
-        print(chr(27) + "[2J")
+    #if clear:
+    #    print(chr(27) + "[2J")
 
     print(message_print_format.format("NAME", "VAL", "TIMESTAMP"))
-    print("_"*90)
+    print("_"*80)
 
 
-def print_message_data(message_data, clear=True):
+def print_message_data(message_data):
 
     global first_iteration
     global data_header
 
-    if clear:
-        print_header(True)
+    print_header(True)
 
     if first_iteration and 'data_header' in message_data:
         data_header = message_data['data_header']
@@ -62,7 +61,7 @@ def print_message_data(message_data, clear=True):
 
         print message_print_format.format(channel_name, str(channel_value), str(date))
 
-    print("_"*90)
+    print("_"*80)
     print("pulse_id: %d" % pulse_id)
     print("global_timestamp: %s" % str(date_g))
 
@@ -106,6 +105,7 @@ def main():
                         help='Limit message printing to every n messages, this will reduce CPU load. Note that all messages are still received, but are not displayed. If -n 0 is passed message display is disabled')
     parser.add_argument('-l', '--log', type=str,
                         help='Enable logging. All errors (pulse_id skip, etc..) will be logged in file specified')
+    parser.add_argument('-v', '--value', action='count', help='Display values')
 
     # Parse arguments
     arguments = parser.parse_args()
@@ -149,26 +149,29 @@ def main():
 
         if arguments.n != 0 and (messages_received % arguments.n) == 0:
 
-            print_message_data(message.data, arguments.monitor)
-
             if arguments.monitor:
-                now = time.time()
-                delta_time = now - previous_time
+                print(chr(27) + "[2J")
 
-                # Calculations
-                receive_rate = (total_bytes_received - previous_total_bytes_received) / delta_time
-                message_rate = (messages_received - previous_messages_received) / delta_time
+            if arguments.value:
+                print_message_data(message.data)
 
-                previous_total_bytes_received = total_bytes_received
-                previous_messages_received = messages_received
-                previous_time = now
+            now = time.time()
+            delta_time = now - previous_time
 
-                print("_"*90)
-                print("Messages Received: {}".format(messages_received))
-                print("Message Rate: {} Hz".format(message_rate))
-                print("Data Received: {} Mb".format(total_bytes_received/1024.0/1024.0))
-                print("Receive Rate: {} Mbps".format(receive_rate/1024/1024*8))
-                print("Messages Missed: {} ".format(messages_missed))
+            # Calculations
+            receive_rate = (total_bytes_received - previous_total_bytes_received) / delta_time
+            message_rate = (messages_received - previous_messages_received) / delta_time
+
+            previous_total_bytes_received = total_bytes_received
+            previous_messages_received = messages_received
+            previous_time = now
+
+            print("_"*80)
+            print("Messages Received: {}".format(messages_received))
+            print("Message Rate: {} Hz".format(message_rate))
+            print("Data Received: {} Mb".format(total_bytes_received/1024.0/1024.0))
+            print("Receive Rate: {} Mbps".format(receive_rate/1024/1024*8))
+            print("Messages Missed: {} ".format(messages_missed))
         messages_received += 1
 
 if __name__ == "__main__":
