@@ -280,6 +280,20 @@ The same index of the arrays corresponds to the same pulse_id which stored in th
      timestamp_offset [int64]
 ```
 
+### Matlab
+The saved hdf5 file can be read / browsed within Matlab as follows:
+
+```Matlab
+% Show content/structure of hdf5 file
+h5disp('data.h5')
+
+% Get file info to visually browse the content/structure
+hdf5info('data.h5')
+
+% Read data
+data = hdf5read('data.h5', '/MINSB04-RLLE-RFRX:CH2-AMPLT/data')
+```
+
 # Development
 
 ## Dependencies
