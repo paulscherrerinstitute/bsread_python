@@ -99,30 +99,30 @@ dbLoadRecords("bsread_test.template","P={prefix}-FAKEDATA")
     import socket
     print_set_environment(socket.gethostname(), port)
 
-    print ''
-    print '# To start the test ioc use '
-    print 'iocsh startup.cmd'
-    print ''
+    print('')
+    print('# To start the test ioc use ')
+    print('iocsh startup.cmd')
+    print('')
 
 
 def print_set_environment(ioc, port):
-    print ''
-    print '# To set the environment automatically use:'
-    print '# eval "$(bs-source env '+ioc+' %d)"' % int(port)
-    print ''
-    print 'export BS_SOURCE=tcp://'+ioc+':%d' % int(port)
-    print 'export BS_CONFIG=tcp://'+ioc+':%d' % (int(port)+1)
-    print ''
+    print('')
+    print('# To set the environment automatically use:')
+    print('# eval "$(bs-source env '+ioc+' %d)"' % int(port))
+    print('')
+    print('export BS_SOURCE=tcp://'+ioc+':%d' % int(port))
+    print('export BS_CONFIG=tcp://'+ioc+':%d' % (int(port)+1))
+    print('')
 
 
 def print_unset_environment():
-    print ''
-    print '# To unset the environment use:'
-    print '# eval "$(bs-source clear_env)"'
+    print('')
+    print('# To unset the environment use:')
+    print('# eval "$(bs-source clear_env)"')
 
-    print 'unset BS_SOURCE'
-    print 'unset BS_CONFIG'
-    print ''
+    print('unset BS_SOURCE')
+    print('unset BS_CONFIG')
+    print('')
 
 
 def main():
