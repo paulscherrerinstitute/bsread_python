@@ -52,8 +52,11 @@ def get_introspect(address):
         print(("\t{}".format(channel)))
 
     print("\nCurrent configuration")
-    for channel in response["config"]["channels"]:
-        print(("\t{:50.50} MOD:{:3} OFF:{}".format(channel["name"],channel["modulo"],channel["offset"])))
+    if response["config"]["channels"]:
+        for channel in response["config"]["channels"]:
+            print(("\t{:50.50} MOD:{:3} OFF:{}".format(channel["name"],channel["modulo"],channel["offset"])))
+    else:
+        print('\t-')
 
     return response
 
@@ -117,6 +120,7 @@ def main():
     parser.add_argument('-c', '--channel', type=str, action=EnvDefault, envvar='BS_CONFIG', help='Address to configure, has to be in format "tcp://<address>:<port>"')
     parser.add_argument('-a', '--all', action='count', help='Stream all channels of the IOC')
     parser.add_argument('-i', '--introspect', action='count', help='Request introspection from IOC')
+    parser.add_argument('-v', '--verbose', action='count', help='Verbose output to show configuration json string')
 
     arguments = parser.parse_args()
     address = arguments.channel
@@ -145,8 +149,8 @@ def main():
         configuration_string = read_configuration()
         response = configure(address, configuration_string)
 
-
-    print(response)
+    if arguments.verbose:
+        print(response)
 
 
 if __name__ == '__main__':
