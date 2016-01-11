@@ -1,5 +1,5 @@
 import mflow
-from handlers.bsr_m_1_0 import Handler
+from .handlers.bsr_m_1_0 import Handler
 import zmq
 import time
 import datetime
@@ -90,7 +90,7 @@ def data_consistency_check(message_data):
 def main():
 
     # Argument parsing
-    from cli_utils import EnvDefault
+    from .cli_utils import EnvDefault
     parser = argparse.ArgumentParser(description='BSREAD receiving utility')
 
     parser.add_argument('-s', '--source', action=EnvDefault, envvar='BS_SOURCE', type=str,

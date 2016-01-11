@@ -1,5 +1,5 @@
 import mflow
-from handlers.bsr_m_1_0 import Handler
+from .handlers.bsr_m_1_0 import Handler
 import zmq
 
 
@@ -29,7 +29,7 @@ def receive(source, clear=False):
 
 
 def main():
-    from cli_utils import EnvDefault
+    from .cli_utils import EnvDefault
     import argparse
     parser = argparse.ArgumentParser(description='bsread receive utility')
 

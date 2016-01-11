@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import mflow
-from handlers.bsr_m_1_0 import Handler
+from .handlers.bsr_m_1_0 import Handler
 import zmq
 import writer as wr
 import logging
@@ -114,7 +114,7 @@ def receive(source, file_name):
 
 
 def main():
-    from cli_utils import EnvDefault
+    from .cli_utils import EnvDefault
     import argparse
     parser = argparse.ArgumentParser(description='BSREAD hdf5 utility')
 

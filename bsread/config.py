@@ -111,7 +111,7 @@ def read_configuration():
 
 def main():
     import argparse
-    from cli_utils import EnvDefault
+    from .cli_utils import EnvDefault
 
     parser = argparse.ArgumentParser(description='BSREAD configuration utility')
     parser.add_argument('-c', '--channel', type=str, action=EnvDefault, envvar='BS_CONFIG', help='Address to configure, has to be in format "tcp://<address>:<port>"')
