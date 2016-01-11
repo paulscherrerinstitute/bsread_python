@@ -49,11 +49,11 @@ def get_introspect(address):
     
     print("Available channels: ")
     for channel in response["channels"]:
-        print("\t{}".format(channel))
+        print(("\t{}".format(channel)))
 
     print("\nCurrent configuration")
     for channel in response["config"]["channels"]:
-        print("\t{:50.50} MOD:{:3} OFF:{}".format(channel["name"],channel["modulo"],channel["offset"]))
+        print(("\t{:50.50} MOD:{:3} OFF:{}".format(channel["name"],channel["modulo"],channel["offset"])))
 
     return response
 
@@ -104,7 +104,7 @@ def read_configuration():
 
             configuration.channels.append(Channel(name, modulo=modulo, offset=offset))
         except ValueError:
-            print("modulo (float) or offset (int) specified in wrong type - ignoring channel: "+name)
+            print(("modulo (float) or offset (int) specified in wrong type - ignoring channel: "+name))
 
     return configuration.json()
 
@@ -123,13 +123,13 @@ def main():
 
     import re
     if not re.match('^tcp://', address):
-        print 'Protocol not defined for address - Using tcp://'
+        print('Protocol not defined for address - Using tcp://')
         address = 'tcp://' + address
     if not re.match('.*:[0-9]+$', address):
-        print 'Port not defined for address - Using 10000'
+        print('Port not defined for address - Using 10000')
         address += ':10000'
     if not re.match('^tcp://[a-zA-Z\.\-0-9]+:[0-9]+$', address):
-        print 'Invalid URI - ' + address
+        print('Invalid URI - ' + address)
         exit(-1)
 
     # Introspect mode? 
