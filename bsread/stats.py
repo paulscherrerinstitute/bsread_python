@@ -1,5 +1,5 @@
 import mflow
-from handlers.bsr_m_1_0 import Handler
+from .handlers.bsr_m_1_0 import Handler
 import zmq
 import time
 import datetime
@@ -54,7 +54,7 @@ def print_message_data(message_data):
             date = 'None'
             # date_g = 'None'
 
-        print message_print_format.format(channel_name, str(channel_value), str(date))
+        print(message_print_format.format(channel_name, str(channel_value), str(date)))
 
     print("_"*80)
 
@@ -90,7 +90,7 @@ def data_consistency_check(message_data):
 def main():
 
     # Argument parsing
-    from cli_utils import EnvDefault
+    from .cli_utils import EnvDefault
     parser = argparse.ArgumentParser(description='BSREAD receiving utility')
 
     parser.add_argument('-s', '--source', action=EnvDefault, envvar='BS_SOURCE', type=str,
@@ -109,13 +109,13 @@ def main():
 
     import re
     if not re.match('^tcp://', address):
-        print 'Protocol not defined for address - Using tcp://'
+        print('Protocol not defined for address - Using tcp://')
         address = 'tcp://' + address
     if not re.match('.*:[0-9]+$', address):
-        print 'Port not defined for address - Using 9999'
+        print('Port not defined for address - Using 9999')
         address += ':9999'
     if not re.match('^tcp://[a-zA-Z\.\-0-9]+:[0-9]+$', address):
-        print 'Invalid URI - ' + address
+        print('Invalid URI - ' + address)
         exit(-1)
 
     if arguments.log:

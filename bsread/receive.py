@@ -1,5 +1,5 @@
 import mflow
-from handlers.bsr_m_1_0 import Handler
+from .handlers.bsr_m_1_0 import Handler
 import zmq
 
 
@@ -15,13 +15,13 @@ def receive(source, clear=False):
         #     sys.stderr.write("\x1b[2J\x1b[H")
 
         if clear:
-            print(chr(27) + "[2J")
+            print((chr(27) + "[2J"))
 
-        print message['header']
+        print(message['header'])
         if "data_header" in message:
-            print message['data_header']
-        print message['data']
-        print message['timestamp']
+            print(message['data_header'])
+        print(message['data'])
+        print(message['timestamp'])
 
         # if "data_header" in message:
         #     print "Data Header: ", message['data_header']
@@ -29,7 +29,7 @@ def receive(source, clear=False):
 
 
 def main():
-    from cli_utils import EnvDefault
+    from .cli_utils import EnvDefault
     import argparse
     parser = argparse.ArgumentParser(description='bsread receive utility')
 
@@ -41,13 +41,13 @@ def main():
 
     import re
     if not re.match('^tcp://', address):
-        print 'Protocol not defined for address - Using tcp://'
+        print('Protocol not defined for address - Using tcp://')
         address = 'tcp://' + address
     if not re.match('.*:[0-9]+$', address):
-        print 'Port not defined for address - Using 9999'
+        print('Port not defined for address - Using 9999')
         address += ':9999'
     if not re.match('^tcp://[a-zA-Z\.\-0-9]+:[0-9]+$', address):
-        print 'Invalid URI - ' + address
+        print('Invalid URI - ' + address)
         exit(-1)
 
     if arguments.monitor:

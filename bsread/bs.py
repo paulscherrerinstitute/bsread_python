@@ -1,18 +1,18 @@
 
 def usage():
 
-    print ''
-    print 'Usage: bs [OPTIONS] COMMAND [arg...]'
-    print ''
-    print 'Commands:'
-    print ''
-    print ' config          - Configure IOC'
-    print ' stats           - Show receiving statistics'
-    print ' receive         - Basic receiver'
-    print ' h5              - Dump stream into HDF5 file'
-    print ''
-    print 'Run \'bs COMMAND --help\' for more information on a command.'
-    print ''
+    print('')
+    print('Usage: bs [OPTIONS] COMMAND [arg...]')
+    print('')
+    print('Commands:')
+    print('')
+    print(' config          - Configure IOC')
+    print(' stats           - Show receiving statistics')
+    print(' receive         - Basic receiver')
+    print(' h5              - Dump stream into HDF5 file')
+    print('')
+    print('Run \'bs COMMAND --help\' for more information on a command.')
+    print('')
 
 
 def main():
@@ -36,7 +36,7 @@ def main():
         try:
             command_script = importlib.import_module('bsread.'+command)
         except:
-            print command + ' - Command not found'
+            print(command + ' - Command not found')
             usage()
             exit(-1)
 

@@ -3,7 +3,7 @@
 
 from setuptools import setup, find_packages, Extension
 
-VERSION = (0, 0, 15)
+VERSION = (0, 0, 16)
 VERSION_STR = ".".join([str(x) for x in VERSION])
 
 setup(
