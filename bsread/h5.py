@@ -3,7 +3,7 @@
 import mflow
 from .handlers.bsr_m_1_0 import Handler
 import zmq
-import writer as wr
+from . import writer as wr
 import logging
 
 # Logger configuration
