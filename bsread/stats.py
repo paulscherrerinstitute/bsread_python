@@ -8,19 +8,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-message_print_format = "{:30.30}| {:25.25} {:30.30}"
+message_print_format = "{:40.40}| {:25.25} {:30.30}"
 
 previous_pulse_id = 0
 first_iteration = True
 data_header = None
-
-
-def print_header(clear=True):
-    #if clear:
-    #    print(chr(27) + "[2J")
-
-    print(message_print_format.format("NAME", "VAL", "TIMESTAMP"))
-    print("_"*80)
 
 
 def print_message_data(message_data):
@@ -28,7 +20,9 @@ def print_message_data(message_data):
     global first_iteration
     global data_header
 
-    print_header(True)
+    # Print header
+    print(message_print_format.format("NAME", "VAL", "TIMESTAMP"))
+    print("_"*80)
 
     if first_iteration and 'data_header' in message_data:
         data_header = message_data['data_header']
@@ -43,6 +37,7 @@ def print_message_data(message_data):
     except:
         date_g = 'None'
 
+    # Print values
     for i, c in enumerate(data_header['channels']):
         channel_name = c['name']
         channel_value = message_data['data'][i]
@@ -62,9 +57,10 @@ def print_message_data(message_data):
         print message_print_format.format(channel_name, str(channel_value), str(date))
 
     print("_"*80)
+
+    # Print "global" metadata
     print("pulse_id: %d" % pulse_id)
     print("global_timestamp: %s" % str(date_g))
-
 
 
 def data_consistency_check(message_data):
