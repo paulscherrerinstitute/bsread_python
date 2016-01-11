@@ -82,7 +82,7 @@ class Writer:
     def compact_data(self):
         """Compact datasets, i.e. shrink them to actual size"""
 
-        for key, dataset_group in self.dataset_groups.iteritems():
+        for key, dataset_group in self.dataset_groups.items():
             for dataset in dataset_group.datasets:
                 if dataset:  # Check for dataset stub, i.e. None
                     # Compact if count is smaller than actual size
