@@ -1,5 +1,6 @@
 import mflow
-from .handlers.bsr_m_1_0 import Handler
+# from .handlers.bsr_m_1_0 import Handler
+from .handlers.compact import Handler
 import zmq
 
 
@@ -17,15 +18,27 @@ def receive(source, clear=False):
         if clear:
             print((chr(27) + "[2J"))
 
-        print(message['header'])
-        if "data_header" in message:
-            print(message['data_header'])
-        print(message['data'])
-        print(message['timestamp'])
+        separator = '\t'
+        # separator = ', '
 
-        # if "data_header" in message:
-        #     print "Data Header: ", message['data_header']
-        # print message['data'],  message['timestamp'], message['header']
+        if message.format_changed or clear:
+            keys = "pulse_id" + separator + "global_timestamp" + separator + "global_timestamp_offset"  # Have pulse_id, ... in first column
+            for key in message.data.keys():
+                if keys:
+                    keys = keys + separator + key
+                else:
+                    keys = key
+            print(keys)
+
+        # pprint.pprint(message.data.values())
+        values = str(message.pulse_id) + separator + str(message.global_timestamp) + separator + str(message.global_timestamp_offset)  # Have pulse_id in first column
+        for value in message.data.values():
+            if values:
+                values = values + separator + str(value.value)
+            else:
+                values = str(value.value)
+
+        print(values)
 
 
 def main():
