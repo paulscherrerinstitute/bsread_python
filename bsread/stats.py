@@ -77,7 +77,7 @@ def main():
 
     # Argument parsing
     from .cli_utils import EnvDefault
-    parser = argparse.ArgumentParser(description='BSREAD receiving utility')
+    parser = argparse.ArgumentParser(description='bsread statistics utility')
 
     parser.add_argument('-s', '--source', action=EnvDefault, envvar='BS_SOURCE', type=str,
                         help='source address, has to be in format "tcp://<address>:<port>"')
