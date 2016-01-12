@@ -1,5 +1,5 @@
 import mflow
-from .handlers.bsr_m_1_0 import Handler
+from .handlers.compact import Handler
 import zmq
 import time
 import datetime
@@ -11,26 +11,17 @@ logger = logging.getLogger(__name__)
 message_print_format = "{:40.40}| {:25.25} {:30.30}"
 
 previous_pulse_id = 0
-first_iteration = True
-data_header = None
 
 
 def print_message_data(message_data):
-
-    global first_iteration
-    global data_header
 
     # Print header
     print(message_print_format.format("NAME", "VAL", "TIMESTAMP"))
     print("_"*80)
 
-    if first_iteration and 'data_header' in message_data:
-        data_header = message_data['data_header']
-        first_iteration = False
-
-    global_timestamp = message_data['header']['global_timestamp']['epoch']
-    global_timestamp_ns = message_data['header']['global_timestamp']['ns']
-    pulse_id = message_data['header']['pulse_id']
+    global_timestamp = message_data.global_timestamp_offset
+    global_timestamp_ns = message_data.global_timestamp
+    pulse_id = message_data.pulse_id
 
     try:
         date_g = datetime.datetime.fromtimestamp(global_timestamp + float(global_timestamp_ns)/1e9)
@@ -38,21 +29,16 @@ def print_message_data(message_data):
         date_g = 'None'
 
     # Print values
-    for i, c in enumerate(data_header['channels']):
-        channel_name = c['name']
-        channel_value = message_data['data'][i]
-        # pulse_id = message_data['pulse_ids'][i]
-        timestamp = message_data['timestamp'][i]
-        timestamp_ns = message_data['timestamp_offset'][i]
-        # global_timestamp = message_data['header']['global_timestamp']['epoch']
-        # global_timestamp_ns = message_data['header']['global_timestamp']['ns']
+    for i, c in message_data.data.items():
+        channel_name = i
+        channel_value = c.value
+        timestamp = c.timestamp
+        timestamp_ns = c.timestamp_offset
 
         try:
             date = datetime.datetime.fromtimestamp(timestamp + float(timestamp_ns)/1e9)
-            # date_g = datetime.datetime.fromtimestamp(global_timestamp + float(global_timestamp_ns)/1e9)
         except:
             date = 'None'
-            # date_g = 'None'
 
         print(message_print_format.format(channel_name, str(channel_value), str(date)))
 
@@ -73,7 +59,7 @@ def data_consistency_check(message_data):
 
     """
     global previous_pulse_id
-    current_pulse_id = message_data['header']['pulse_id']
+    current_pulse_id = message_data.pulse_id
 
     messages_missed = 0
 
