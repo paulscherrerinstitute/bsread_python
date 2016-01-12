@@ -13,6 +13,7 @@ requirements:
         - setuptools
     run:
         - python
+        - mflow
         - numpy
         - pyzmq
 
