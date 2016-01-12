@@ -1,5 +1,5 @@
 # Overview
-This is a Python (3) package to deal with beam synchronous data. It is based on the base streaming library mflow and just provides the required message handlers to it.
+This is a Python (3) package to deal with beam synchronous data. It is based on the streaming library [mflow](https://github.com/datastreaming/mflow) and provides the required message handlers to it.
 
 The bsread command line tools are based on this package. If you are looking for those please consult the https://git.psi.ch/sf_daq/bsread_commandline documentation.
 
@@ -16,14 +16,17 @@ __Warning / Attention:__ Please ensure that you don't connect to a production IO
 Following code can be used to receive beam synchronous data from a source.
 
 ```python
-import mflow
-import bsread.handlers.compact import Handler
+from bsread import Source
 
-receiver = mflow.connect(source, conn_type="connect", mode=zmq.PULL)
-handler = Handler()
+source = Source('ioc', 9999)
+# source.request(['TOCK-BSREAD:SIM-PULSE'])  # configure IOC
+stream = source.connect()
 
 while True:
-    message = receiver.receive(handler=handler.receive)
+    message = stream.receive()
+    # Terminate loop at some time
+
+stream.disconnect()
 ```
 
 The returned message object contains all information for one pulse. Following data is available.
