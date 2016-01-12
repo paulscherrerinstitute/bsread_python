@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import mflow
-from .handlers.bsr_m_1_0 import Handler
+from .handlers.extended import Handler
 import zmq
 from . import writer as wr
 import logging
