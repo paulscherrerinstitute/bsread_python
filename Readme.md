@@ -11,6 +11,16 @@ __Warning / Attention:__ Please ensure that you don't connect to a production IO
 
 ----
 
+# Installation
+
+## Anaconda
+
+The bsread package is available on [anaconda.org](https://anaconda.org/paulscherrerinstitute/bsread) and can be installed as follows:
+
+```bash
+conda install -c https://conda.anaconda.org/paulscherrerinstitute bsread
+```
+
 # Usage
 
 Following code can be used to receive beam synchronous data from a source.
@@ -56,9 +66,9 @@ The current dependencies are
 
 A standard Anaconda distribution comes with all the required dependencies except mflow.
 
-## Build
+## Anaconda
 To build the Anaconda package for this library
 
-1. Update the version numbers in conda-recipe/bsread/meta.yaml
-2. Go to conda-recipe
-3. conda build bsread
+1. Update the version numbers in conda-recipe/meta.yaml
+2. Create package: `conda build conda-recipe`
+3. Upload package: `anaconda upload <path_to.tar.bz2_file>`
