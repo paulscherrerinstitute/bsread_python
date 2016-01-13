@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-import bsread
+import mflow
+from .handlers.extended import Handler
 import zmq
-import writer as wr
+from . import writer as wr
 import logging
 
 # Logger configuration
@@ -12,23 +13,27 @@ logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(name)s - %(me
 
 
 def receive(source, file_name):
-    receiver = bsread.Bsread(mode=zmq.PULL)
-    receiver.connect(address=source, conn_type="connect", )
+    receiver = mflow.connect(source, conn_type="connect", mode=zmq.PULL)
+    handler = Handler()
 
     writer = wr.Writer()
     writer.open_file(file_name)
 
+    first_iteration = True
+
     try:
         while True:
-            message_data = receiver.receive()
+            message_data = receiver.receive(handler=handler.receive)
+            message_data = message_data.data
 
             if message_data['header']['hash'] == '':
-                print 'SKIPPING FIRST MESSAGE !!!!'
+                print('SKIPPING FIRST MESSAGE !!!!')
                 continue
 
-            if "data_header" in message_data:
+            if first_iteration and "data_header" in message_data:
                 data_header = message_data['data_header']
-                print "Data Header: ", data_header
+                print("Data Header: ", data_header)
+                first_iteration = False
 
                 writer.add_dataset('/pulse_id', dataset_group_name='pulse_id_array', dtype='i8')
 
@@ -84,7 +89,7 @@ def receive(source, file_name):
                     if 'shape' in channel:
                         shape = [1] + channel['shape']
                         maxshape = [None] + channel['shape']
-                        print shape, "  ", maxshape, channel['name']
+                        print(shape, "  ", maxshape, channel['name'])
                         writer.add_dataset('/'+channel['name']+'/data', dataset_group_name='data', shape=shape, maxshape=maxshape, dtype=dtype)
                     else:
                         writer.add_dataset('/'+channel['name']+'/data', dataset_group_name='data', dtype=dtype)
@@ -109,7 +114,7 @@ def receive(source, file_name):
 
 
 def main():
-    from cli_utils import EnvDefault
+    from .cli_utils import EnvDefault
     import argparse
     parser = argparse.ArgumentParser(description='BSREAD hdf5 utility')
 
@@ -122,13 +127,13 @@ def main():
 
     import re
     if not re.match('^tcp://', address):
-        print 'Protocol not defined for address - Using tcp://'
+        print('Protocol not defined for address - Using tcp://')
         address = 'tcp://' + address
     if not re.match('.*:[0-9]+$', address):
-        print 'Port not defined for address - Using 9999'
+        print('Port not defined for address - Using 9999')
         address += ':9999'
     if not re.match('^tcp://[a-zA-Z\.\-0-9]+:[0-9]+$', address):
-        print 'Invalid URI - ' + address
+        print('Invalid URI - ' + address)
         exit(-1)
 
     receive(address, arguments.file)

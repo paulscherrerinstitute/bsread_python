@@ -1,9 +1,11 @@
 package:
     name: bsread
-    version: 0.0.13
+    version: 0.1.0
+#source:
+#    git_tag: 0.0.14
+#    git_url: git@git.psi.ch:sf_daq/bsread_python.git
 source:
-    git_tag: 0.0.13
-    git_url: https://github.psi.ch/scm/st/bsread_python.git
+    path: ..
 
 requirements:
     build:
@@ -11,6 +13,7 @@ requirements:
         - setuptools
     run:
         - python
+        - mflow
         - numpy
         - pyzmq
 
@@ -20,5 +23,5 @@ build:
     - bs-source = bsread.bs_source:main
 
 about:
-    home: https://github.psi.ch/projects/ST/repos/bsread_python/browse
+    home: git@git.psi.ch:sf_daq/bsread_python.git
     summary: "BSREAD Python library."

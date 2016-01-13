@@ -1,4 +1,3 @@
-import zmq
 import numpy
 
 
@@ -8,7 +7,10 @@ class Handler:
         self.header_hash = None
         self.receive_functions = None
 
-    def receive(self, socket, header):
+    def receive(self, receiver):
+
+        header = receiver.next(as_json=True)
+
         return_value = {}
 
         data = []
@@ -20,18 +22,18 @@ class Handler:
         pulse_id = header['pulse_id']
         pulse_id_array.append(pulse_id)
 
-        if socket.getsockopt(zmq.RCVMORE) and (self.header_hash is None or not self.header_hash == header['hash']):
+        if receiver.has_more() and (self.header_hash is None or not self.header_hash == header['hash']):
 
             self.header_hash = header['hash']
 
             # Interpret data header
-            data_header = socket.recv_json()
+            data_header = receiver.next(as_json=True)
 
             # If a message with ho channel information is received,
             # ignore it and return from function with no data.
             if not data_header['channels']:
-                while socket.getsockopt(zmq.RCVMORE):
-                    raw_data = socket.recv()
+                while receiver.has_more():
+                    raw_data = receiver.next()
                 return_value['header'] = header
                 return_value['pulse_id_array'] = pulse_id_array
 
@@ -47,21 +49,21 @@ class Handler:
             return_value['data_header'] = data_header
         else:
             # Skip second header
-            socket.recv()
+            receiver.next()
 
         # Receiving data
         counter = 0
         msg_data_size = 0
-        while socket.getsockopt(zmq.RCVMORE):
-            raw_data = socket.recv()
+        while receiver.has_more():
+            raw_data = receiver.next()
             msg_data_size += len(raw_data)
 
             if raw_data:
                 endianness = self.receive_functions[counter][0]["encoding"];
                 data.append(self.receive_functions[counter][1].get_value(raw_data, endianness=endianness))
 
-                if socket.getsockopt(zmq.RCVMORE):
-                    raw_timestamp = socket.recv()
+                if receiver.has_more():
+                    raw_timestamp = receiver.next()
                     timestamp_array = numpy.fromstring(raw_timestamp, dtype=endianness+'u8')
                     # secPastEpoch = value[0]
                     # nsec = value[1]
@@ -84,7 +86,7 @@ class Handler:
         return_value['timestamp'] = timestamp
         return_value['timestamp_offset'] = timestamp_offset
         return_value['pulse_ids'] = pulse_ids
-        return_value['size'] = msg_data_size
+        # return_value['size'] = msg_data_size
 
         return return_value
 
@@ -136,10 +138,10 @@ def get_receive_functions(data_header):
                 functions.append((channel, NumberProvider('f8')))
 
             else:
-                print "Unknown data type. Trying to parse as 64-bit floating-point number."
+                print("Unknown data type. Trying to parse as 64-bit floating-point number.")
                 functions.append((channel, NumberProvider('f8')))
         else:
-            print "'type' channel field not found. Trying to parse as 64-bit floating-point number."
+            print("'type' channel field not found. Trying to parse as 64-bit floating-point number.")
             functions.append((channel, NumberProvider('f8')))
 
         # Define endianness of data

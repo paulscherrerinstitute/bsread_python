@@ -24,13 +24,13 @@ class Channel:
             self.offset = offset
 
 
-def bsread_zmq_rpc(address,request):
+def zmq_rpc(address, request):
     ctx = zmq.Context()
     sock = zmq.Socket(ctx, zmq.REQ)
     sock.connect(address)
 
-    ##Normal strings indicate that the request is already JSON encoded
-    if(type(request)==str):
+    # Normal strings indicate that the request is already JSON encoded
+    if type(request) == str:
         sock.send_string(request)
     else:
         sock.send_string(json.dumps(request))
@@ -42,17 +42,21 @@ def bsread_zmq_rpc(address,request):
 
     return response
 
+
 def get_introspect(address):
     request = {"cmd":"introspect"}
-    response = bsread_zmq_rpc(address, json.dumps(request))
+    response = zmq_rpc(address, json.dumps(request))
     
     print("Available channels: ")
     for channel in response["channels"]:
-        print("\t{}".format(channel))
+        print(("\t{}".format(channel)))
 
     print("\nCurrent configuration")
-    for channel in response["config"]["channels"]:
-        print("\t{:50.50} MOD:{:3} OFF:{}".format(channel["name"],channel["modulo"],channel["offset"]))
+    if response["config"]["channels"]:
+        for channel in response["config"]["channels"]:
+            print(("\t{:50.50} MOD:{:3} OFF:{}".format(channel["name"],channel["modulo"],channel["offset"])))
+    else:
+        print('\t-')
 
     return response
 
@@ -70,7 +74,7 @@ def configure(address, configuration_string):
     logger.info("Configuring: ", address)
     logger.info("Configuration: ", configuration_string)
 
-    response = bsread_zmq_rpc(address, configuration_string)
+    response = zmq_rpc(address, configuration_string)
 
     return response
 
@@ -103,50 +107,50 @@ def read_configuration():
 
             configuration.channels.append(Channel(name, modulo=modulo, offset=offset))
         except ValueError:
-            print("modulo (float) or offset (int) specified in wrong type - ignoring channel: "+name)
+            print(("modulo (float) or offset (int) specified in wrong type - ignoring channel: "+name))
 
     return configuration.json()
 
 
 def main():
     import argparse
-    from cli_utils import EnvDefault
+    from .cli_utils import EnvDefault
 
     parser = argparse.ArgumentParser(description='BSREAD configuration utility')
     parser.add_argument('-c', '--channel', type=str, action=EnvDefault, envvar='BS_CONFIG', help='Address to configure, has to be in format "tcp://<address>:<port>"')
     parser.add_argument('-a', '--all', action='count', help='Stream all channels of the IOC')
     parser.add_argument('-i', '--introspect', action='count', help='Request introspection from IOC')
+    parser.add_argument('-v', '--verbose', action='count', help='Verbose output to show configuration json string')
 
     arguments = parser.parse_args()
     address = arguments.channel
 
     import re
     if not re.match('^tcp://', address):
-        print 'Protocol not defined for address - Using tcp://'
+        print('Protocol not defined for address - Using tcp://')
         address = 'tcp://' + address
     if not re.match('.*:[0-9]+$', address):
-        print 'Port not defined for address - Using 10000'
+        print('Port not defined for address - Using 10000')
         address += ':10000'
     if not re.match('^tcp://[a-zA-Z\.\-0-9]+:[0-9]+$', address):
-        print 'Invalid URI - ' + address
+        print('Invalid URI - ' + address)
         exit(-1)
 
-    
     # Introspect mode? 
     if arguments.introspect:
-        response=get_introspect(address)
+        response = get_introspect(address)
     # Check if to configure all channels
     elif arguments.all:
         # Sending special JSON to the IOC to configure all channels to be streamed out
         configuration_string = json.dumps({"grep": 2})
         response = configure(address, configuration_string)
-    #Normal config
+    # Normal config
     else:
         configuration_string = read_configuration()
         response = configure(address, configuration_string)
 
-
-    print(response)
+    if arguments.verbose:
+        print(response)
 
 
 if __name__ == '__main__':
