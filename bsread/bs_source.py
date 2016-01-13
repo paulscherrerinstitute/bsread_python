@@ -1,11 +1,16 @@
+import create_test_db
 
-def create_test_ioc_config(ioc_prefix, port):
+
+def create_test_ioc_config(ioc_prefix, port, dbs_to_load=None):
 
     startup_script = """require "bsread"
 runScript $(bsread_DIR)/bsread_sim.cmd, "SYS={prefix},BSREAD_PORT={port}"
 dbLoadRecords("bsread_test.template","P={prefix}-FAKEDATA")
     """.format(port=port, prefix=ioc_prefix.upper())
     # print startup_script
+
+    if(dbs_to_load):
+        startup_script = startup_script + '\ndbLoadRecords("{filename}","P={prefix}-FAKEDATA")\n'.format(filename=dbs_to_load,prefix=ioc_prefix.upper())
 
     with open("startup.cmd", 'w') as f:
         f.write(startup_script)
@@ -60,6 +65,18 @@ def main():
     parser_create = subparsers.add_parser('create', help="Create configuration files for a test ioc")
     parser_create.add_argument('prefix', type=str, help='ioc prefix')
     parser_create.add_argument('port', type=int, help='ioc stream port')
+    parser_create.add_argument('--db', type=str, help="""
+
+    create additional test database with specified number of scalars and waveforms 
+    using generator strings (e.g. 'scalar(10);waveform(10,1024)')
+
+    input commands must be delimited with ';'. 
+
+    Available input commands: 
+        scalar([no of scalars])
+        waveform([no of waveforms],[size of waveform])
+
+    """)
 
     parser_env = subparsers.add_parser('env', help='Display environment variable for easy use of bs command')
     parser_env.add_argument('ioc', type=str, help='ioc name')
@@ -74,7 +91,11 @@ def main():
         exit(0)
 
     if arguments.subparser == 'create':
-        create_test_ioc_config(arguments.prefix, arguments.port)
+        if(arguments.db):
+            create_test_db.create_db(arguments.db,"test.template")
+            create_test_ioc_config(arguments.prefix, arguments.port,"test.template")
+        else:
+            create_test_ioc_config(arguments.prefix, arguments.port)
 
     if arguments.subparser == 'clear_env':
         print_unset_environment()
