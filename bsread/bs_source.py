@@ -1,4 +1,4 @@
-import create_test_db
+from . import create_test_db
 
 
 def create_test_ioc_config(ioc_prefix, port, dbs_to_load=None):
@@ -56,12 +56,12 @@ def main():
     parser_create.add_argument('port', type=int, help='ioc stream port')
     parser_create.add_argument('--db', type=str, help="""
 
-    create additional test database with specified number of scalars and waveforms 
+    create additional test database with specified number of scalars and waveforms
     using generator strings (e.g. 'scalar(10);waveform(10,1024)')
 
-    input commands must be delimited with ';'. 
+    input commands must be delimited with ';'.
 
-    Available input commands: 
+    Available input commands:
         scalar([no of scalars])
         waveform([no of waveforms],[size of waveform])
 
