@@ -54,6 +54,22 @@ timestamp_offset = channel_value.timestamp_offset
 
 The `message.data` dictionary is an [OrderedDict](https://docs.python.org/2/library/collections.html#collections.OrderedDict). Entries will always be sorted by the sequence they are added, i.e. the order will be the same as the order the channels are configured on the IOC.
 
+
+## Generating Streams
+For various purposes (e.g. testing) beam synchronous streams can be easily created as follows:
+
+```Python
+from bsread import Generator
+generator = Generator()
+generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
+generator.add_channel('ABCD', lambda x: x*10.0)
+generator.add_channel('XYZW', lambda x: 'hello', metadata={'type': 'string'})
+generator.add_channel('WWW', lambda x: [1.0, 2.0, 3.0, 4.0], metadata={'type': 'float64', 'shape': [4]})
+generator.generate_stream()
+```
+
+The `add_channel` function is used to register functions to generate values for pulses. The registered functions need to accept one input parameter which will be filled with the pulse_id. The optional parameter for the `add_channel` function is metadata. As soon as the function does not return an float/double or the shape is not [1] the metadata needs to be set.
+
 # Development
 
 ## Dependencies

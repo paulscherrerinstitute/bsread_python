@@ -139,54 +139,32 @@ class Generator:
             count = len(channels)-1  # use of count to make value timestamps unique and to detect last item
             for name, channel in self.channels.items():
                 value = channel.function(pulse_id)
-                stream.send(struct.pack('d', value), send_more=True)
+
+                stream.send(get_bytearray(value), send_more=True)
                 stream.send(struct.pack('q', current_timestamp_epoch) + struct.pack('q', count), send_more=(count > 0))
                 count -= 1
-
-
-            # for index in range(0, 200):
-            #     channel = dict()
-            #     channel['encoding'] = "little"
-            #     channel['name'] = "CHANNEL-%d" % index
-            #     channel['type'] = "double"
-            #     channels.append(channel)
-            #
-            # channel = dict()
-            # channel['encoding'] = "little"
-            # channel['name'] = "CHANNEL-STRING"
-            # channel['type'] = "string"
-            # channels.append(channel)
-            #
-            # channel = dict()
-            # channel['encoding'] = "little"
-            # channel['name'] = "CHANNEL-ARRAY_1"
-            # channel['type'] = "double"
-            # channel['shape'] = [300]
-            # channels.append(channel)
-
-            # for index in range(0, 200):
-            #     self.socket.send(struct.pack('d', value+index), zmq.SNDMORE)  # Data
-            #     self.socket.send(struct.pack('q', current_timestamp) + struct.pack('q', 0), zmq.SNDMORE)  # Timestamp
-            #     value += 0.01
-            #
-            # self.socket.send("hello-%d" % value, zmq.SNDMORE)  # Data
-            # self.socket.send(struct.pack('q', current_timestamp) + struct.pack('q', 0), zmq.SNDMORE)  # Timestamp
-            #
-            # # lists need to be handled
-            # msg = bytearray()
-            # for index in xrange(0,300,1):
-            # 	grad=(3.1415*(index)/float(200))+pulse_id/float(100)
-            # 	msg.extend(struct.pack('d',math.sin((grad))))
-            #
-            #
-            # self.socket.send(msg, zmq.SNDMORE)  # Data
-            # self.socket.send(struct.pack('q', current_timestamp) + struct.pack('q', 0), zmq.SNDMORE)  # Timestamp
 
             pulse_id += 1
 
             # Todo this function need to be triggered by a timer to really have 10ms inbetween
             # Send out every 10ms
             time.sleep(0.01)
+
+
+def get_bytearray(value):
+    if isinstance(value, float):
+        return struct.pack('d', value)
+    elif isinstance(value, int):
+        return struct.pack('i', value)
+    elif isinstance(value, str):
+        return value.encode('utf-8')
+    elif isinstance(value, list):
+        message = bytearray()
+        for v in value:
+            message.extend(get_bytearray(v))
+        return message
+    else:
+        return bytearray()
 
 
 class Channel:

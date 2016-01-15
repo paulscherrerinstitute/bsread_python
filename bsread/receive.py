@@ -2,9 +2,12 @@ import mflow
 # from .handlers.bsr_m_1_0 import Handler
 from .handlers.compact import Handler
 import zmq
+import numpy
 
 
 def receive(source, clear=False):
+    numpy.set_printoptions(threshold=5)
+    numpy.set_printoptions(linewidth=100)
     receiver = mflow.connect(source, conn_type="connect", mode=zmq.PULL)
     handler = Handler()
 
