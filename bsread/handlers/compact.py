@@ -75,52 +75,56 @@ def get_receive_functions(data_header):
 
     functions = []
     for channel in data_header['channels']:
+        shape = None
+        if 'shape' in channel:
+            shape = channel['shape']
+
         if 'type' in channel:
             if channel['type'].lower() == 'double':
-                functions.append((channel, NumberProvider('f8')))
+                functions.append((channel, NumberProvider('f8', shape=shape)))
             elif channel['type'].lower() == 'float':
-                functions.append((channel, NumberProvider('f4')))
+                functions.append((channel, NumberProvider('f4', shape=shape)))
             elif channel['type'].lower() == 'integer':
-                functions.append((channel, NumberProvider('i4')))
+                functions.append((channel, NumberProvider('i4', shape=shape)))
             elif channel['type'].lower() == 'long':
-                functions.append((channel, NumberProvider('i4')))
+                functions.append((channel, NumberProvider('i4', shape=shape)))
             elif channel['type'].lower() == 'ulong':
-                functions.append((channel, NumberProvider('u4')))
+                functions.append((channel, NumberProvider('u4', shape=shape)))
             elif channel['type'].lower() == 'short':
-                functions.append((channel, NumberProvider('i2')))
+                functions.append((channel, NumberProvider('i2', shape=shape)))
             elif channel['type'].lower() == 'ushort':
-                functions.append((channel, NumberProvider('u2')))
+                functions.append((channel, NumberProvider('u2', shape=shape)))
 
             elif channel['type'].lower() == 'string':
                 functions.append((channel, StringProvider()))
 
             elif channel['type'].lower() == 'int8':
-                functions.append((channel, NumberProvider('i1')))
+                functions.append((channel, NumberProvider('i1', shape=shape)))
             elif channel['type'].lower() == 'uint8':
-                functions.append((channel, NumberProvider('u1')))
+                functions.append((channel, NumberProvider('u1', shape=shape)))
             elif channel['type'].lower() == 'int16':
-                functions.append((channel, NumberProvider('i2')))
+                functions.append((channel, NumberProvider('i2', shape=shape)))
             elif channel['type'].lower() == 'uint16':
-                functions.append((channel, NumberProvider('u2')))
+                functions.append((channel, NumberProvider('u2', shape=shape)))
             elif channel['type'].lower() == 'int32':
-                functions.append((channel, NumberProvider('i4')))
+                functions.append((channel, NumberProvider('i4', shape=shape)))
             elif channel['type'].lower() == 'uint32':
-                functions.append((channel, NumberProvider('u4')))
+                functions.append((channel, NumberProvider('u4', shape=shape)))
             elif channel['type'].lower() == 'int64':
-                functions.append((channel, NumberProvider('i8')))
+                functions.append((channel, NumberProvider('i8', shape=shape)))
             elif channel['type'].lower() == 'uint64':
-                functions.append((channel, NumberProvider('u8')))
+                functions.append((channel, NumberProvider('u8', shape=shape)))
             elif channel['type'].lower() == 'float32':
-                functions.append((channel, NumberProvider('f4')))
+                functions.append((channel, NumberProvider('f4', shape=shape)))
             elif channel['type'].lower() == 'float64':
-                functions.append((channel, NumberProvider('f8')))
+                functions.append((channel, NumberProvider('f8', shape=shape)))
 
             else:
                 print("Unknown data type. Trying to parse as 64-bit floating-point number.")
-                functions.append((channel, NumberProvider('f8')))
+                functions.append((channel, NumberProvider('f8', shape=shape)))
         else:
             print("'type' channel field not found. Trying to parse as 64-bit floating-point number.")
-            functions.append((channel, NumberProvider('f8')))
+            functions.append((channel, NumberProvider('f8', shape=shape)))
 
         # Define endianness of data
         # > - big endian
@@ -135,13 +139,16 @@ def get_receive_functions(data_header):
 
 # numpy type definitions can be found at: http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html
 class NumberProvider:
-    def __init__(self, dtype):
+    def __init__(self, dtype, shape=None):
         self.dtype = dtype
+        self.shape = shape
 
     def get_value(self, raw_data, endianness='<'):
         try:
             value = numpy.fromstring(raw_data, dtype=endianness+self.dtype)
             if len(value) > 1:
+                if self.shape:
+                    value = value.reshape(self.shape)
                 return value
             else:
                 return value[0]
