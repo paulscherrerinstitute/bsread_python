@@ -99,9 +99,9 @@ def get_receive_functions(data_header):
                 functions.append((channel, StringProvider()))
 
             elif channel['type'].lower() == 'int8':
-                functions.append((channel, NumberProvider('i', shape=shape)))
+                functions.append((channel, NumberProvider('i1', shape=shape)))
             elif channel['type'].lower() == 'uint8':
-                functions.append((channel, NumberProvider('u', shape=shape)))
+                functions.append((channel, NumberProvider('u1', shape=shape)))
             elif channel['type'].lower() == 'int16':
                 functions.append((channel, NumberProvider('i2', shape=shape)))
             elif channel['type'].lower() == 'uint16':
