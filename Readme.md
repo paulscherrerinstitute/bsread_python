@@ -58,7 +58,7 @@ The `message.data` dictionary is an [OrderedDict](https://docs.python.org/2/libr
 ## Generating Streams
 For various purposes (e.g. testing) beam synchronous streams can be easily created as follows:
 
-```Python
+```python
 from bsread import Generator
 generator = Generator()
 generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})

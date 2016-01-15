@@ -1,4 +1,4 @@
-from .bsread import Generator
+from bsread import Generator
 import math
 
 
@@ -21,6 +21,7 @@ def image(pulse_id):
         image.append([1.0, 2.0, 3.0, 4.0])
     return image
 
+
 if __name__ == "__main__":
     generator = Generator()
     generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
@@ -32,3 +33,4 @@ if __name__ == "__main__":
     generator.add_channel('WAVE', waveform, metadata={'shape': [30]})
     generator.add_channel('IMAGE', image, metadata={'shape': [2, 4]})
     generator.generate_stream()
+
