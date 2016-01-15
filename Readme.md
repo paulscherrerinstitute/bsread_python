@@ -70,6 +70,8 @@ generator.generate_stream()
 
 The `add_channel` function is used to register functions to generate values for pulses. The registered functions need to accept one input parameter which will be filled with the pulse_id. The optional parameter for the `add_channel` function is metadata. As soon as the function does not return an float/double or the shape is not [1] the metadata needs to be set.
 
+A more complete example can be fount at [examples/Readme.md]
+
 # Development
 
 ## Dependencies
