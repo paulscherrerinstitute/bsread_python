@@ -163,7 +163,7 @@ def get_bytearray(value):
         for v in value:
             message.extend(get_bytearray(v))
         return message
-    elif isinstance(value, bytearray)
+    elif isinstance(value, bytearray):
         return value
     else:
         return bytearray()
