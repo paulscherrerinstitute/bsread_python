@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     generator = Generator()
     generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
-    generator.add_channel('ABC_LITTLE', lambda x: struct.pack('>I', x), metadata={'type': 'int32', 'encoding': 'big'})
+    generator.add_channel('ABC_BIG', lambda x: struct.pack('>i', x), metadata={'type': 'int32', 'encoding': 'big'})
     generator.add_channel('ABCD', lambda x: x*10.0)
     generator.add_channel('ABCDF', lambda x: x*100.0)
     generator.add_channel('XYZ', lambda x: x*200.0)
