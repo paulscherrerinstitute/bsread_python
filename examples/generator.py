@@ -1,5 +1,6 @@
 from bsread import Generator
 import math
+import struct
 
 
 def waveform(pulse_id):
@@ -22,12 +23,15 @@ def image(pulse_id):
     return image
 
 
+def big_endian_number(pulse_id):
+    return struct.pack('>i', pulse_id)
+
+
 if __name__ == "__main__":
-    import struct
 
     generator = Generator()
     generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
-    generator.add_channel('ABC_BIG', lambda x: struct.pack('>i', x), metadata={'type': 'int32', 'encoding': 'big'})
+    generator.add_channel('ABC_BIG', big_endian_number, metadata={'type': 'int32', 'encoding': 'big'})
     generator.add_channel('ABCD', lambda x: x*10.0)
     generator.add_channel('ABCDF', lambda x: x*100.0)
     generator.add_channel('XYZ', lambda x: x*200.0)
