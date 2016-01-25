@@ -24,7 +24,8 @@ def image(pulse_id):
 
 
 def big_endian_number(pulse_id):
-    return struct.pack('>i', pulse_id)
+    big_endian_bytes = struct.pack('>i', pulse_id)
+    return big_endian_bytes
 
 
 if __name__ == "__main__":
