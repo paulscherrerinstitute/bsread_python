@@ -107,7 +107,7 @@ class Generator:
 
         # Data header
         data_header = dict()
-        data_header['htype'] = "bsr_d-1.0"
+        data_header['htype'] = "bsr_d-1.1"
         channels = []
 
         for name, channel in self.channels.items():
@@ -118,7 +118,7 @@ class Generator:
 
         # Main header
         main_header = dict()
-        main_header['htype'] = "bsr_m-1.0"
+        main_header['htype'] = "bsr_m-1.1"
         main_header['hash'] = hashlib.md5(data_header_json.encode('utf-8')).hexdigest()
 
         pulse_id = self.start_pulse_id
