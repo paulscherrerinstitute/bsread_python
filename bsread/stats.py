@@ -19,8 +19,8 @@ def print_message_data(message_data):
     print(message_print_format.format("NAME", "VAL", "TIMESTAMP"))
     print("_"*80)
 
-    global_timestamp = message_data.global_timestamp_offset
-    global_timestamp_ns = message_data.global_timestamp
+    global_timestamp = message_data.global_timestamp
+    global_timestamp_ns = message_data.global_timestamp_offset
     pulse_id = message_data.pulse_id
 
     try:
