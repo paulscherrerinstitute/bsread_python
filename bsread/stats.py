@@ -5,12 +5,20 @@ import time
 import datetime
 import argparse
 import logging
+from collections import namedtuple
 
 logger = logging.getLogger(__name__)
 
 message_print_format = "{:40.40}| {:25.25} {:30.30}"
 
 previous_pulse_id = 0
+
+
+class Statistics:
+    def __init__(self):
+        self.missed_pulse_ids = 0
+        self.duplicated_pulse_ids = 0
+        self.reverted_pulse_ids = 0
 
 
 def print_message_data(message_data):
@@ -49,29 +57,33 @@ def print_message_data(message_data):
     print("global_timestamp: %s" % str(date_g))
 
 
-def data_consistency_check(message_data):
+def data_consistency_check(message_data, statistics):
     """
     Check 'consistency' of messages, i.e. whether pulse_id increases by one
     Args:
         message_data: Current message
+        statistics: Current statistics
 
-    Returns: Messages missed between last and current message - i.e. lost/missed messages
+    Returns: Metadata regarding messages missed between last and current message - i.e. lost/missed messages etc.
 
     """
     global previous_pulse_id
     current_pulse_id = message_data.pulse_id
 
-    messages_missed = 0
-
     if not previous_pulse_id:
-        pass
+        previous_pulse_id = current_pulse_id
     elif previous_pulse_id + 1 != current_pulse_id:
-        logger.warning("Skipped message detected, expected {} but received {}".format(previous_pulse_id + 1, current_pulse_id))
-        messages_missed = current_pulse_id - previous_pulse_id - 1
-
-    previous_pulse_id = current_pulse_id
-    return messages_missed
-
+        if current_pulse_id == previous_pulse_id:
+            statistics.duplicated_pulse_ids += 1
+        elif current_pulse_id > previous_pulse_id:
+            logger.warning("Skipped message detected, expected {} but received {}".format(previous_pulse_id + 1, current_pulse_id))
+            statistics.missed_pulse_ids = current_pulse_id - previous_pulse_id - 1
+            previous_pulse_id = current_pulse_id
+        else:
+            # current pulse id is smaller than previous one
+            statistics.reverted_pulse_ids += 1
+    else:
+        previous_pulse_id = current_pulse_id
 
 def main():
 
@@ -116,7 +128,7 @@ def main():
 
     messages_received = 0
     previous_messages_received = 0
-    messages_missed = 0
+    statistics = Statistics()
 
     previous_time = time.time()
     previous_total_bytes_received = 0
@@ -127,7 +139,7 @@ def main():
         total_bytes_received = message.statistics.total_bytes_received
 
         # Check consistency
-        messages_missed += data_consistency_check(message.data)
+        data_consistency_check(message.data, statistics)
 
         if arguments.n != 0 and (messages_received % arguments.n) == 0:
 
@@ -153,7 +165,9 @@ def main():
             print("Message Rate: {} Hz".format(message_rate))
             print("Data Received: {} Mb".format(total_bytes_received/1024.0/1024.0))
             print("Receive Rate: {} Mbps".format(receive_rate/1024/1024*8))
-            print("Messages Missed: {} ".format(messages_missed))
+            print("Missed Pulse_IDs: {} ".format(statistics.missed_pulse_ids))
+            print("Duplicated Pulse_IDs: {} ".format(statistics.duplicated_pulse_ids))
+            print("Reverted Pulse_IDs: {} ".format(statistics.reverted_pulse_ids))
         messages_received += 1
 
 if __name__ == "__main__":

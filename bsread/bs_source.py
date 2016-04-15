@@ -115,21 +115,21 @@ def main():
     if arguments.subparser == 'env':
         print_set_environment(arguments.ioc, arguments.port)
         exit(0)
-
-    if arguments.subparser == 'create':
+    elif arguments.subparser == 'create':
         if(arguments.db):
             create_test_db.create_db(arguments.db,"test.template")
             create_test_ioc_config(arguments.prefix, arguments.port,"test.template")
         else:
             create_test_db.create_db("scalar(40); waveform(10,124)","test.template")
             create_test_ioc_config(arguments.prefix, arguments.port)
-
-    if arguments.subparser == 'run':
+    elif arguments.subparser == 'run':
         generate_stream(int(arguments.port))
-
-    if arguments.subparser == 'clear_env':
+    elif arguments.subparser == 'clear_env':
         print_unset_environment()
         exit(0)
+    else:
+        parser.print_help()
+        exit(1)
 
 
 if __name__ == "__main__":
