@@ -58,7 +58,27 @@ def get_introspect(address):
     else:
         print('\t-')
 
+    print("BSREAD parameters:")
+
+    if "inhibit" in response:
+        print("\tInhibit: ",response["inhibit"])
+    else:
+        print("\tInhibit: not specified by server :(")
+
     return response
+
+
+def set_inhibit(address,inhibit):
+    if not isinstance(inhibit, bool):
+        raise TypeError("Inhibit must be boolean")
+
+
+    request = {"cmd":"inhibit","val":inhibit}
+    print("sent", json.dumps(request))
+    response = zmq_rpc(address, json.dumps(request))
+    print("response",response)
+
+
 
 
 def configure(address, configuration_string):
@@ -120,6 +140,8 @@ def main():
     parser.add_argument('-c', '--channel', type=str, action=EnvDefault, envvar='BS_CONFIG', help='Address to configure, has to be in format "tcp://<address>:<port>"')
     parser.add_argument('-a', '--all', action='count', help='Stream all channels of the IOC')
     parser.add_argument('-i', '--introspect', action='count', help='Request introspection from IOC')
+    parser.add_argument('-I', '--inhibit', type=int, default=None, help='Set inhibit bit')
+
     parser.add_argument('-v', '--verbose', action='count', help='Verbose output to show configuration json string')
 
     arguments = parser.parse_args()
@@ -144,6 +166,8 @@ def main():
         # Sending special JSON to the IOC to configure all channels to be streamed out
         configuration_string = json.dumps({"grep": 2})
         response = configure(address, configuration_string)
+    elif arguments.inhibit != None:
+        response = set_inhibit(address, bool(arguments.inhibit))
     # Normal config
     else:
         configuration_string = read_configuration()
