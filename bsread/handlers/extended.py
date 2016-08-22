@@ -59,7 +59,7 @@ class Handler:
             msg_data_size += len(raw_data)
 
             if raw_data:
-                endianness = self.receive_functions[counter][0]["encoding"];
+                endianness = self.receive_functions[counter][0]["encoding"]
                 data.append(self.receive_functions[counter][1].get_value(raw_data, endianness=endianness))
 
                 if receiver.has_more():

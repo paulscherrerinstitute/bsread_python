@@ -44,7 +44,7 @@ def zmq_rpc(address, request):
 
 
 def get_introspect(address):
-    request = {"cmd":"introspect"}
+    request = {"cmd": "introspect"}
     response = zmq_rpc(address, json.dumps(request))
     
     print("Available channels: ")
@@ -54,31 +54,28 @@ def get_introspect(address):
     print("\nCurrent configuration")
     if response["config"]["channels"]:
         for channel in response["config"]["channels"]:
-            print(("\t{:50.50} MOD:{:3} OFF:{}".format(channel["name"],channel["modulo"],channel["offset"])))
+            print(("\t{:50.50} MOD:{:3} OFF:{}".format(channel["name"], channel["modulo"], channel["offset"])))
     else:
         print('\t-')
 
     print("BSREAD parameters:")
 
     if "inhibit" in response:
-        print("\tInhibit: ",response["inhibit"])
+        print("\tInhibit: ", response["inhibit"])
     else:
         print("\tInhibit: not specified by server :(")
 
     return response
 
 
-def set_inhibit(address,inhibit):
+def set_inhibit(address, inhibit):
     if not isinstance(inhibit, bool):
         raise TypeError("Inhibit must be boolean")
 
-
-    request = {"cmd":"inhibit","val":inhibit}
+    request = {"cmd": "inhibit", "val": inhibit}
     print("sent", json.dumps(request))
     response = zmq_rpc(address, json.dumps(request))
-    print("response",response)
-
-
+    print("response", response)
 
 
 def configure(address, configuration_string):
@@ -166,7 +163,7 @@ def main():
         # Sending special JSON to the IOC to configure all channels to be streamed out
         configuration_string = json.dumps({"grep": 2})
         response = configure(address, configuration_string)
-    elif arguments.inhibit != None:
+    elif arguments.inhibit is not None:
         response = set_inhibit(address, bool(arguments.inhibit))
     # Normal config
     else:

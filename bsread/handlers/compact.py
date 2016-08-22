@@ -23,7 +23,6 @@ class Handler:
         else:
             raise RuntimeError("Invalid timestamp format in BSDATA header message {}".format(message))
 
-        
         message.global_timestamp_offset = header['global_timestamp']['ns']
 
         # Receiver data header
@@ -59,7 +58,7 @@ class Handler:
             channel_value = Value()
 
             if raw_data:
-                endianness = self.receive_functions[counter][0]["encoding"];
+                endianness = self.receive_functions[counter][0]["encoding"]
                 channel_value.value = self.receive_functions[counter][1].get_value(raw_data, endianness=endianness)
 
             if receiver.has_more():

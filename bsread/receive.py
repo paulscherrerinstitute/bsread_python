@@ -25,7 +25,9 @@ def receive(source, clear=False):
         # separator = ', '
 
         if message.format_changed or clear:
-            keys = "pulse_id" + separator + "global_timestamp" + separator + "global_timestamp_offset"  # Have pulse_id, ... in first column
+            # Have pulse_id, ... in first column
+            keys = "pulse_id" + separator + "global_timestamp" + separator + "global_timestamp_offset"
+
             for key in message.data.keys():
                 if keys:
                     keys = keys + separator + key
@@ -34,7 +36,8 @@ def receive(source, clear=False):
             print(keys)
 
         # pprint.pprint(message.data.values())
-        values = str(message.pulse_id) + separator + str(message.global_timestamp) + separator + str(message.global_timestamp_offset)  # Have pulse_id in first column
+        # Have pulse_id in first column
+        values = str(message.pulse_id) + separator + str(message.global_timestamp) + separator + str(message.global_timestamp_offset)
         for value in message.data.values():
             if values:
                 values = values + separator + str(value.value)
@@ -49,7 +52,8 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description='bsread receive utility')
 
-    parser.add_argument('-s', '--source', action=EnvDefault, envvar='BS_SOURCE', type=str, help='Source address - format "tcp://<address>:<port>"')
+    parser.add_argument('-s', '--source', action=EnvDefault,
+                        envvar='BS_SOURCE', type=str, help='Source address - format "tcp://<address>:<port>"')
     parser.add_argument('-m', '--monitor', action='count', help='Monitor mode / clear the screen on every message')
 
     arguments = parser.parse_args()

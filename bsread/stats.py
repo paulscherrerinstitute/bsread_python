@@ -85,6 +85,7 @@ def data_consistency_check(message_data, statistics):
     else:
         previous_pulse_id = current_pulse_id
 
+
 def main():
 
     # Argument parsing

@@ -8,8 +8,8 @@ runScript $(bsread_DIR)/bsread_sim.cmd, "SYS={prefix},BSREAD_PORT={port}"
 
     # print startup_script
 
-    if(dbs_to_load):
-        startup_script = startup_script + '\ndbLoadRecords("{filename}","P={prefix}-FAKEDATA")\n'.format(filename=dbs_to_load,prefix=ioc_prefix.upper())
+    if dbs_to_load:
+        startup_script = startup_script + '\ndbLoadRecords("{filename}","P={prefix}-FAKEDATA")\n'.format(filename=dbs_to_load, prefix=ioc_prefix.upper())
 
     with open("startup.cmd", 'w') as f:
         f.write(startup_script)
@@ -116,11 +116,11 @@ def main():
         print_set_environment(arguments.ioc, arguments.port)
         exit(0)
     elif arguments.subparser == 'create':
-        if(arguments.db):
-            create_test_db.create_db(arguments.db,"test.template")
-            create_test_ioc_config(arguments.prefix, arguments.port,"test.template")
+        if arguments.db:
+            create_test_db.create_db(arguments.db, "test.template")
+            create_test_ioc_config(arguments.prefix, arguments.port, "test.template")
         else:
-            create_test_db.create_db("scalar(40); waveform(10,124)","test.template")
+            create_test_db.create_db("scalar(40); waveform(10,124)", "test.template")
             create_test_ioc_config(arguments.prefix, arguments.port)
     elif arguments.subparser == 'run':
         generate_stream(int(arguments.port))

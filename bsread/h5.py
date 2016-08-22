@@ -90,7 +90,8 @@ def receive(source, file_name):
                         shape = [1] + channel['shape']
                         maxshape = [None] + channel['shape']
                         print(shape, "  ", maxshape, channel['name'])
-                        writer.add_dataset('/'+channel['name']+'/data', dataset_group_name='data', shape=shape, maxshape=maxshape, dtype=dtype)
+                        writer.add_dataset('/'+channel['name']+'/data', dataset_group_name='data', shape=shape,
+                                           maxshape=maxshape, dtype=dtype)
                     else:
                         writer.add_dataset('/'+channel['name']+'/data', dataset_group_name='data', dtype=dtype)
 

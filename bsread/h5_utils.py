@@ -1,5 +1,6 @@
 import h5py
 
+
 class Struct:
     """
     The recursive class for building and representing objects of an hdf5 tree
@@ -53,10 +54,10 @@ class StructSOnly:
         return self.__dict__[val]
 
 
-def printStructure(x, level):
+def print_structure(x, level):
     for a, b in x.__dict__.items():
         if isinstance(b, StructSOnly):
             print(' ' * level, a)
-            printStructure(b, level + 4)
+            print_structure(b, level + 4)
         else:
             print(' ' * level, a, '[' + b + ']')
