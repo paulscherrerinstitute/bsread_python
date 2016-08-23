@@ -7,6 +7,8 @@ import hashlib
 import math
 import struct
 
+from .handlers.compact import Handler
+
 
 PULL = zmq.PULL
 PUSH = zmq.PUSH
@@ -17,26 +19,46 @@ CONNECT = "connect"
 BIND = "bind"
 
 
+# Support of "with" statement
+class source:
+
+    def __init__(self, host='', port=9999, config_port=None, conn_type=CONNECT, mode=PULL):
+        self.source = Source(host=host, port=port, config_port=config_port, conn_type=conn_type, mode=mode)
+
+    def __enter__(self):
+        self.source.connect()
+        return self.source
+
+    def __exit__(self, type, value, traceback):
+        self.source.disconnect()
+
+
 class Source:
 
-    def __init__(self, host='', port=9999, config_port=None):
+    def __init__(self, host='', port=9999, config_port=None, conn_type=CONNECT, mode=PULL):
         if not config_port:
             config_port = port + 1
 
         self.host = host
         self.port = port
         self.config_port = config_port
+        self.conn_type = conn_type
+        self.mode = mode
 
         self.address = 'tcp://'+self.host+':'+str(self.port)
         self.config_address = 'tcp://'+self.host+':'+str(self.config_port)
 
-    def connect(self, address=None, conn_type=CONNECT, mode=PULL):
+        self.stream = None
+        self.handler = Handler()
 
-        if address:
-            self.address = address
+    def connect(self):
+        self.stream = mflow.connect(self.address, conn_type=self.conn_type, mode=self.mode)
 
-        stream = mflow.connect(self.address, conn_type=conn_type, mode=mode)
-        return Stream(stream)
+    def disconnect(self):
+        self.stream.disconnect()
+
+    def receive(self):
+        return self.stream.receive(handler=self.handler.receive)
 
     def request(self, channels=[], address=None, all_channels=False):
 
@@ -59,23 +81,6 @@ class Source:
 
         from . import config
         config.zmq_rpc(self.config_address, json.dumps(request))
-
-
-#  Convenience class to hide the explicit specification of the receive handler to use
-class Stream:
-
-    def __init__(self, stream):
-
-        from .handlers.compact import Handler
-
-        self.stream = stream
-        self.handler = Handler()
-
-    def receive(self):
-        return self.stream.receive(handler=self.handler.receive)
-
-    def disconnect(self):
-        self.stream.disconnect()
 
 
 class Generator:
