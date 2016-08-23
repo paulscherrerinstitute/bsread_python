@@ -77,7 +77,7 @@ def data_consistency_check(message_data, statistics):
             statistics.duplicated_pulse_ids += 1
         elif current_pulse_id > previous_pulse_id:
             logger.warning("Skipped message detected, expected {} but received {}".format(previous_pulse_id + 1, current_pulse_id))
-            statistics.missed_pulse_ids = current_pulse_id - previous_pulse_id - 1
+            statistics.missed_pulse_ids += current_pulse_id - previous_pulse_id - 1
             previous_pulse_id = current_pulse_id
         else:
             # current pulse id is smaller than previous one
