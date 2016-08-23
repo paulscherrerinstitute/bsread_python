@@ -86,12 +86,13 @@ class Source:
 
 class Generator:
 
-    def __init__(self, port=9999, start_pulse_id=0):
+    def __init__(self, port=9999, start_pulse_id=0, block=True):
 
         from collections import OrderedDict
 
         self.start_pulse_id = start_pulse_id
         self.port = port
+        self.block = block
         self.channels = OrderedDict()
 
     def add_channel(self, name, function, metadata=None):
@@ -139,15 +140,15 @@ class Generator:
             main_header['global_timestamp'] = {"epoch": current_timestamp_epoch, "ns": current_timestamp_ns}
 
             # Send headers
-            stream.send(json.dumps(main_header).encode('utf-8'), send_more=True)  # Main header
-            stream.send(data_header_json.encode('utf-8'), send_more=True)  # Data header
+            stream.send(json.dumps(main_header).encode('utf-8'), send_more=True, block=self.block)  # Main header
+            stream.send(data_header_json.encode('utf-8'), send_more=True, block=self.block)  # Data header
 
             count = len(channels)-1  # use of count to make value timestamps unique and to detect last item
             for name, channel in self.channels.items():
                 value = channel.function(pulse_id)
 
-                stream.send(get_bytearray(value), send_more=True)
-                stream.send(struct.pack('q', current_timestamp_epoch) + struct.pack('q', count), send_more=(count > 0))
+                stream.send(get_bytearray(value), send_more=True, block=self.block)
+                stream.send(struct.pack('q', current_timestamp_epoch) + struct.pack('q', count), send_more=(count > 0), block=self.block)
                 count -= 1
 
             pulse_id += 1
