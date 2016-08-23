@@ -53,6 +53,7 @@ class Source:
 
     def connect(self):
         self.stream = mflow.connect(self.address, conn_type=self.conn_type, mode=self.mode)
+        return self  # Return self to be backward compatible
 
     def disconnect(self):
         self.stream.disconnect()
