@@ -26,17 +26,29 @@ conda install -c https://conda.anaconda.org/paulscherrerinstitute bsread
 Following code can be used to receive beam synchronous data from a source.
 
 ```python
+from bsread import source
+
+with source('ioc', 9999) as stream:
+    # source.request(['TOCK-BSREAD:SIM-PULSE'])  # configure IOC
+    while True:
+        message = stream.receive()
+        # Terminate loop at some time
+```
+
+The extended version is:
+
+```python
 from bsread import Source
 
 source = Source('ioc', 9999)
 # source.request(['TOCK-BSREAD:SIM-PULSE'])  # configure IOC
-stream = source.connect()
+source.connect()
 
 while True:
-    message = stream.receive()
+    message = source.receive()
     # Terminate loop at some time
 
-stream.disconnect()
+source.disconnect()
 ```
 
 The returned message object contains all information for one pulse. Following data is available.
