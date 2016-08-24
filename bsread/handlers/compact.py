@@ -46,6 +46,8 @@ class Handler:
                 # Interpret data header
                 self.data_header = receiver.next(as_json=True)
 
+            print(self.data_header)
+
             # If a message with ho channel information is received,
             # ignore it and return from function with no data.
             if not self.data_header['channels']:
