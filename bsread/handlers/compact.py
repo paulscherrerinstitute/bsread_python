@@ -46,8 +46,6 @@ class Handler:
                 # Interpret data header
                 self.data_header = receiver.next(as_json=True)
 
-            print(self.data_header)
-
             # If a message with ho channel information is received,
             # ignore it and return from function with no data.
             if not self.data_header['channels']:
@@ -103,50 +101,109 @@ def get_receive_functions(data_header):
 
         if 'type' in channel:
             if channel['type'].lower() == 'double':
-                functions.append((channel, NumberProvider('f8', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('f8', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('f8', shape=shape)))
             elif channel['type'].lower() == 'float':
-                functions.append((channel, NumberProvider('f4', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('f4', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('f4', shape=shape)))
             elif channel['type'].lower() == 'integer':
-                functions.append((channel, NumberProvider('i4', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('i4', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('i4', shape=shape)))
             elif channel['type'].lower() == 'long':
-                functions.append((channel, NumberProvider('i4', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('i4', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('i4', shape=shape)))
             elif channel['type'].lower() == 'ulong':
-                functions.append((channel, NumberProvider('u4', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('u4', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('u4', shape=shape)))
             elif channel['type'].lower() == 'short':
-                functions.append((channel, NumberProvider('i2', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('i2', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('i2', shape=shape)))
             elif channel['type'].lower() == 'ushort':
-                functions.append((channel, NumberProvider('u2', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('u2', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('u2', shape=shape)))
 
             elif channel['type'].lower() == 'string':
-                functions.append((channel, StringProvider()))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleStringProvider()))
+                else:
+                    functions.append((channel, StringProvider()))
 
             elif channel['type'].lower() == 'int8':
-                functions.append((channel, NumberProvider('i1', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('i1', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('i1', shape=shape)))
             elif channel['type'].lower() == 'uint8':
-                functions.append((channel, NumberProvider('u1', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('u1', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('u1', shape=shape)))
             elif channel['type'].lower() == 'int16':
-                functions.append((channel, NumberProvider('i2', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('i2', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('i2', shape=shape)))
             elif channel['type'].lower() == 'uint16':
-                functions.append((channel, NumberProvider('u2', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('u2', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('u2', shape=shape)))
             elif channel['type'].lower() == 'int32':
-                functions.append((channel, NumberProvider('i4', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('i4', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('i4', shape=shape)))
             elif channel['type'].lower() == 'uint32':
-                functions.append((channel, NumberProvider('u4', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('u4', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('u4', shape=shape)))
             elif channel['type'].lower() == 'int64':
-                functions.append((channel, NumberProvider('i8', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('i8', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('i8', shape=shape)))
             elif channel['type'].lower() == 'uint64':
-                functions.append((channel, NumberProvider('u8', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('u8', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('u8', shape=shape)))
             elif channel['type'].lower() == 'float32':
-                functions.append((channel, NumberProvider('f4', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('f4', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('f4', shape=shape)))
             elif channel['type'].lower() == 'float64':
-                functions.append((channel, NumberProvider('f8', shape=shape)))
+                if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                    functions.append((channel, BitshuffleNumberProvider('f8', shape=shape)))
+                else:
+                    functions.append((channel, NumberProvider('f8', shape=shape)))
 
             else:
-                print("Unknown data type. Trying to parse as 64-bit floating-point number.")
-                functions.append((channel, NumberProvider('f8', shape=shape)))
+                print("Unknown data type. Adding None provider.")
+                functions.append((channel, NoneProvider()))
+
         else:
-            print("'type' channel field not found. Trying to parse as 64-bit floating-point number.")
-            functions.append((channel, NumberProvider('f8', shape=shape)))
+            print("'type' channel field not found. Parse as 64-bit floating-point number (default).")
+            if 'compression' in channel and channel['compression'] == 'bitshuffle_lz4':
+                functions.append((channel, BitshuffleNumberProvider('f8', shape=shape)))
+            else:
+                functions.append((channel, NumberProvider('f8', shape=shape)))
+
 
         # Define endianness of data
         # > - big endian
@@ -178,13 +235,57 @@ class NumberProvider:
             return None
 
 
+# numpy type definitions can be found at: http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html
+class BitshuffleNumberProvider:
+    def __init__(self, dtype, shape=None):
+        self.dtype = dtype
+        self.shape = shape
+
+    def get_value(self, raw_data, endianness='<'):
+        try:
+
+            raw_data = numpy.frombuffer(raw_data, dtype=numpy.uint8)
+            # length = struct.unpack(">q", raw_data[:8].tobytes())[0]
+            return bitshuffle.decompress_lz4(raw_data[12:], shape=self.shape, dtype=numpy.dtype(endianness+self.dtype))
+        except:
+            return None
+
+
+class NoneProvider:
+    def __init__(self):
+        pass
+
+    def get_value(self, raw_data, endianness='<'):
+        # endianness does not make sens in this function
+        return None
+
+
 class StringProvider:
     def __init__(self):
         pass
 
     def get_value(self, raw_data, endianness='<'):
         # endianness does not make sens in this function
-        return raw_data.decode()
+        try:
+            return raw_data.decode()
+        except:
+            return None
+
+
+class BitshuffleStringProvider:
+    def __init__(self):
+        pass
+
+    def get_value(self, raw_data, endianness='<'):
+        # endianness does not make sens in this function
+
+        try:
+            raw_data = numpy.frombuffer(raw_data, dtype=numpy.uint8)
+            length = struct.unpack(">q", raw_data[:8].tobytes())[0]
+            byte_array = bitshuffle.decompress_lz4(raw_data[12:], shape=(length,), dtype=numpy.dtype('uint8'))
+            return byte_array.tobytes().decode()
+        except:
+            return None
 
 
 class Message:
