@@ -171,7 +171,7 @@ def main():
         response = configure(address, configuration_string)
 
     if arguments.verbose:
-        print(response)
+        print(json.dumps(response))
 
 
 if __name__ == '__main__':
