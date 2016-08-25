@@ -41,7 +41,9 @@ def receive(source, file_name):
                 for channel in data_header['channels']:
                     dtype = 'f8'
 
-                    if channel['type'].lower() == 'double':
+                    if 'type' not in channel:  # Default
+                        dtype = 'f8'
+                    elif channel['type'].lower() == 'double':
                         dtype = 'f8'
                     elif channel['type'].lower() == 'float':
                         dtype = 'f4'
@@ -77,9 +79,9 @@ def receive(source, file_name):
                     elif channel['type'].lower() == 'float64':
                         dtype = 'f8'
 
-                    elif channel['type'].lower() == 'string' or channel['type'].lower() == 'int8' or \
-                                                    channel['type'].lower() == 'uint8':
+                    else:
                         # we are skipping strings as they are not supported ...
+                        # string, int8, uint8 ...
                         writer.add_dataset_stub(dataset_group_name='data')
                         writer.add_dataset_stub(dataset_group_name='timestamp')
                         writer.add_dataset_stub(dataset_group_name='timestamp_offset')
