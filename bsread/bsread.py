@@ -39,6 +39,29 @@ class Source:
 
     def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=PULL,
                  channels=None, config_address=None, all_channels=False):
+        """
+
+        Args:
+            host:           Source to connect to. If no source is set library will try to connect to the dispatching
+                            layer.
+            port:           Data port of source - only applies if host parameter is set
+            config_port:    Configuration port of source - only applies if host parameter is set
+            conn_type:      Specifies whether to connect or bind to the specified data socket - i.e. whether to
+                            connect to the source or whether the source connects to this instance - values: CONNECT
+                            or BIND
+            mode:           Data delivery mode - values: PULL or PUB
+            channels:       List of channels that should be in the stream. This is either a list of channel names and/or
+                            a list of dictionaries specifying the desired channel configuration.
+                            Example: ['ChannelA', {'name': 'ChannelC', 'modulo': 10},
+                                    {'name': 'ChannelC', 'modulo': 10, 'offset': 1}]
+                            If this option is present the IOC or the dispatching layer gets configured depending on
+                            whether the host parameter is set. host=None > use of dispatching layer, and this parameter
+                            must be specified
+            config_address: Specific configuration address of the (hardware) source. This only applies if host parameter
+                            is set.
+            all_channels:   Whether to configure all channels to be streamed. This only appiles if host parameter is
+                            set.
+        """
 
         self.use_dispatching_layer = False
 
@@ -68,8 +91,16 @@ class Source:
                         for item in channels:
                             if isinstance(item, str):  # Support channel only list
                                 channel_list.append({"name": item})
-                            else:
-                                channel_list.append(item)
+                            elif isinstance(item, dict):
+                                # Ensure that we send an sane dictionary to the REST API
+                                channel_config = dict()
+                                channel_config['name'] = item['name']
+                                if 'modulo' in item:
+                                    channel_config['modulo'] = item['modulo']
+                                if 'offset' in item:
+                                    channel_config['offset'] = item['offset']
+
+                                channel_list.append(channel_config)
                         request = {"channels": channel_list}
                     else:
                         request = {"channels": []}
@@ -79,11 +110,17 @@ class Source:
 
         else:  # Otherwise we expect to connect to the dispatching layer
 
+            self.use_dispatching_layer = True
+
             if channels is None:
                 raise Exception('Channels need to be specified while connecting to the dispatching layer')
 
-            # TODO request stream and set address correctly
-            self.address = ''  # Need to be set
+            # TODO Need to be tested
+            # Request stream from dispatching layer
+            from . import dispatcher
+            self.address = dispatcher.request_stream()
+            # IMPORTANT: As the stream will be cleaned up after some time of inactivity (no connection),
+            # make sure that the connect statement is issued very quick
 
         self.stream = None
         self.handler = Handler()
@@ -93,7 +130,13 @@ class Source:
         return self  # Return self to be backward compatible
 
     def disconnect(self):
-        self.stream.disconnect()
+        try:
+            self.stream.disconnect()
+        except Exception as e:
+            # TODO to be tested
+            from . import dispatcher
+            dispatcher.remove_stream(self.address)
+            raise e
 
     def receive(self):
         return self.stream.receive(handler=self.handler.receive)
