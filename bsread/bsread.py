@@ -22,8 +22,10 @@ BIND = "bind"
 # Support of "with" statement
 class source:
 
-    def __init__(self, host='', port=9999, config_port=None, conn_type=CONNECT, mode=PULL):
-        self.source = Source(host=host, port=port, config_port=config_port, conn_type=conn_type, mode=mode)
+    def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=PULL,
+                 channels=None, config_address=None, all_channels=False):
+        self.source = Source(host=host, port=port, config_port=config_port, conn_type=conn_type, mode=mode,
+                             channels=channels, config_address=config_address, all_channels=all_channels)
 
     def __enter__(self):
         self.source.connect()
@@ -35,7 +37,11 @@ class source:
 
 class Source:
 
-    def __init__(self, host='', port=9999, config_port=None, conn_type=CONNECT, mode=PULL):
+    def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=PULL,
+                 channels=None, config_address=None, all_channels=False):
+
+        self.use_dispatching_layer = False
+
         if not config_port:
             config_port = port + 1
 
@@ -45,8 +51,39 @@ class Source:
         self.conn_type = conn_type
         self.mode = mode
 
-        self.address = 'tcp://'+self.host+':'+str(self.port)
-        self.config_address = 'tcp://'+self.host+':'+str(self.config_port)
+        if host:  # If a host is specified we assume a direct connection to the source
+            self.address = 'tcp://'+self.host+':'+str(self.port)
+            self.config_address = 'tcp://'+self.host+':'+str(self.config_port)
+
+            if channels is not None or all_channels:
+                # Reconfigure source for given channels
+                if config_address:
+                    self.config_address = config_address
+
+                if all_channels:
+                    request = {"grep": 2}
+                else:
+                    if channels:  # List is not empty
+                        channel_list = []
+                        for item in channels:
+                            if isinstance(item, str):  # Support channel only list
+                                channel_list.append({"name": item})
+                            else:
+                                channel_list.append(item)
+                        request = {"channels": channel_list}
+                    else:
+                        request = {"channels": []}
+
+                from . import config
+                config.zmq_rpc(self.config_address, json.dumps(request))
+
+        else:  # Otherwise we expect to connect to the dispatching layer
+
+            if channels is None:
+                raise Exception('Channels need to be specified while connecting to the dispatching layer')
+
+            # TODO request stream and set address correctly
+            self.address = ''  # Need to be set
 
         self.stream = None
         self.handler = Handler()
@@ -60,28 +97,6 @@ class Source:
 
     def receive(self):
         return self.stream.receive(handler=self.handler.receive)
-
-    def request(self, channels=[], address=None, all_channels=False):
-
-        if address:
-            self.config_address = address
-
-        if all_channels:
-            request = {"grep": 2}
-        else:
-            if channels:  # List is not empty
-                channel_list = []
-                for item in channels:
-                    if isinstance(item, str):  # Support channel only list
-                        channel_list.append({"name": item})
-                    else:
-                        channel_list.append(item)
-                request = {"channels": channel_list}
-            else:
-                request = {"channels": []}
-
-        from . import config
-        config.zmq_rpc(self.config_address, json.dumps(request))
 
 
 class Generator:
