@@ -1,6 +1,8 @@
 import requests
 import json
 
+import logging
+
 base_url = 'http://localhost:8080'
 base_url = 'http://dispatcher-api.psi.ch/sf'
 
@@ -83,7 +85,7 @@ def request_stream(channels, stream_type='pub_sub'):
 
     """
     # Request stream
-    config = {"channels": [{"name": "Int16Waveform"}, {"name": "UInt16Waveform"}], "streamType": stream_type}
+    config = {"channels": [], "streamType": stream_type}
 
     for channel in channels:
         if isinstance(channel, str):
@@ -99,11 +101,17 @@ def request_stream(channels, stream_type='pub_sub'):
 
             config['channels'].append(channel_config)
 
+    # TODO remove debugging
+    print(config)
+
     headers = {'content-type': 'application/json'}
     response = requests.post(base_url+'/stream', data=json.dumps(config), headers=headers)
 
     if not response.ok:
         raise Exception('Unable to request stream for specified channels - ' + response.text)
+
+    # TODO remove debugging
+    print(response.json())
 
     return response.json()['stream']
     # TODO stream might contain more channels than the channels requested this library should filter these channels out.
