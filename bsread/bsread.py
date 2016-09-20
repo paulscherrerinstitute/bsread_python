@@ -128,7 +128,7 @@ class Source:
             stream_type = 'push_pull' if self.mode == PULL else 'pub_sub'
             self.address = dispatcher.request_stream(channels, stream_type=stream_type)
 
-            # # Workaround
+            # # TODO REMOVE Workaround
             # import re
             # self.address = re.sub('psivpn129.psi.ch', 'localhost', self.address)
             # print(self.address)
@@ -147,7 +147,7 @@ class Source:
         try:
             self.stream.disconnect()
         finally:
-            # # Workaround
+            # # TODO REMOVE Workaround
             # import re
             # self.address = re.sub('localhost', 'psivpn129.psi.ch', self.address)
             # print(self.address)
