@@ -22,8 +22,9 @@ BIND = "bind"
 # Support of "with" statement
 class source:
 
-    def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=PULL,
-                 channels=None, config_address=None, all_channels=False, dispatcher_url='http://dispatcher-api.psi.ch/sf'):
+    def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None,
+                 channels=None, config_address=None, all_channels=False,
+                 dispatcher_url='http://dispatcher-api.psi.ch/sf'):
         self.source = Source(host=host, port=port, config_port=config_port, conn_type=conn_type, mode=mode,
                              channels=channels, config_address=config_address, all_channels=all_channels,
                              dispatcher_url=dispatcher_url)
@@ -38,7 +39,7 @@ class source:
 
 class Source:
 
-    def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=PULL,
+    def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None,
                  channels=None, config_address=None, all_channels=False,
                  dispatcher_url='http://dispatcher-api.psi.ch/sf'):
         """
@@ -75,11 +76,11 @@ class Source:
         self.port = port
         self.config_port = config_port
         self.conn_type = conn_type
-        self.mode = mode
 
         self.dispatcher_url = dispatcher_url
 
         if host:  # If a host is specified we assume a direct connection to the source
+            self.mode = mode if mode else PULL  # Set default mode for point to point to push/pull
             self.address = 'tcp://'+self.host+':'+str(self.port)
             self.config_address = 'tcp://'+self.host+':'+str(self.config_port)
 
@@ -114,7 +115,7 @@ class Source:
                 config.zmq_rpc(self.config_address, json.dumps(request))
 
         else:  # Otherwise we expect to connect to the dispatching layer
-
+            self.mode = mode if mode else SUB  # Set default mode for point to point to pub/sub
             self.use_dispatching_layer = True
 
             if channels is None:
@@ -127,10 +128,10 @@ class Source:
             stream_type = 'push_pull' if self.mode == PULL else 'pub_sub'
             self.address = dispatcher.request_stream(channels, stream_type=stream_type)
 
-            # # TODO remove Workaround
-            # import re
-            # self.address = re.sub('psivpn129.psi.ch', 'localhost', self.address)
-            # print(self.address)
+            # TODO remove Workaround
+            import re
+            self.address = re.sub('psivpn129.psi.ch', 'localhost', self.address)
+            print(self.address)
 
             # IMPORTANT: As the stream will be cleaned up after some time of inactivity (no connection),
             # make sure that the connect statement is issued very quick
@@ -146,10 +147,10 @@ class Source:
         try:
             self.stream.disconnect()
         finally:
-            # # TODO remove Workaround
-            # import re
-            # self.address = re.sub('localhost', 'psivpn129.psi.ch', self.address)
-            # print(self.address)
+            # TODO remove Workaround
+            import re
+            self.address = re.sub('localhost', 'psivpn129.psi.ch', self.address)
+            print(self.address)
 
             from . import dispatcher
             dispatcher.base_url = self.dispatcher_url
