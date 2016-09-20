@@ -101,8 +101,7 @@ def request_stream(channels, stream_type='pub_sub'):
 
             config['channels'].append(channel_config)
 
-    # TODO remove debugging
-    print(config)
+    logging.info('Request stream: ' + config.__str__())
 
     headers = {'content-type': 'application/json'}
     response = requests.post(base_url+'/stream', data=json.dumps(config), headers=headers)
@@ -110,8 +109,7 @@ def request_stream(channels, stream_type='pub_sub'):
     if not response.ok:
         raise Exception('Unable to request stream for specified channels - ' + response.text)
 
-    # TODO remove debugging
-    print(response.json())
+    logging.info('Stream returned: ' + response.text)
 
     return response.json()['stream']
     # TODO stream might contain more channels than the channels requested this library should filter these channels out.
@@ -123,6 +121,8 @@ def request_streams():
     Returns:    List of streams
 
     """
+
+    logging.info('Request currently available streams')
     # Get streams currently requested
     response = requests.get(base_url+'/streams')
 
@@ -141,6 +141,8 @@ def remove_stream(stream):
     Returns:
 
     """
+
+    logging.info('Remove stream: ' + stream)
 
     config = stream
     # TODO Update once the dispatching API was updated
