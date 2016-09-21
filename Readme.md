@@ -11,61 +11,65 @@ __Warning / Attention:__ Please ensure that you don't connect to a production IO
 
 ----
 
-# Installation
-
-## Anaconda
-
-The bsread package is available on [anaconda.org](https://anaconda.org/paulscherrerinstitute/bsread) and can be installed as follows:
-
-```bash
-conda install -c https://conda.anaconda.org/paulscherrerinstitute bsread
-```
-
 # Usage
 
-Following code can be used to receive beam synchronous data from a source.
+__Note:__ The bsread module, by default, accesses the SwissFEL Dispatching Layer. As this infrastructure is only accessible within the SwissFEL network the code needs to run on a machine that has direct access to this network.
+
+You can get a customized, synchronized stream from any combination of beam synchronous channels by using this piece of code:
+
+```python
+with source(channels=['YOUR_CHANNEL', 'YOUR_SECOND_CHANNEL']) as stream:
+    while True:
+        message = stream.receive()
+        print(message.data.data['YOUR_CHANNEL'].value)
+```
+
+If you want to request non 100Hz data for particular channels you can simply configure this as follows:
+
+```python
+with source(channels=['YOUR_CHANNEL', {'name': 'YOUR_SECOND_CHANNEL', 'modulo': '10', 'offset': 0}]) as stream:
+    while True:
+        message = stream.receive()
+        print(message.data.data['YOUR_CHANNEL'].value)
+```
+
+As you can see you can mix simple channel names with specific channel configurations.
+
+
+To receive beam synchronous data from a specific source without using the SwissFEL Dispatching Layer use:
 
 ```python
 from bsread import source
 
-with source('ioc', 9999) as stream:
+with source(host='ioc', port=9999) as stream:
     # source.request(['TOCK-BSREAD:SIM-PULSE'])  # configure IOC
     while True:
         message = stream.receive()
         # Terminate loop at some time
 ```
 
-The extended version is:
+
+In any case, the returned message object contains all information for one pulse. Following data is available.
 
 ```python
-from bsread import Source
+pulse_id = message.data.pulse_id
+global_timestamp = message.data.global_timestamp
+global_timestamp_offset = message.data.global_timestamp_offset
+channel_value = message.data.data['channel_name']
 
-source = Source('ioc', 9999)
-# source.request(['TOCK-BSREAD:SIM-PULSE'])  # configure IOC
-source.connect()
-
-while True:
-    message = source.receive()
-    # Terminate loop at some time
-
-source.disconnect()
-```
-
-The returned message object contains all information for one pulse. Following data is available.
-
-```python
-pulse_id = message.pulse_id
-global_timestamp = message.global_timestamp
-global_timestamp_offset = message.global_timestamp_offset
-channel_value = message.data['channel_name']
-
+# A channel value contains following information:
 value = channel_value.value
 timestamp = channel_value.timestamp
 timestamp_offset = channel_value.timestamp_offset
 ```
 
-The `message.data` dictionary is an [OrderedDict](https://docs.python.org/2/library/collections.html#collections.OrderedDict). Entries will always be sorted by the sequence they are added, i.e. the order will be the same as the order the channels are configured on the IOC.
+The `message.data.data` dictionary is an [OrderedDict](https://docs.python.org/2/library/collections.html#collections.OrderedDict). Entries will always be sorted by the sequence they are added, i.e. the order will be the same as the order the channels are configured on the IOC.
 
+Beside the actual data the message also includes statistics information. This information can be accessed by:
+
+```
+message.statistics
+```
 
 ## Generating Streams
 For various purposes (e.g. testing) beam synchronous streams can be easily created as follows:
@@ -85,6 +89,18 @@ The `add_channel` function is used to register functions to generate values for 
 The constructor of `Generator()` accepts a parameter `block`, while specifying `block=False` the generator will drop messages incase the client is not able to keep up consuming the messages.
 
 A more complete example can be fount in [examples/generator.py](examples/generator.py).
+
+
+# Installation
+
+## Anaconda
+
+The bsread package is available on [anaconda.org](https://anaconda.org/paulscherrerinstitute/bsread) and can be installed as follows:
+
+```bash
+conda install -c https://conda.anaconda.org/paulscherrerinstitute bsread
+```
+
 
 # Development
 
