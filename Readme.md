@@ -93,12 +93,29 @@ The constructor of `Generator()` accepts a parameter `block`, while specifying `
 The generator also accepts a *pre* and a *post* function that will be called before sending the data (and before calling the lambdas) as well as after the sending.
 This can be used, for example, to update an object that the registered lambdas are accessing.
 
+To have the active loop in your code (instead of the Generator) you can
+
+```python
+from bsread import Generator
+generator = Generator()
+# generator.set_pre_function(pre)
+generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
+
+generator.open_stream()
+while True:
+    generator.send()
+    time.sleep(0.01)
+
+generator.close_stream()
+```
+
 A more complete example can be fount in [examples/generator.py](examples/generator.py).
 
 
 Besides using lambdas for generating data you can also explicitly pass the data to send to the Generator. However, keep in mind that the then the active loop is in your domain. This can be done like this:
 
 ```python
+from bsread import Generator
 generator = Generator()
 generator.add_channel('ABCD')
 generator.add_channel('ABCD2')
@@ -108,7 +125,7 @@ generator.send_data(2.0, 2.1)
 generator.close_stream()
 ```
 
-*Note:* The types and order of the data needs to correspond to the sequence the channels are registered.
+*Note:* The types and order of the data needs to correspond to the sequence the channels are registered. Also if a lambda was registered with a channel this lambda will be ignored.
 
 
 # Installation
