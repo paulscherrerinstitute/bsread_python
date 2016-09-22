@@ -77,10 +77,12 @@ For various purposes (e.g. testing) beam synchronous streams can be easily creat
 ```python
 from bsread import Generator
 generator = Generator()
+# generator.set_pre_function(pre)
 generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
 generator.add_channel('ABCD', lambda x: x*10.0)
 generator.add_channel('XYZW', lambda x: 'hello', metadata={'type': 'string'})
 generator.add_channel('WWW', lambda x: [1.0, 2.0, 3.0, 4.0], metadata={'type': 'float64', 'shape': [4]})
+# generator.set_post_function(pre)
 generator.generate_stream()
 ```
 
@@ -88,7 +90,25 @@ The `add_channel` function is used to register functions to generate values for 
 
 The constructor of `Generator()` accepts a parameter `block`, while specifying `block=False` the generator will drop messages incase the client is not able to keep up consuming the messages.
 
+The generator also accepts a *pre* and a *post* function that will be called before sending the data (and before calling the lambdas) as well as after the sending.
+This can be used, for example, to update an object that the registered lambdas are accessing.
+
 A more complete example can be fount in [examples/generator.py](examples/generator.py).
+
+
+Besides using lambdas for generating data you can also explicitly pass the data to send to the Generator. However, keep in mind that the then the active loop is in your domain. This can be done like this:
+
+```python
+generator = Generator()
+generator.add_channel('ABCD')
+generator.add_channel('ABCD2')
+generator.open_stream()
+generator.send_data(1.0, 1.1)
+generator.send_data(2.0, 2.1)
+generator.close_stream()
+```
+
+*Note:* The types and order of the data needs to correspond to the sequence the channels are registered.
 
 
 # Installation
