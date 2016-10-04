@@ -71,21 +71,23 @@ if __name__ == '__main__':
     print(sources)
 
 
-def request_stream(channels, stream_type='pub_sub'):
+def request_stream(channels, stream_type='pub_sub', send_incomplete_messages=True):
     """
     Request stream for specific channels
     Args:
-        channels:   List of channels that should be in the stream. This is either a list of channel names and/or
-                    a list of dictionaries specifying the desired channel configuration.
-                    Example: ['ChannelA', {'name': 'ChannelC', 'modulo': 10},
-                             {'name': 'ChannelC', 'modulo': 10, 'offset': 1}]
-        stream_type: Type of stream, either pub_sub (default) or push_pull
+        channels:                   List of channels that should be in the stream. This is either a list of channel
+                                    names and/or a list of dictionaries specifying the desired channel configuration.
+                                    Example: ['ChannelA', {'name': 'ChannelC', 'modulo': 10},
+                                             {'name': 'ChannelC', 'modulo': 10, 'offset': 1}]
+        stream_type:                Type of stream, either pub_sub (default) or push_pull
+        send_incomplete_messages:   Send incomplete messages if not all channel values are available for a pulse-id
+                                    after some time
 
     Returns: ZMQ endpoint to connect to for the stream
 
     """
     # Request stream
-    config = {"channels": [], "streamType": stream_type, "sendIncompleteMessages": True}
+    config = {"channels": [], "streamType": stream_type, "sendIncompleteMessages": send_incomplete_messages}
 
     for channel in channels:
         if isinstance(channel, str):
