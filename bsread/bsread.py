@@ -123,10 +123,10 @@ class Source:
             stream_type = 'push_pull' if self.mode == PULL else 'pub_sub'
             self.address = dispatcher.request_stream(channels, stream_type=stream_type)
 
-            # TODO REMOVE Workaround
-            import re
-            self.address = re.sub('psivpn128.psi.ch', 'localhost', self.address)
-            print(self.address)
+            # # TODO REMOVE Workaround
+            # import re
+            # self.address = re.sub('psivpn128.psi.ch', 'localhost', self.address)
+            # print(self.address)
 
             # IMPORTANT: As the stream will be cleaned up after some time of inactivity (no connection),
             # make sure that the connect statement is issued very quick
@@ -142,10 +142,10 @@ class Source:
         try:
             self.stream.disconnect()
         finally:
-            # TODO REMOVE Workaround
-            import re
-            self.address = re.sub('localhost', 'psivpn128.psi.ch', self.address)
-            print(self.address)
+            # # TODO REMOVE Workaround
+            # import re
+            # self.address = re.sub('localhost', 'psivpn128.psi.ch', self.address)
+            # print(self.address)
 
             from . import dispatcher
             dispatcher.base_url = self.dispatcher_url

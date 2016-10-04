@@ -85,7 +85,7 @@ def request_stream(channels, stream_type='pub_sub'):
 
     """
     # Request stream
-    config = {"channels": [], "streamType": stream_type}
+    config = {"channels": [], "streamType": stream_type, "sendIncompleteMessages": True}
 
     for channel in channels:
         if isinstance(channel, str):
