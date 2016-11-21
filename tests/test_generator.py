@@ -30,6 +30,10 @@ class TestGenerator(unittest.TestCase):
         generator.send_data(2.0, 2.1)
         generator.close_stream()
 
+    def test_send_interval(self):
+        generator = Generator()
+        generator.send(interval=)
+
     # def test_stream(self):
     #     logging.info('bla')
     #     generator = Generator()

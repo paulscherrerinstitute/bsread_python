@@ -7,6 +7,7 @@ import struct
 import json
 import threading
 
+
 class Generator:
 
     def __init__(self, port=9999, start_pulse_id=0, block=True):
@@ -26,6 +27,8 @@ class Generator:
         self.main_header = None
         self.stream = None
         self.pulse_id = None
+
+        self.status_streaming = False
 
     def set_pre_function(self, function):
         """
@@ -65,7 +68,6 @@ class Generator:
         self.channels[name] = Channel(function, metadata)
 
     def open_stream(self):
-
         self.stream = mflow.connect('tcp://*:%d' % self.port, queue_size=10, conn_type=mflow.BIND, mode=mflow.PUSH)
 
         # Data header
@@ -86,14 +88,25 @@ class Generator:
 
         self.pulse_id = self.start_pulse_id
 
+        self.status_streaming = True
+
     def close_stream(self):
+        self.status_streaming = False
         self.stream.disconnect()
 
     def send(self, data=None, interval=None):
+        """
+            data:       Data to be send with the message send. If no data is specified data will be retrieved from the
+                        functions registered with each channel
+            interval:   Interval in seconds to repeatedly execute this method
+        """
 
-        if interval:
-            threading.Timer(interval, lambda: self.send_data(interval)).start()
+        if interval and self.status_streaming:
+            threading.Timer(interval, lambda: self.send(interval=interval)).start()
+            # Sending the same data over and over again would not make sense - therefore data is not supported when
+            # interval is specified
 
+        # TODO - pass header metadata?
         # Call pre function if registered
         if self.pre_function:
             self.pre_function()
@@ -105,6 +118,7 @@ class Generator:
         self.main_header['pulse_id'] = self.pulse_id
         self.main_header['global_timestamp'] = {"epoch": current_timestamp_epoch, "ns": current_timestamp_ns}
 
+        # TODO optimize - have dirty flag and only re-generate if necessary
         # Send headers
         # Main header
         self.stream.send(json.dumps(self.main_header).encode('utf-8'), send_more=True, block=self.block)
