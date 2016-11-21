@@ -18,6 +18,8 @@ class Generator:
         self.port = port
         self.block = block
         self.channels = OrderedDict()
+
+        # Ability to add a pre and/or post function
         self.pre_function = None
         self.post_function = None
 
@@ -29,30 +31,6 @@ class Generator:
         self.pulse_id = None
 
         self.status_streaming = False
-
-    def set_pre_function(self, function):
-        """
-        Register function to be executed before each pulse.
-        Args:
-            function:
-
-        Returns:
-
-        """
-        # TODO need to check parameter for sanity
-        self.pre_function = function
-
-    def set_post_function(self, function):
-        """
-        Register a function to be executed after sending out the data for a pulse.
-        Args:
-            function:
-
-        Returns:
-
-        """
-        # TODO need to check parameter for sanity
-        self.post_function = function
 
     def add_channel(self, name, function=None, metadata=None):
 
