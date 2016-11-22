@@ -5,17 +5,40 @@ import hashlib
 import math
 import struct
 import json
-import threading
+import logging
+from collections import OrderedDict
+
+
+# Support of "with" statement
+class sender:
+
+    def __init__(self, queue_size=10, port=9999, conn_type=mflow.BIND, mode=mflow.PUSH, block=True, start_pulse_id=0):
+        self.sender = Sender(queue_size=queue_size, port=port, conn_type=conn_type, mode=mode, block=block,
+                             start_pulse_id=start_pulse_id)
+
+    def __enter__(self):
+        self.sender.open()
+        return self.sender
+
+    def __exit__(self, type, value, traceback):
+        self.sender.close()
 
 
 class Sender:
 
-    def __init__(self, start_pulse_id=0, block=True):
+    def __init__(self, queue_size=10, port=9999, conn_type=mflow.BIND, mode=mflow.PUSH, block=True, start_pulse_id=0):
 
-        from collections import OrderedDict
+        self.block = block
+        self.queue_size = queue_size
+        self.port = port
+        self.conn_type = conn_type
+        self.mode = mode
+
+        self.stream = None
 
         self.start_pulse_id = start_pulse_id
-        self.block = block
+        self.pulse_id = None
+
         self.channels = OrderedDict()
 
         # Ability to add a pre and/or post function
@@ -26,10 +49,8 @@ class Sender:
         self.data_header = None
         self.data_header_json = None
         self.main_header = None
-        self.stream = None
-        self.pulse_id = None
 
-        self.status_streaming = False
+        self.status_stream_open = False
 
     def add_channel(self, name, function=None, metadata=None):
 
@@ -44,49 +65,72 @@ class Sender:
         # Add channel
         self.channels[name] = Channel(function, metadata)
 
-    def open_stream(self, queue_size=10, port=9999, conn_type=mflow.BIND, mode=mflow.PUSH):
-        self.stream = mflow.connect('tcp://*:%d' % port, queue_size=queue_size, conn_type=conn_type, mode=mode)
+    def open(self):
+        self.stream = mflow.connect('tcp://*:%d' % self.port, queue_size=self.queue_size, conn_type=self.conn_type,
+                                    mode=self.mode)
 
         # Data header
-        self.data_header = dict()
-        self.data_header['htype'] = "bsr_d-1.1"
-        channels = []
-
-        for name, channel in self.channels.items():
-            channels.append(channel.metadata)
-
-        self.data_header['channels'] = channels
-        self.data_header_json = json.dumps(self.data_header)
+        self._create_data_header()
 
         # Main header
         self.main_header = dict()
         self.main_header['htype'] = "bsr_m-1.1"
         self.main_header['hash'] = hashlib.md5(self.data_header_json.encode('utf-8')).hexdigest()
 
+        # Set initial pulse_id
         self.pulse_id = self.start_pulse_id
 
-        self.status_streaming = True
+        # Update internal status
+        self.status_stream_open = True
 
-    def close_stream(self):
-        self.status_streaming = False
+    def _create_data_header(self):
+        self.data_header = dict()
+        self.data_header['htype'] = "bsr_d-1.1"
+        channels = []
+        for name, channel in self.channels.items():
+            channels.append(channel.metadata)
+        self.data_header['channels'] = channels
+        self.data_header_json = json.dumps(self.data_header)
+
+    def close(self):
         self.stream.disconnect()
+        self.status_stream_open = False
 
-    def send(self, data=None, current_timestamp=time.time(), pulse_id=None):
+    def send(self, timestamp=time.time(), pulse_id=None, data=None, check_data=True, *args, **kwargs):
         """
             data:       Data to be send with the message send. If no data is specified data will be retrieved from the
                         functions registered with each channel
             interval:   Interval in seconds to repeatedly execute this method
         """
 
+        # If args are specified data will be overwritten
+        list_data = args if args else None
+        dict_data = data if data else kwargs  # data has precedence before **kwargs
+
         if pulse_id:
             self.pulse_id = pulse_id
+
+        if check_data:
+            if dict_data and not self.channels.keys() == dict_data.keys():
+                logging.info("Update channel metadata")
+                self.channels = OrderedDict()
+                for key, value in dict_data.items():
+                    metadata = dict()
+                    metadata['name'] = key
+                    metadata['type'] = _get_type(value)
+                    self.channels[key] = Channel(None, metadata)
+
+                self._create_data_header()
+            elif list_data:
+                if len(list_data) != self.channels:
+                    raise ValueError("Length of passed data does not correspond to configured channels")
 
         # Call pre function if registered
         if self.pre_function:
             self.pre_function()
 
-        current_timestamp_epoch = int(current_timestamp)
-        current_timestamp_ns = int(math.modf(current_timestamp)[0] * 1e9)
+        current_timestamp_epoch = int(timestamp)
+        current_timestamp_ns = int(math.modf(timestamp)[0] * 1e9)
 
         self.main_header['pulse_id'] = self.pulse_id
         self.main_header['global_timestamp'] = {"epoch": current_timestamp_epoch, "ns": current_timestamp_ns}
@@ -99,13 +143,15 @@ class Sender:
 
         counter = 0
         count = len(self.channels) - 1  # use of count to make value timestamps unique and to detect last item
-        for _, channel in self.channels.items():
-            if data:
-                value = data[counter]
+        for name, channel in self.channels.items():
+            if dict_data:
+                value = dict_data[name]
+            elif list_data:
+                value = list_data[counter]
             else:
                 value = channel.function(self.pulse_id)
 
-            self.stream.send(get_bytearray(value), send_more=True, block=self.block)
+            self.stream.send(_get_bytearray(value), send_more=True, block=self.block)
             self.stream.send(struct.pack('q', current_timestamp_epoch) + struct.pack('q', count),
                              send_more=(count > 0), block=self.block)
             count -= 1
@@ -117,19 +163,15 @@ class Sender:
         if self.post_function:
             self.post_function()
 
-    # Utility method to send data
-    def send_data(self, *args):
-        self.send(data=args)
-
     def generate_stream(self):
-        self.open_stream()
+        self.open()
 
         while True:
             self.send()
             time.sleep(0.01)
 
 
-def get_bytearray(value):
+def _get_bytearray(value):
     if isinstance(value, float):
         return struct.pack('d', value)
     elif isinstance(value, int):
@@ -139,10 +181,21 @@ def get_bytearray(value):
     elif isinstance(value, list):
         message = bytearray()
         for v in value:
-            message.extend(get_bytearray(v))
+            message.extend(_get_bytearray(v))
         return message
     else:
         return bytearray(value)
+
+
+def _get_type(value):
+    if isinstance(value, float):
+        return "float64"
+    elif isinstance(value, int):
+        return "int32"
+    elif isinstance(value, str):
+        return "string"
+    elif isinstance(value, list):
+        return _get_bytearray(value[0])
 
 
 class Channel:
