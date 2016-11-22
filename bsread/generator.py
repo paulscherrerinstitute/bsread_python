@@ -10,12 +10,11 @@ import threading
 
 class Generator:
 
-    def __init__(self, port=9999, start_pulse_id=0, block=True):
+    def __init__(self, start_pulse_id=0, block=True):
 
         from collections import OrderedDict
 
         self.start_pulse_id = start_pulse_id
-        self.port = port
         self.block = block
         self.channels = OrderedDict()
 
@@ -45,8 +44,8 @@ class Generator:
         # Add channel
         self.channels[name] = Channel(function, metadata)
 
-    def open_stream(self):
-        self.stream = mflow.connect('tcp://*:%d' % self.port, queue_size=10, conn_type=mflow.BIND, mode=mflow.PUSH)
+    def open_stream(self, queue_size=10, port=9999, conn_type=mflow.BIND, mode=mflow.PUSH):
+        self.stream = mflow.connect('tcp://*:%d' % port, queue_size=queue_size, conn_type=conn_type, mode=mode)
 
         # Data header
         self.data_header = dict()
@@ -72,31 +71,26 @@ class Generator:
         self.status_streaming = False
         self.stream.disconnect()
 
-    def send(self, data=None, interval=None):
+    def send(self, data=None, current_timestamp=time.time(), pulse_id=None):
         """
             data:       Data to be send with the message send. If no data is specified data will be retrieved from the
                         functions registered with each channel
             interval:   Interval in seconds to repeatedly execute this method
         """
 
-        if interval and self.status_streaming:
-            threading.Timer(interval, lambda: self.send(interval=interval)).start()
-            # Sending the same data over and over again would not make sense - therefore data is not supported when
-            # interval is specified
+        if pulse_id:
+            self.pulse_id = pulse_id
 
-        # TODO - pass header metadata?
         # Call pre function if registered
         if self.pre_function:
             self.pre_function()
 
-        current_timestamp = time.time()  # current timestamp in seconds
         current_timestamp_epoch = int(current_timestamp)
         current_timestamp_ns = int(math.modf(current_timestamp)[0] * 1e9)
 
         self.main_header['pulse_id'] = self.pulse_id
         self.main_header['global_timestamp'] = {"epoch": current_timestamp_epoch, "ns": current_timestamp_ns}
 
-        # TODO optimize - have dirty flag and only re-generate if necessary
         # Send headers
         # Main header
         self.stream.send(json.dumps(self.main_header).encode('utf-8'), send_more=True, block=self.block)
@@ -105,7 +99,7 @@ class Generator:
 
         counter = 0
         count = len(self.channels) - 1  # use of count to make value timestamps unique and to detect last item
-        for name, channel in self.channels.items():
+        for _, channel in self.channels.items():
             if data:
                 value = data[counter]
             else:
@@ -123,19 +117,16 @@ class Generator:
         if self.post_function:
             self.post_function()
 
+    # Utility method to send data
     def send_data(self, *args):
         self.send(data=args)
 
     def generate_stream(self):
-
         self.open_stream()
-        # self.send(interval=0.1)
 
         while True:
             self.send()
             time.sleep(0.01)
-
-        # self.close_stream()
 
 
 def get_bytearray(value):
