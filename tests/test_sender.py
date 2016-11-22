@@ -81,27 +81,28 @@ class TestGenerator(unittest.TestCase):
         self.assertEqual(data_type, "uint16")
         self.assertEqual(shape, [2, 3])
 
-
-
-
     def test_stream(self):
         with source(host="localhost", port=9999) as in_stream:
 
             with sender(queue_size=10) as stream:
-
+                test_array = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
                 # Send Data
-                stream.send(one=1, two=2)
-                stream.send(pulse_id=0, one=3, two=4)
+                stream.send(one=1, two=2,
+                            three=test_array)
+                stream.send(pulse_id=0, one=3, two=4,
+                            three=test_array)
 
                 # Receive and check data
                 message = in_stream.receive()
-                print(message.data.pulse_id)
+                self.assertEqual(message.data.pulse_id, 0)
                 self.assertEqual(message.data.data["one"].value, 1)
                 self.assertEqual(message.data.data["two"].value, 2)
                 message = in_stream.receive()
-                print(message.data.pulse_id)
+                self.assertEqual(message.data.pulse_id, 0)
                 self.assertEqual(message.data.data["one"].value, 3)
                 self.assertEqual(message.data.data["two"].value, 4)
+
+                self.assertTrue(numpy.array_equal(message.data.data["three"].value, test_array))
 
 if __name__ == '__main_ _':
     unittest.main()

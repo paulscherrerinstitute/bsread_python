@@ -206,7 +206,7 @@ def _get_type(value):
     elif isinstance(value, str):
         return "string", [1]
     elif isinstance(value, numpy.ndarray):
-        return value.dtype, list(value.shape)
+        return value.dtype.name, list(value.shape)
     elif isinstance(value, list):
         dtype, _ = _get_type(value[0])
         return dtype, [len(value)]
