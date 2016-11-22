@@ -1,8 +1,9 @@
 import unittest
-import _thread
+import numpy
 import logging
 logging.basicConfig(level=logging.DEBUG)  # Changeing of debug level needs to be done before the import for unit testing
 
+import bsread.sender
 from bsread.sender import Sender, sender
 from bsread import source
 
@@ -36,20 +37,54 @@ class TestGenerator(unittest.TestCase):
     #     generator.pre_function = lambda: print("x")
     #     # generator.send(interval=1.0)
 
+    def test__get_bytearray(self):
+        value = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
+        bytes = bsread.sender._get_bytearray(value)
+
+        new_value = numpy.fromstring(bytes, dtype=numpy.uint16).reshape((2, 3))
+        print(new_value)
+
+    def test__get_type(self):
+        value = 1
+        data_type, shape = bsread.sender._get_type(value)
+        self.assertEqual(data_type, "int32")
+        self.assertEqual(shape, [1])
+
+        value = 1.2
+        data_type, shape = bsread.sender._get_type(value)
+        self.assertEqual(data_type, "float64")
+        self.assertEqual(shape, [1])
+
+        value = "this is a test"
+        data_type, shape = bsread.sender._get_type(value)
+        self.assertEqual(data_type, "string")
+        self.assertEqual(shape, [1])
+
+        value = [1, 2, 3]
+        data_type, shape = bsread.sender._get_type(value)
+        self.assertEqual(data_type, "int32")
+        self.assertEqual(shape, [3])
+
+        value = [1.0, 2.2, 3.4, 5.3]
+        data_type, shape = bsread.sender._get_type(value)
+        self.assertEqual(data_type, "float64")
+        self.assertEqual(shape, [4])
+
+        value = numpy.array([1, 2, 3], dtype=numpy.uint16)
+        data_type, shape = bsread.sender._get_type(value)
+        self.assertEqual(data_type, "uint16")
+        self.assertEqual(shape, [3])
+
+        value = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
+        print(value)
+        data_type, shape = bsread.sender._get_type(value)
+        self.assertEqual(data_type, "uint16")
+        self.assertEqual(shape, [2, 3])
+
+
+
+
     def test_stream(self):
-
-        # def receive(thread_name):
-        #     try:
-        #         with source(host="localhost", port=9999) as stream:
-        #             message = stream.receive()
-        #             self.assertEqual(message.data.data["one"].value, 1)
-        #             self.assertEqual(message.data.data["two"].value, 2)
-        #             message = stream.receive()
-        #             self.assertEqual(message.data.data["one"].value, 3)
-        #             self.assertEqual(message.data.data["two"].value, 5)
-        #
-        # _thread.start_new_thread(receive, ("Receive",))
-
         with source(host="localhost", port=9999) as in_stream:
 
             with sender(queue_size=10) as stream:

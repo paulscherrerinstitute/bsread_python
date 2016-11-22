@@ -4,6 +4,7 @@ import sys
 import hashlib
 import math
 import struct
+import numpy
 import json
 import logging
 from collections import OrderedDict
@@ -125,7 +126,7 @@ class Sender:
                 for key, value in dict_data.items():
                     metadata = dict()
                     metadata['name'] = key
-                    metadata['type'] = _get_type(value)
+                    metadata['type'], metadata['shape'] = _get_type(value)
                     self.channels[key] = Channel(None, metadata)
 
                 self._create_data_header()
@@ -186,6 +187,8 @@ def _get_bytearray(value):
         return struct.pack('i', value)
     elif isinstance(value, str):
         return value.encode('utf-8')
+    elif isinstance(value, numpy.ndarray):
+        return value.tobytes()
     elif isinstance(value, list):
         message = bytearray()
         for v in value:
@@ -197,13 +200,16 @@ def _get_bytearray(value):
 
 def _get_type(value):
     if isinstance(value, float):
-        return "float64"
+        return "float64", [1]
     elif isinstance(value, int):
-        return "int32"
+        return "int32", [1]
     elif isinstance(value, str):
-        return "string"
+        return "string", [1]
+    elif isinstance(value, numpy.ndarray):
+        return value.dtype, list(value.shape)
     elif isinstance(value, list):
-        return _get_bytearray(value[0])
+        dtype, _ = _get_type(value[0])
+        return dtype, [len(value)]
 
 
 class Channel:
