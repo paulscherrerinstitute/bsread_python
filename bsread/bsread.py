@@ -1,14 +1,13 @@
 import mflow
-import zmq
 import json
 
 from .handlers.compact import Handler
 
 
-PULL = zmq.PULL
-PUSH = zmq.PUSH
-PUB = zmq.PUB
-SUB = zmq.SUB
+PULL = mflow.PULL
+PUSH = mflow.PUSH
+PUB = mflow.PUB
+SUB = mflow.SUB
 
 CONNECT = "connect"
 BIND = "bind"

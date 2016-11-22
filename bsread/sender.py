@@ -8,11 +8,19 @@ import json
 import logging
 from collections import OrderedDict
 
+PULL = mflow.PULL
+PUSH = mflow.PUSH
+PUB = mflow.PUB
+SUB = mflow.SUB
+
+CONNECT = "connect"
+BIND = "bind"
+
 
 # Support of "with" statement
 class sender:
 
-    def __init__(self, queue_size=10, port=9999, conn_type=mflow.BIND, mode=mflow.PUSH, block=True, start_pulse_id=0):
+    def __init__(self, queue_size=10, port=9999, conn_type=BIND, mode=PUSH, block=True, start_pulse_id=0):
         self.sender = Sender(queue_size=queue_size, port=port, conn_type=conn_type, mode=mode, block=block,
                              start_pulse_id=start_pulse_id)
 
@@ -26,7 +34,7 @@ class sender:
 
 class Sender:
 
-    def __init__(self, queue_size=10, port=9999, conn_type=mflow.BIND, mode=mflow.PUSH, block=True, start_pulse_id=0):
+    def __init__(self, queue_size=10, port=9999, conn_type=BIND, mode=PUSH, block=True, start_pulse_id=0):
 
         self.block = block
         self.queue_size = queue_size
