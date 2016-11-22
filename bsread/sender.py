@@ -116,7 +116,7 @@ class Sender:
         list_data = args if args else None
         dict_data = data if data else kwargs  # data has precedence before **kwargs
 
-        if pulse_id:
+        if pulse_id is not None:
             self.pulse_id = pulse_id
 
         if check_data:

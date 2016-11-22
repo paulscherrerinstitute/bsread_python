@@ -91,13 +91,15 @@ class TestGenerator(unittest.TestCase):
 
                 # Send Data
                 stream.send(one=1, two=2)
-                stream.send(one=3, two=4)
+                stream.send(pulse_id=0, one=3, two=4)
 
                 # Receive and check data
                 message = in_stream.receive()
+                print(message.data.pulse_id)
                 self.assertEqual(message.data.data["one"].value, 1)
                 self.assertEqual(message.data.data["two"].value, 2)
                 message = in_stream.receive()
+                print(message.data.pulse_id)
                 self.assertEqual(message.data.data["one"].value, 3)
                 self.assertEqual(message.data.data["two"].value, 4)
 
