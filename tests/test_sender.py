@@ -53,15 +53,13 @@ class TestGenerator(unittest.TestCase):
         with source(host="localhost", port=9999) as in_stream:
 
             with sender(block=False, queue_size=10) as stream:
+
+                # Send Data
                 stream.send(one=1, two=2)
                 stream.send(one=3, two=4)
 
-                print("test")
-
-
-                print("ff")
+                # Receive and check data
                 message = in_stream.receive()
-                print("ff")
                 self.assertEqual(message.data.data["one"].value, 1)
                 self.assertEqual(message.data.data["two"].value, 2)
                 message = in_stream.receive()
