@@ -8,7 +8,7 @@ import json
 import threading
 
 
-class Generator:
+class Sender:
 
     def __init__(self, start_pulse_id=0, block=True):
 

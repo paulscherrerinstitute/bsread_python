@@ -1,7 +1,7 @@
 import unittest
 import logging
 
-from bsread.generator import Generator
+from bsread.sender import Sender
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -21,8 +21,8 @@ class TestGenerator(unittest.TestCase):
         pass
 
     def test_send(self):
-        generator = Generator()
-        generator.set_pre_function(pre)
+        generator = Sender()
+        generator.pre_function = pre
         generator.add_channel('ABCD')
         generator.add_channel('ABCD2')
         generator.open_stream()
@@ -31,8 +31,8 @@ class TestGenerator(unittest.TestCase):
         generator.close_stream()
 
     def test_send_interval(self):
-        generator = Generator()
-        generator.pre_function(lambda: print("x"))
+        generator = Sender()
+        generator.pre_function = lambda: print("x")
         generator.send(interval=1.0)
 
     # def test_stream(self):
