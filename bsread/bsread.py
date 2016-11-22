@@ -150,9 +150,10 @@ class Source:
             # self.address = re.sub('localhost', 'psivpn128.psi.ch', self.address)
             # print(self.address)
 
-            from . import dispatcher
-            dispatcher.base_url = self.dispatcher_url
-            dispatcher.remove_stream(self.address)
+            if self.use_dispatching_layer:
+                from . import dispatcher
+                dispatcher.base_url = self.dispatcher_url
+                dispatcher.remove_stream(self.address)
 
     def receive(self):
         return self.stream.receive(handler=self.handler.receive)

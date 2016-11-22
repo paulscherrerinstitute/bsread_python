@@ -52,7 +52,7 @@ class TestGenerator(unittest.TestCase):
 
         with source(host="localhost", port=9999) as in_stream:
 
-            with sender(block=False, queue_size=10) as stream:
+            with sender(queue_size=10) as stream:
 
                 # Send Data
                 stream.send(one=1, two=2)
