@@ -81,6 +81,12 @@ class TestGenerator(unittest.TestCase):
         self.assertEqual(data_type, "uint16")
         self.assertEqual(shape, [2, 3])
 
+        value = numpy.float32(1.0)
+        print(isinstance(value, numpy.generic))
+        data_type, shape = bsread.sender._get_type(value)
+        self.assertEqual(data_type, "float32")
+        self.assertEqual(shape, [1])
+
     def test_stream(self):
         with source(host="localhost", port=9999) as in_stream:
 
