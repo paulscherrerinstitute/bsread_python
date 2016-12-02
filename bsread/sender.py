@@ -142,7 +142,7 @@ class Sender:
         current_timestamp_ns = int(math.modf(timestamp)[0] * 1e9)
 
         self.main_header['pulse_id'] = self.pulse_id
-        self.main_header['global_timestamp'] = {"epoch": current_timestamp_epoch, "ns": current_timestamp_ns}
+        self.main_header['global_timestamp'] = {"sec": current_timestamp_epoch, "ns": current_timestamp_ns}
 
         # Send headers
         # Main header
