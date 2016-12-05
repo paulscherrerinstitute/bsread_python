@@ -146,14 +146,8 @@ def remove_stream(stream):
 
     logging.info('Remove stream: ' + stream)
 
-    config = stream
-    # TODO Update once the dispatching API was updated
-    headers = {'content-type': 'application/json'}
-    response = requests.delete(base_url+'/stream', data=json.dumps(config), headers=headers)
+    headers = {'content-type': 'text/plain'}
+    response = requests.delete(base_url+'/stream', data=stream, headers=headers)
 
     if not response.ok:
         raise Exception('Unable to remove stream ' + stream + ' - ' + response.text)
-
-    # config = "tcp://pineapple.psi.ch:50727"
-    # headers = {'content-type': 'text/plain'}
-    # response = requests.delete(base_url+'/stream', data=config, headers=headers)
