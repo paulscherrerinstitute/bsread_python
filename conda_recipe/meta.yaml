@@ -1,6 +1,6 @@
 package:
     name: bsread
-    version: 0.7.5
+    version: 0.7.6
 #source:
 #    git_tag: 0.0.14
 #    git_url: git@git.psi.ch:sf_daq/bsread_python.git
@@ -14,6 +14,7 @@ requirements:
     run:
         - python
         - mflow
+        - bitshuffle
         - numpy
         - pyzmq
 

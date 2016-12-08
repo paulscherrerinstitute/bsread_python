@@ -3,7 +3,7 @@
 
 from setuptools import setup, find_packages, Extension
 
-VERSION = (0, 7, 5)
+VERSION = (0, 7, 6)
 VERSION_STR = ".".join([str(x) for x in VERSION])
 
 setup(
@@ -16,6 +16,6 @@ setup(
     author_email='psi@psi.ch',
     url='https://git.psi.ch/sf_daq/bsread_python',
     packages=['bsread', 'bsread.handlers'],
-    requires=['mflow', 'numpy', 'pyzmq'],
+    requires=['mflow', 'bitshuffle', 'numpy', 'pyzmq'],
 
 )
