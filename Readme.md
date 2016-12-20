@@ -1,9 +1,10 @@
 # Overview
-This is a Python (3) package to deal with beam synchronous data. It is based on the streaming library [mflow](https://github.com/datastreaming/mflow) and provides the required message handlers to it.
+This is a Python (>=3.5) package to deal with beam synchronous data. It is based on the streaming library [mflow](https://github.com/datastreaming/mflow) and provides the required message handlers to it.
 
-The bsread command line tools are based on this package. If you are looking for those please consult the https://git.psi.ch/sf_daq/bsread_commandline documentation.
 
-The format of the bsread stream is specified [here](https://docs.google.com/document/d/1BynCjz5Ax-onDW0y8PVQnYmSssb6fAyHkdDl1zh21yY/edit#heading=h.ugxijco36cap).
+__The bsread command line tools are based on this package. These commands are described in [ReadmeCLI.md](ReadmeCLI.md)__
+
+The format of the bsread stream is specified [here](https://git.psi.ch/sf_daq/bsread_specification).
 
 ----
 
@@ -123,6 +124,20 @@ generator.open_stream()
 generator.send_data(1.0, 1.1)
 generator.send_data(2.0, 2.1)
 generator.close_stream()
+```
+
+An other way is to send data as follows:
+
+```python 
+from bsread import sender
+
+with sender(queue_size=10) as stream:
+    test_array = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
+    # Send Data
+    stream.send(one=1, two=2,
+                three=test_array)
+    stream.send(pulse_id=0, one=3, two=4,
+                three=test_array)
 ```
 
 *Note:* The types and order of the data needs to correspond to the sequence the channels are registered. Also if a lambda was registered with a channel this lambda will be ignored.

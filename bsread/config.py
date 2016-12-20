@@ -136,7 +136,7 @@ def main():
     parser = argparse.ArgumentParser(description='BSREAD configuration utility')
     parser.add_argument('-c', '--channel', type=str, action=EnvDefault, envvar='BS_CONFIG', help='Address to configure, has to be in format "tcp://<address>:<port>"')
     parser.add_argument('-a', '--all', action='count', help='Stream all channels of the IOC')
-    parser.add_argument('-i', '--introspect', action='count', help='Request introspection from IOC')
+    parser.add_argument('-u', '--update', action='count', help='Update IOC configuration')
     parser.add_argument('-I', '--inhibit', type=int, default=None, help='Set inhibit bit')
 
     parser.add_argument('-v', '--verbose', action='count', help='Verbose output to show configuration json string')
@@ -155,20 +155,21 @@ def main():
         print('Invalid URI - ' + address)
         exit(-1)
 
-    # Introspect mode? 
-    if arguments.introspect:
-        response = get_introspect(address)
-    # Check if to configure all channels
+    if arguments.update:
+        # Update current configuration
+        configuration_string = read_configuration()
+        response = configure(address, configuration_string)
     elif arguments.all:
         # Sending special JSON to the IOC to configure all channels to be streamed out
         configuration_string = json.dumps({"grep": 2})
         response = configure(address, configuration_string)
     elif arguments.inhibit is not None:
+        # Inhibit bsread instance
         response = set_inhibit(address, bool(arguments.inhibit))
-    # Normal config
     else:
-        configuration_string = read_configuration()
-        response = configure(address, configuration_string)
+        # Get current configuration
+        response = get_introspect(address)
+
 
     if arguments.verbose:
         print(json.dumps(response))
