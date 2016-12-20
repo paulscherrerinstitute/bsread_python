@@ -98,6 +98,15 @@ def configure(address, configuration_string):
 
 def read_configuration():
 
+    import signal
+    import sys
+
+    def signal_handler(signal, frame):
+        print('Aborting configuration')
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+
     # we use an input_provider class instead of a list of lines as we
     # want to be able to have interactive input as well
 
