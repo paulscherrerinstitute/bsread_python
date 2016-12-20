@@ -46,24 +46,33 @@ def zmq_rpc(address, request):
 def get_introspect(address):
     request = {"cmd": "introspect"}
     response = zmq_rpc(address, json.dumps(request))
-    
-    print("Available channels: ")
-    for channel in response["channels"]:
-        print(("\t{}".format(channel)))
 
-    print("\nCurrent configuration")
+    print()
+    print("Available Channels: ")
+    print("-------------------")
+
+    for channel in response["channels"]:
+        print(("{}".format(channel)))
+
+    print()
+    print("Current Configuration:")
+    print("{:50.50} {} {}".format("Name", "Modulo", "Offset"))
+    print("-" * 64)
+
     if response["config"]["channels"]:
         for channel in response["config"]["channels"]:
-            print(("\t{:50.50} MOD:{:3} OFF:{}".format(channel["name"], channel["modulo"], channel["offset"])))
+            print(("{:50.50} {:6} {:6}".format(channel["name"], channel["modulo"], channel["offset"])))
     else:
-        print('\t-')
+        print('-')
 
-    print("BSREAD parameters:")
+    print()
+    print("Status:")
+    print("-------")
 
     if "inhibit" in response:
-        print("\tInhibit: ", response["inhibit"])
+        print("Inhibit: ", response["inhibit"])
     else:
-        print("\tInhibit: not specified by server :(")
+        print("Inhibit: not specified by server :(")
 
     return response
 
