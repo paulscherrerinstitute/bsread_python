@@ -134,42 +134,49 @@ def main():
     previous_time = time.time()
     previous_total_bytes_received = 0
 
-    while True:
+    try:
+        while True:
 
-        message = receiver.receive(handler=handler.receive)
-        total_bytes_received = message.statistics.total_bytes_received
+            message = receiver.receive(handler=handler.receive)
+            total_bytes_received = message.statistics.total_bytes_received
 
-        # Check consistency
-        data_consistency_check(message.data, statistics)
+            # Check consistency
+            data_consistency_check(message.data, statistics)
 
-        if arguments.n != 0 and (messages_received % arguments.n) == 0:
+            if arguments.n != 0 and (messages_received % arguments.n) == 0:
 
-            if arguments.monitor:
-                print(chr(27) + "[2J")
+                if arguments.monitor:
+                    print(chr(27) + "[2J")
 
-            if arguments.value:
-                print_message_data(message.data)
+                if arguments.value:
+                    print_message_data(message.data)
 
-            now = time.time()
-            delta_time = now - previous_time
+                now = time.time()
+                delta_time = now - previous_time
 
-            # Calculations
-            receive_rate = (total_bytes_received - previous_total_bytes_received) / delta_time
-            message_rate = (messages_received - previous_messages_received) / delta_time
+                # Calculations
+                receive_rate = (total_bytes_received - previous_total_bytes_received) / delta_time
+                message_rate = (messages_received - previous_messages_received) / delta_time
 
-            previous_total_bytes_received = total_bytes_received
-            previous_messages_received = messages_received
-            previous_time = now
+                previous_total_bytes_received = total_bytes_received
+                previous_messages_received = messages_received
+                previous_time = now
 
-            print("_"*80)
-            print("Messages Received: {}".format(messages_received))
-            print("Message Rate: {} Hz".format(message_rate))
-            print("Data Received: {} Mb".format(total_bytes_received/1024.0/1024.0))
-            print("Receive Rate: {} Mbps".format(receive_rate/1024/1024*8))
-            print("Missed Pulse_IDs: {} ".format(statistics.missed_pulse_ids))
-            print("Duplicated Pulse_IDs: {} ".format(statistics.duplicated_pulse_ids))
-            print("Reverted Pulse_IDs: {} ".format(statistics.reverted_pulse_ids))
-        messages_received += 1
+                print("_"*80)
+                print("Messages Received: {}".format(messages_received))
+                print("Message Rate: {} Hz".format(message_rate))
+                print("Data Received: {} Mb".format(total_bytes_received/1024.0/1024.0))
+                print("Receive Rate: {} Mbps".format(receive_rate/1024/1024*8))
+                print("Missed Pulse_IDs: {} ".format(statistics.missed_pulse_ids))
+                print("Duplicated Pulse_IDs: {} ".format(statistics.duplicated_pulse_ids))
+                print("Reverted Pulse_IDs: {} ".format(statistics.reverted_pulse_ids))
+            messages_received += 1
+
+    except AttributeError:
+        # Usually AttributeError is thrown if the receiving is terminated via ctrl+c
+        # As we don't want to see a stacktrace then catch this exception
+        pass
+
 
 if __name__ == "__main__":
     main()
