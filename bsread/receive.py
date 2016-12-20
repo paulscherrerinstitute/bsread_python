@@ -70,10 +70,16 @@ def main():
         print('Invalid URI - ' + address)
         exit(-1)
 
-    if arguments.monitor:
-        receive(address, clear=True)
-    else:
-        receive(address)
+    try:
+        if arguments.monitor:
+            receive(address, clear=True)
+        else:
+            receive(address)
+
+    except AttributeError:
+        # Usually AttributeError is thrown if the receiving is terminated via ctrl+c
+        # As we don't want to see a stacktrace then catch this exception
+        pass
 
 
 if __name__ == "__main__":

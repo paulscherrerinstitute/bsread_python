@@ -139,7 +139,13 @@ def main():
         print('Invalid URI - ' + address)
         exit(-1)
 
-    receive(address, arguments.file)
+    try:
+        receive(address, arguments.file)
+
+    except(TypeError, AttributeError):
+        # Usually AttributeError is thrown if the receiving is terminated via ctrl+c
+        # As we don't want to see a stacktrace then catch this exception
+        pass
 
 
 if __name__ == "__main__":
