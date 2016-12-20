@@ -125,6 +125,20 @@ generator.send_data(2.0, 2.1)
 generator.close_stream()
 ```
 
+An other way is to send data as follows:
+
+```python 
+from bsread import sender
+
+with sender(queue_size=10) as stream:
+    test_array = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
+    # Send Data
+    stream.send(one=1, two=2,
+                three=test_array)
+    stream.send(pulse_id=0, one=3, two=4,
+                three=test_array)
+```
+
 *Note:* The types and order of the data needs to correspond to the sequence the channels are registered. Also if a lambda was registered with a channel this lambda will be ignored.
 
 
