@@ -60,7 +60,7 @@ def main():
                         help='Source address - format "tcp://<address>:<port>"')
     parser.add_argument('-m', '--monitor', action='count', help='Monitor mode / clear the screen on every message')
     parser.add_argument('channel', type=str, nargs='*',
-                        help='Channels to retrieve')
+                        help='Channels to retrieve (from dispatching layer)')
 
     arguments = parser.parse_args()
     address = arguments.source  # Either use dispatcher or environment variables

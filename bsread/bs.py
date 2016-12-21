@@ -10,6 +10,8 @@ def usage():
     print(' stats           - Show receiving statistics')
     print(' receive         - Basic receiver')
     print(' h5              - Dump stream into HDF5 file')
+    print(' create          - Create a test softioc')
+    print(' simulate        - Provide a test stream')
     print('')
     print('Run \'bs COMMAND --help\' for more information on a command.')
     print('')

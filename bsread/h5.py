@@ -125,7 +125,7 @@ def main():
                         help='Source address - format "tcp://<address>:<port>"')
     parser.add_argument('file', type=str, help='Destination file')
     parser.add_argument('channel', type=str, nargs='*',
-                        help='Channels to retrieve')
+                        help='Channels to retrieve (from dispatching layer)')
 
     arguments = parser.parse_args()
 

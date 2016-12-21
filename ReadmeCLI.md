@@ -1,165 +1,12 @@
 # Overview
-There are 2 utility command for bsread to facilitate and experiment with the beam synchronous data acquisition system.
-The __bs-source__ command facilitates the easy setup of an test IOC as well as setting environment variables for specific iocs to allow easy usage of the __bs__ command. The __bs__ command provides easy to use receiving functionality to see and check whether an IOC is streaming out (correct) data. Also it provides an easy to use way to configure the channels that should be streamed out from an IOC.
 
-The format of the stream is specified [here](https://docs.google.com/document/d/1BynCjz5Ax-onDW0y8PVQnYmSssb6fAyHkdDl1zh21yY/edit#heading=h.ugxijco36cap).
+To work and test with beam synchronous data sources there is the __bs__ command. The __bs__ command provides easy to use receiving functionality to see and check whether data is streamed correctly. There is also a sub-command that gives statistics about the incoming stream. Both can be used point to point to the source or via the SwissFEL dispatching layer.
 
-----
+Beside that the __bs__ command provides a way to configure the channels that should be streamed out from an IOC.
 
-__Note:__ For the time being, to be able to use the commands from GFA machines you need to add the central GFA Python environment to you path. This can be done by executing following command:
-
-```
-source /opt/gfa/python
-```
+__Warning / Attention:__ Please ensure that you don't connect to a production source directly nor that you connect twice to a single source unless you are knowing what you are doing! Due to the current data delivery scheme (PUSH/PULL) data might be lost otherwise! If you are in doubt please ask for assistance from the Controls HA group (daq@psi.ch).
 
 ----
-
-__Warning / Attention:__ Please ensure that you don't connect to a production IOC nor that you connect twice to a single IOC unless you are knowing what you are doing! Due to the current data delivery scheme (PUSH/PULL) data might be lost otherwise! If you are in doubt please ask for assistance from the Controls HA group (daq@psi.ch).
-
-----
-
-# bs-source
-__bs-source__ provides an easy way to create a test IOC for testing as well as setting environment variables that facilitates the usage of the __bs__ command.
-
-The usage of __bs-source__ is as follows:
-
-```bash
-Usage: bs-source [-h] {create,env,clear_env} ...
-
-bsread source utility
-
-optional arguments:
-  -h, --help            show this help message and exit
-
-subcommands:
-  Subcommands
-
-  {create,env,clear_env}
-                        additional help
-    create              Create configuration files for a test ioc
-    env                 Display environment variable for easy use of bs
-                        command
-    clear_env           Display how to clear environment variables
-```
-
-## Generate Test Stream
-
-To generate a test stream use:
-
-```
-bs-source run
-```
-
-Usage:
-
-```bash
-usage: bs-source run [-h] [port]
-
-positional arguments:
-  port        port number of stream
-
-optional arguments:
-  -h, --help  show this help message and exit
-```
-
-## Create a Test IOC
-
-To create the configuration of a test IOC simply use:
-
-```bash
-bs-source create MY-PREFIX 7777
-```
-
-The first argument is the prefix for the test records as well as IOC name, the second needs to be a random port - especially when setting up a test IOC on the login cluster nodes. If the port is omitted, the default port 9999 is taken (the standard bsread port). However this port should only be used if you are sure your test ioc is the only IOC of the node running it.
-
-```bash
-bs-source create -h
-usage: bs-source create [-h] prefix port
-
-positional arguments:
-  prefix      ioc prefix
-  port        ioc stream port
-
-optional arguments:
-  -h, --help  show this help message and exit
-```
-
-After creating the configuration files with the command use `iocsh startup.cmd` to start the IOC. All the required commands are displayed to set your client environment as well as starting the test IOC.
-
-
-The creation and start of the test ioc can be done in one go with following command:
-
-```bash
-eval "$(bs-source create TOCK 7777)"
-```
-
-
-
-## Set environment
-
-To set the client side environment for easy __bs__ command usage you can use
-
-```bash
-bs-source env -h
-usage: bs-source env [-h] ioc [port]
-
-positional arguments:
-  ioc         ioc name
-  port        port number of stream
-
-optional arguments:
-  -h, --help  show this help message and exit
-```
-
-If the command is executed the environment settings are just displayed. To also set environment follow the instructions shown at the start of the output.
-
-### Example
-
-```bash
-bs-source env sf-lc 9999
-
-# To set the environment automatically use:
-# eval "$(bs-source env sf-lc 9999)"
-
-export BS_SOURCE=tcp://sf-lc:9999
-export BS_CONFIG=tcp://sf-lc:10000
-```
-
-As mentioned before to also set the environment use the command displayed at the beginning of the output:
-
-```bash
-eval "$(bs-source env sf-lc 9999)"
-```
-
-## Clear environment
-
-To clear the client side environment use:
-
-```bash
-bs-source clear_env -h
-usage: bs-source clear_env [-h]
-
-optional arguments:
-  -h, --help  show this help message and exit
-```
-
-The command just displayed the commands needed to clear the client side environment. To also set environment follow the instructions shown at the start of the output.
-
-### Example
-```
-bs-source clear_env
-
-# To unset the environment use:
-# eval "$(bs-source clear_env)"
-unset BS_SOURCE
-unset BS_CONFIG
-```
-
-To immediately unset the environment without copy/paste the output use
-
-```bash
-eval "$(bs-source clear_env)"
-```
 
 # bs
 
@@ -176,67 +23,23 @@ Commands:
  stats           - Show receiving statistics
  receive         - Basic receiver
  h5              - Dump stream into HDF5 file
+ create          - Create a test softioc
+ simulate        - Provide a test stream
 
 Run 'bs COMMAND --help' for more information on a command.
 ```
-
-## bs config
-__bs config__ reads and updates the configuration a bsread enabled IOC.
-While using no options it reads the current configuration from the IOC. While using `-u ` it generates and uploads a new configuration to the specified IOC. For the new configuraiton, the script reads from standard input. Therefore the input can also be piped into the program.
-
-```
-config [-h] [-c CHANNEL] [-a] [-i] [-I INHIBIT] [-v]
-
-BSREAD configuration utility
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -c CHANNEL, --channel CHANNEL
-                        Address to configure, has to be in format
-                        "tcp://<address>:<port>"
-  -a, --all             Stream all channels of the IOC
-  -u, --update          Update IOC configuration
-  -I INHIBIT, --inhibit INHIBIT
-                        Set inhibit bit
-  -v, --verbose         Verbose output to show configuration json string
-```
-
-The script reads from standard input and terminates on EOF or empty lines
-
-An input line looks like this:
-
-```
-<channel> modulo(optional, type=float ) offset(optional, type=int)
-```
-
-Note that only the channel name is mandatory.
-
-If the client side environment was not set via the `bs-source env` command you have to specify the IOC configuration channel via the __-c__ option. If the environment was set this option can be omitted.
-__Note:__ The configuration channel port is the ONE port above the data port. i.e. if the data port is 9999 the configuration port is 10000.
-
-
-As mentioned before the configuration can also be piped from any other process. This is can be done like this:
-
-```bash
-echo -e "one\ntwo\nthree" | bs config -c tcp://<ioc>:<port> -u
-```
-
-or
-
-```bash
-cat myconfig | bs config -u
-```
-
-__Note:__ In the last example the environment was set via `bs-source env`
 
 ## bs receive
 
 __bs receive__ can be used to receive and display bsread data from an IOC. If the client environment was set the __-s__ option can be omitted.
 
 ```bash
-usage: receive [-h] [-s SOURCE] [-m]
+usage: receive [-h] [-s SOURCE] [-m] [channel [channel ...]]
 
-BSREAD receive utility
+bsread receive utility
+
+positional arguments:
+  channel               Channels to retrieve (from dispatching layer)
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -245,14 +48,20 @@ optional arguments:
   -m, --monitor         Monitor mode / clear the screen on every message
 ```
 
+_Note:_ If `-s` is specified, the list of channels is ignored.
+
 ## bs stats
 
-__bs stats -m__ provides you with some basic statistics about the messages received. Also a basic check whether pulse_ids were missing in the stream is performed.
+__bs stats__ provides you with some basic statistics about the messages received. Also a basic check whether pulse_ids were missing in the stream is performed.
 
 ```bash
 usage: stats [-h] [-s SOURCE] [-m] [-n N] [-l LOG] [-v]
+             [channel [channel ...]]
 
 bsread statistics utility
+
+positional arguments:
+  channel               Channels to retrieve (from dispatching layer)
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -270,17 +79,57 @@ optional arguments:
   -v, --value           Display values
 ```
 
+_Note:_ If `-s` is specified, the list of channels is ignored.
+
+## bs config
+__bs config__ reads and updates the configuration a bsread enabled IOC.
+While using no options it reads the current configuration from the IOC. While using `-u ` it generates and uploads a new configuration to the specified IOC. For the new configuration, the script reads from standard input. Therefore the input can also be piped into the program.
+
+```
+usage: config [-h] [-a] [-u] [-I INHIBIT] [-v] ioc
+
+BSREAD configuration utility
+
+positional arguments:
+  ioc                   URL of config channel of ioc to retrieve config from
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a, --all             Stream all channels of the IOC
+  -u, --update          Update IOC configuration
+  -I INHIBIT, --inhibit INHIBIT
+                        Set inhibit bit
+  -v, --verbose         Verbose output to show configuration json string
+```
+
+The script reads from standard input and terminates on EOF or empty lines
+
+An input line looks like this:
+
+```
+<channel> modulo(optional, type=float ) offset(optional, type=int)
+```
+
+Note, that only the channel name is mandatory.
+
+As mentioned before the configuration can also be piped from any other process. This is can be done like this:
+
+```bash
+echo -e "one\ntwo\nthree" | bs config -c <ioc> -u
+```
+
 ## bs h5
 
 __bs h5__ will dump the incoming stream into an hdf5 file for later analysis. As with the other commands, if the environment was set via `bs-source env` the __-s__ option can be omitted.
 
 ```bash
-usage: h5 [-h] [-s SOURCE] file
+usage: h5 [-h] [-s SOURCE] file [channel [channel ...]]
 
 BSREAD hdf5 utility
 
 positional arguments:
   file                  Destination file
+  channel               Channels to retrieve (from dispatching layer)
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -306,19 +155,60 @@ The same index of the arrays corresponds to the same pulse_id which stored in th
      timestamp_offset [int64]
 ```
 
-### Matlab
-The saved hdf5 file can be read / browsed within Matlab as follows:
+_Note:_ If `-s` is specified, the list of channels is ignored.
 
-```Matlab
-% Show content/structure of hdf5 file
-h5disp('data.h5')
+# bs simulate
 
-% Get file info to visually browse the content/structure
-hdf5info('data.h5')
+To generate a test stream use:
 
-% Read data
-data = hdf5read('data.h5', '/MINSB04-RLLE-RFRX:CH2-AMPLT/data')
+```
+bs simulate
 ```
 
-# Development
-The bsread commandline is based on the bsread Python library (https://git.psi.ch/sf_daq/bsread_python). Please check the documentation of this package regarding development, packaging and deployment.
+Usage:
+
+```bash
+usage: simulate [-h] [-p PORT]
+
+bsread simulation utility
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -p PORT, --port PORT  Port number of stream
+```
+
+# bs create
+
+To create the configuration of a test softioc use:
+
+```bash
+bs create MY-PREFIX 7777
+```
+
+The first argument is the prefix for the test records as well as IOC name, the second needs to be a random port - especially when setting up a test IOC on the login cluster nodes. If the port is omitted, the default port 9999 is taken (the standard bsread port). However this port should only be used if you are sure your test ioc is the only IOC of the node running it.
+
+```bash
+usage: create [-h] [--db DB] prefix port
+
+bsread create utility - creates a sample ioc configuration
+
+positional arguments:
+  prefix      ioc prefix
+  port        ioc stream port
+
+optional arguments:
+  -h, --help  show this help message and exit
+  --db DB     create additional test database with specified number of scalars
+              and waveforms using generator strings (e.g.
+              'scalar(10);waveform(10,1024)') input commands must be delimited
+              with ';'. Available input commands: scalar([no of scalars])
+              waveform([no of waveforms],[size of waveform])
+```
+
+After creating the configuration files with the command use `iocsh startup.cmd` to start the IOC.
+
+The creation and start of the test ioc can be done in one go with following command:
+
+```bash
+eval "$(bs create TOCK 7777)"
+```

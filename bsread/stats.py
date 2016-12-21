@@ -100,7 +100,7 @@ def main():
     parser.add_argument('-l', '--log', type=str,
                         help='Enable logging. All errors (pulse_id skip, etc..) will be logged in file specified')
     parser.add_argument('-v', '--value', action='count', help='Display values')
-    parser.add_argument('channel', type=str, nargs='*', help='Channels to retrieve')
+    parser.add_argument('channel', type=str, nargs='*', help='Channels to retrieve (from dispatching layer)')
 
     # Parse arguments
     arguments = parser.parse_args()

@@ -76,8 +76,8 @@ message.statistics
 For various purposes (e.g. testing) beam synchronous streams can be easily created as follows:
 
 ```python
-from bsread import Generator
-generator = Generator()
+from bsread import Sender
+generator = Sender()
 # generator.set_pre_function(pre)
 generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
 generator.add_channel('ABCD', lambda x: x*10.0)
@@ -97,8 +97,8 @@ This can be used, for example, to update an object that the registered lambdas a
 To have the active loop in your code (instead of the Generator) you can
 
 ```python
-from bsread import Generator
-generator = Generator()
+from bsread import Sender
+generator = Sender()
 # generator.set_pre_function(pre)
 generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
 
@@ -116,7 +116,7 @@ A more complete example can be fount in [examples/generator.py](examples/generat
 Besides using lambdas for generating data you can also explicitly pass the data to send to the Generator. However, keep in mind that the then the active loop is in your domain. This can be done like this:
 
 ```python
-from bsread import Generator
+from bsread import Sender
 generator = Generator()
 generator.add_channel('ABCD')
 generator.add_channel('ABCD2')
@@ -128,7 +128,7 @@ generator.close_stream()
 
 An other way is to send data as follows:
 
-```python 
+```python
 from bsread import sender
 
 with sender(queue_size=10) as stream:
