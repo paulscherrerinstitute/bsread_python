@@ -66,6 +66,8 @@ def main():
     address = arguments.source  # Either use dispatcher or environment variables
     channels = arguments.channel
 
+    mode = zmq.PULL
+
     if not channels and not address:
         print('\nNo source nor channels are specified - exiting!\n')
         parser.print_help()
@@ -86,9 +88,10 @@ def main():
     else:
         # Connect via the dispatching layer
         address = dispatcher.request_stream(channels)
+        mode = zmq.SUB
 
     try:
-        receive(source=address, clear=arguments.monitor)
+        receive(source=address, clear=arguments.monitor, mode=mode)
 
     except AttributeError:
         # Usually AttributeError is thrown if the receiving is terminated via ctrl+c
