@@ -4,6 +4,7 @@ import mflow
 from .handlers.extended import Handler
 import zmq
 from . import writer as wr
+from . import dispatcher
 import logging
 
 # Logger configuration
@@ -12,8 +13,8 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(name)s - %(message)s')
 
 
-def receive(source, file_name):
-    receiver = mflow.connect(source, conn_type="connect", mode=zmq.PULL)
+def receive(source, file_name, mode=zmq.PULL):
+    receiver = mflow.connect(source, conn_type="connect", mode=mode)
     handler = Handler()
 
     writer = wr.Writer()
@@ -117,35 +118,57 @@ def receive(source, file_name):
 
 
 def main():
-    from .cli_utils import EnvDefault
     import argparse
     parser = argparse.ArgumentParser(description='BSREAD hdf5 utility')
 
-    parser.add_argument('-s', '--source', action=EnvDefault, envvar='BS_SOURCE', type=str, help='Source address - format "tcp://<address>:<port>"')
+    parser.add_argument('-s', '--source', type=str, default=None,
+                        help='Source address - format "tcp://<address>:<port>"')
     parser.add_argument('file', type=str, help='Destination file')
+    parser.add_argument('channel', type=str, nargs='*',
+                        help='Channels to retrieve')
 
     arguments = parser.parse_args()
 
+    filename = arguments.file
     address = arguments.source
+    channels = arguments.channel
 
-    import re
-    if not re.match('^tcp://', address):
-        print('Protocol not defined for address - Using tcp://')
-        address = 'tcp://' + address
-    if not re.match('.*:[0-9]+$', address):
-        print('Port not defined for address - Using 9999')
-        address += ':9999'
-    if not re.match('^tcp://[a-zA-Z.\-0-9]+:[0-9]+$', address):
-        print('Invalid URI - ' + address)
+    mode = zmq.PULL
+    use_dispatching = False
+
+    if not channels and not address:
+        print('\nNo source nor channels are specified - exiting!\n')
+        parser.print_help()
         exit(-1)
 
+    if address:
+        import re
+        if not re.match('^tcp://', address):
+            # print('Protocol not defined for address - Using tcp://')
+            address = 'tcp://' + address
+        if not re.match('.*:[0-9]+$', address):
+            # print('Port not defined for address - Using 9999')
+            address += ':9999'
+        if not re.match('^tcp://[a-zA-Z.\-0-9]+:[0-9]+$', address):
+            print('Invalid URI - ' + address)
+            exit(-1)
+    else:
+        # Connect via the dispatching layer
+        use_dispatching = True
+        address = dispatcher.request_stream(channels)
+        mode = zmq.SUB
+
     try:
-        receive(address, arguments.file)
+        receive(address, filename, mode=mode)
 
     except(TypeError, AttributeError):
         # Usually AttributeError is thrown if the receiving is terminated via ctrl+c
         # As we don't want to see a stacktrace then catch this exception
         pass
+    finally:
+        if use_dispatching:
+            print('Closing stream')
+            dispatcher.remove_stream(address)
 
 
 if __name__ == "__main__":
