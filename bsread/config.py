@@ -168,7 +168,7 @@ def main():
     if not re.match('.*:[0-9]+$', address):
         # print('Port not defined for address - Using 10000')
         address += ':10000'
-    if not re.match('^tcp://[a-zA-Z\.\-0-9]+:[0-9]+$', address):
+    if not re.match('^tcp://[a-zA-Z.\-0-9]+:[0-9]+$', address):
         print('Invalid URI - ' + address)
         exit(-1)
 

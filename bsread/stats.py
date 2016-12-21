@@ -5,7 +5,7 @@ import time
 import datetime
 import argparse
 import logging
-from collections import namedtuple
+from . import dispatcher
 
 logger = logging.getLogger(__name__)
 
@@ -89,10 +89,9 @@ def data_consistency_check(message_data, statistics):
 def main():
 
     # Argument parsing
-    from .cli_utils import EnvDefault
     parser = argparse.ArgumentParser(description='bsread statistics utility')
 
-    parser.add_argument('-s', '--source', action=EnvDefault, envvar='BS_SOURCE', type=str,
+    parser.add_argument('-s', '--source', type=str, default=None,
                         help='source address, has to be in format "tcp://<address>:<port>"')
     parser.add_argument('-m', '--monitor', action='count',
                         help='Enable monitor mode, this will clear the screen on every message to allow easier monitoring.')
@@ -101,21 +100,35 @@ def main():
     parser.add_argument('-l', '--log', type=str,
                         help='Enable logging. All errors (pulse_id skip, etc..) will be logged in file specified')
     parser.add_argument('-v', '--value', action='count', help='Display values')
+    parser.add_argument('channel', type=str, nargs='*', help='Channels to retrieve')
 
     # Parse arguments
     arguments = parser.parse_args()
     address = arguments.source
+    channels = arguments.channel
 
-    import re
-    if not re.match('^tcp://', address):
-        print('Protocol not defined for address - Using tcp://')
-        address = 'tcp://' + address
-    if not re.match('.*:[0-9]+$', address):
-        print('Port not defined for address - Using 9999')
-        address += ':9999'
-    if not re.match('^tcp://[a-zA-Z\.\-0-9]+:[0-9]+$', address):
-        print('Invalid URI - ' + address)
+    use_dispatching = False
+
+    if not channels and not address:
+        print('\nNo source nor channels are specified - exiting!\n')
+        parser.print_help()
         exit(-1)
+
+    if address:
+        import re
+        if not re.match('^tcp://', address):
+            # print('Protocol not defined for address - Using tcp://')
+            address = 'tcp://' + address
+        if not re.match('.*:[0-9]+$', address):
+            # print('Port not defined for address - Using 9999')
+            address += ':9999'
+        if not re.match('^tcp://[a-zA-Z.\-0-9]+:[0-9]+$', address):
+            print('Invalid URI - ' + address)
+            exit(-1)
+    else:
+        # Connect via the dispatching layer
+        use_dispatching = True
+        address = dispatcher.request_stream(channels, stream_type='push_pull')
 
     if arguments.log:
         handler = logging.FileHandler(arguments.log)
@@ -176,6 +189,10 @@ def main():
         # Usually AttributeError is thrown if the receiving is terminated via ctrl+c
         # As we don't want to see a stacktrace then catch this exception
         pass
+    finally:
+        if use_dispatching:
+            print('Closing stream')
+            dispatcher.remove_stream(address)
 
 
 if __name__ == "__main__":
