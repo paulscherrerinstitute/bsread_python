@@ -21,7 +21,6 @@ requirements:
 build:
   entry_points:
     - bs = bsread.bs:main
-    - bs-source = bsread.bs_source:main
 
 about:
     home: git@git.psi.ch:sf_daq/bsread_python.git
