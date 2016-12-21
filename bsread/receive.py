@@ -67,6 +67,7 @@ def main():
     channels = arguments.channel
 
     mode = zmq.PULL
+    use_dispatching = False
 
     if not channels and not address:
         print('\nNo source nor channels are specified - exiting!\n')
@@ -87,6 +88,7 @@ def main():
             sys.exit(-1)
     else:
         # Connect via the dispatching layer
+        use_dispatching = True
         address = dispatcher.request_stream(channels)
         mode = zmq.SUB
 
@@ -97,6 +99,10 @@ def main():
         # Usually AttributeError is thrown if the receiving is terminated via ctrl+c
         # As we don't want to see a stacktrace then catch this exception
         pass
+    finally:
+        if use_dispatching:
+            print('Closing stream')
+            dispatcher.remove_stream(address)
 
 
 if __name__ == "__main__":
