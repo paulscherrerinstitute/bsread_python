@@ -1,5 +1,4 @@
 from bsread import source
-from bsread import PULL
 from bsread import SUB
 
 import collections

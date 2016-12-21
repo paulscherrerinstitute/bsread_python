@@ -4,7 +4,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)  # Changeing of debug level needs to be done before the import for unit testing
 
 import bsread.sender
-from bsread.sender import Sender, sender
+from bsread.sender import sender
 from bsread import source
 
 

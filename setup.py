@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 
-from setuptools import setup, find_packages, Extension
+from setuptools import setup
 
 VERSION = (0, 7, 6)
 VERSION_STR = ".".join([str(x) for x in VERSION])

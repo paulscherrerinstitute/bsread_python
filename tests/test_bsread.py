@@ -22,7 +22,6 @@ class TestGenerator(unittest.TestCase):
 
     def test_receive(self):
         from bsread import source
-        from bsread import PULL
         from bsread import SUB
 
         # with source(channels=['Float64Waveform', 'Float64'],
