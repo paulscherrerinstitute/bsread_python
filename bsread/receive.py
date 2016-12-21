@@ -1,14 +1,18 @@
 import mflow
 # from .handlers.bsr_m_1_0 import Handler
 from .handlers.compact import Handler
+from . import dispatcher
 import zmq
 import numpy
 
 
-def receive(source, clear=False):
+def receive(source=None, clear=False, mode=zmq.PULL):
     numpy.set_printoptions(threshold=5)
     numpy.set_printoptions(linewidth=100)
-    receiver = mflow.connect(source, conn_type="connect", mode=zmq.PULL)
+
+    print('Trying to connect to %s' % source)
+
+    receiver = mflow.connect(source, conn_type="connect", mode=mode)
     handler = Handler()
 
     while True:
@@ -48,33 +52,43 @@ def receive(source, clear=False):
 
 
 def main():
-    from .cli_utils import EnvDefault
+    import sys
     import argparse
     parser = argparse.ArgumentParser(description='bsread receive utility')
 
-    parser.add_argument('-s', '--source', action=EnvDefault,
-                        envvar='BS_SOURCE', type=str, help='Source address - format "tcp://<address>:<port>"')
+    parser.add_argument('-s', '--source', default=None, type=str,
+                        help='Source address - format "tcp://<address>:<port>"')
     parser.add_argument('-m', '--monitor', action='count', help='Monitor mode / clear the screen on every message')
+    parser.add_argument('channel', type=str, nargs='*',
+                        help='Channels to retrieve')
 
     arguments = parser.parse_args()
-    address = arguments.source
+    address = arguments.source  # Either use dispatcher or environment variables
+    channels = arguments.channel
 
-    import re
-    if not re.match('^tcp://', address):
-        print('Protocol not defined for address - Using tcp://')
-        address = 'tcp://' + address
-    if not re.match('.*:[0-9]+$', address):
-        print('Port not defined for address - Using 9999')
-        address += ':9999'
-    if not re.match('^tcp://[a-zA-Z\.\-0-9]+:[0-9]+$', address):
-        print('Invalid URI - ' + address)
-        exit(-1)
+    if not channels and not address:
+        print('\nNo source nor channels are specified - exiting!\n')
+        parser.print_help()
+        sys.exit(-1)
+
+    if address:
+        import re
+        if not re.match('^tcp://', address):
+            # print('Protocol not defined for address - Using tcp://')
+            address = 'tcp://' + address
+        if not re.match('.*:[0-9]+$', address):
+            # print('Port not defined for address - Using 9999')
+            address += ':9999'
+        if not re.match('^tcp://[a-zA-Z\.\-0-9]+:[0-9]+$', address):
+            print('\nInvalid URI - %s\n' % address)
+
+            sys.exit(-1)
+    else:
+        # Connect via the dispatching layer
+        address = dispatcher.request_stream(channels)
 
     try:
-        if arguments.monitor:
-            receive(address, clear=True)
-        else:
-            receive(address)
+        receive(source=address, clear=arguments.monitor)
 
     except AttributeError:
         # Usually AttributeError is thrown if the receiving is terminated via ctrl+c
