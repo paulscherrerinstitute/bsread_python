@@ -31,17 +31,26 @@ def add_input_sources(addresses):
 
 
 def get_input_sources():
-    """
-
-    Returns: Configured input sources of the dispatching layer - e.g. [{"stream":"tcp://localhost:9999"}]
-
-    """
+    """ Returns: Configured input sources of the dispatching layer - e.g. [{"stream":"tcp://localhost:9999"}] """
     response = requests.get(base_url+'/sources')
 
     if not response.ok:
         raise Exception('Unable to retrieve current input sources - ' + response.text)
 
     return response.json()
+
+
+def get_current_channels():
+    """ Get current incoming channels """
+    response = requests.get(base_url + '/channels/live')
+
+    if not response.ok:
+        raise Exception('Unable to retrieve current incoming channels - ' + response.text)
+
+    channel_list = []
+    for backend in response.json():
+        channel_list.extend(backend['channels'])
+    return channel_list
 
 
 def remove_input_sources(addresses):

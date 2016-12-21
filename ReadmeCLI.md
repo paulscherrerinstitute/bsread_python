@@ -25,8 +25,25 @@ Commands:
  h5              - Dump stream into HDF5 file
  create          - Create a test softioc
  simulate        - Provide a test stream
+ avail           - Show currently available beam synchronous channels
 
 Run 'bs COMMAND --help' for more information on a command.
+```
+
+## bs avail
+
+Show currently available beam synchronous channels
+
+```
+usage: avail [-h] [pattern]
+
+Get available beam synchronous channels
+
+positional arguments:
+  pattern     Regex channel pattern
+
+optional arguments:
+  -h, --help  show this help message and exit
 ```
 
 ## bs receive

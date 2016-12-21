@@ -12,6 +12,7 @@ def usage():
     print(' h5              - Dump stream into HDF5 file')
     print(' create          - Create a test softioc')
     print(' simulate        - Provide a test stream')
+    print(' avail           - Show currently available beam synchronous channels')
     print('')
     print('Run \'bs COMMAND --help\' for more information on a command.')
     print('')
