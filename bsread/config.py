@@ -149,10 +149,9 @@ def read_configuration():
 
 def main():
     import argparse
-    from .cli_utils import EnvDefault
 
     parser = argparse.ArgumentParser(description='BSREAD configuration utility')
-    parser.add_argument('-c', '--channel', type=str, action=EnvDefault, envvar='BS_CONFIG', help='Address to configure, has to be in format "tcp://<address>:<port>"')
+    parser.add_argument('ioc', type=str, help='URL of config channel of ioc to retrieve config from')
     parser.add_argument('-a', '--all', action='count', help='Stream all channels of the IOC')
     parser.add_argument('-u', '--update', action='count', help='Update IOC configuration')
     parser.add_argument('-I', '--inhibit', type=int, default=None, help='Set inhibit bit')
@@ -160,14 +159,14 @@ def main():
     parser.add_argument('-v', '--verbose', action='count', help='Verbose output to show configuration json string')
 
     arguments = parser.parse_args()
-    address = arguments.channel
+    address = arguments.ioc
 
     import re
     if not re.match('^tcp://', address):
-        print('Protocol not defined for address - Using tcp://')
+        # print('Protocol not defined for address - Using tcp://')
         address = 'tcp://' + address
     if not re.match('.*:[0-9]+$', address):
-        print('Port not defined for address - Using 10000')
+        # print('Port not defined for address - Using 10000')
         address += ':10000'
     if not re.match('^tcp://[a-zA-Z\.\-0-9]+:[0-9]+$', address):
         print('Invalid URI - ' + address)
