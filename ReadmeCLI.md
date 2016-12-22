@@ -35,7 +35,7 @@ Run 'bs COMMAND --help' for more information on a command.
 Show currently available beam synchronous channels
 
 ```
-usage: avail [-h] [pattern]
+usage: avail [-h] [-a] [pattern]
 
 Get available beam synchronous channels
 
@@ -44,6 +44,7 @@ positional arguments:
 
 optional arguments:
   -h, --help  show this help message and exit
+  -a, --all   Display all meta information
 ```
 
 ## bs receive
