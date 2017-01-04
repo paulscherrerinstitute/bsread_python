@@ -18,6 +18,7 @@ class Handler:
 
         message = Message()
         message.pulse_id = header['pulse_id']
+        message.hash = header['hash']
             
         if 'sec' in header['global_timestamp']:
             message.global_timestamp = header['global_timestamp']['sec']
@@ -294,6 +295,7 @@ class Message:
         self.pulse_id = None
         self.global_timestamp = None
         self.global_timestamp_offset = None
+        self.hash = None
         self.data = OrderedDict()  # Dictionary of values
 
         self.format_changed = False

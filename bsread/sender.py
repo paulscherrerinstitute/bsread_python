@@ -78,13 +78,12 @@ class Sender:
         self.stream = mflow.connect('tcp://*:%d' % self.port, queue_size=self.queue_size, conn_type=self.conn_type,
                                     mode=self.mode)
 
-        # Data header
-        self._create_data_header()
-
         # Main header
         self.main_header = dict()
         self.main_header['htype'] = "bsr_m-1.1"
-        self.main_header['hash'] = hashlib.md5(self.data_header_json.encode('utf-8')).hexdigest()
+
+        # Data header
+        self._create_data_header()
 
         # Set initial pulse_id
         self.pulse_id = self.start_pulse_id
@@ -100,6 +99,8 @@ class Sender:
             channels.append(channel.metadata)
         self.data_header['channels'] = channels
         self.data_header_json = json.dumps(self.data_header)
+
+        self.main_header['hash'] = hashlib.md5(self.data_header_json.encode('utf-8')).hexdigest()
 
     def close(self):
         self.stream.disconnect()

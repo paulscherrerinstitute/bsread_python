@@ -96,19 +96,24 @@ class TestGenerator(unittest.TestCase):
                 stream.send(one=1, two=2,
                             three=test_array)
                 stream.send(pulse_id=0, one=3, two=4,
-                            three=test_array)
+                            three=test_array, four=2.0)
 
                 # Receive and check data
                 message = in_stream.receive()
+                hash_m1 = message.data.hash
                 self.assertEqual(message.data.pulse_id, 0)
                 self.assertEqual(message.data.data["one"].value, 1)
                 self.assertEqual(message.data.data["two"].value, 2)
                 message = in_stream.receive()
+                hash_m2 = message.data.hash
                 self.assertEqual(message.data.pulse_id, 0)
                 self.assertEqual(message.data.data["one"].value, 3)
                 self.assertEqual(message.data.data["two"].value, 4)
 
                 self.assertTrue(numpy.array_equal(message.data.data["three"].value, test_array))
+
+                # Check is data header hash is different as the second message contains more channels
+                self.assertTrue(hash_m1 != hash_m2, msg="{} {}".format(hash_m1, hash_m2))
 
 if __name__ == '__main_ _':
     unittest.main()

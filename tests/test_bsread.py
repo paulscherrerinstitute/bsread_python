@@ -1,8 +1,6 @@
 import unittest
 import logging
 
-from bsread.generator import Generator
-
 logging.basicConfig(level=logging.DEBUG)
 
 
