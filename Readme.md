@@ -150,23 +150,12 @@ with sender(queue_size=10) as stream:
 The bsread package is available on [anaconda.org](https://anaconda.org/paulscherrerinstitute/bsread) and can be installed as follows:
 
 ```bash
-conda install -c https://conda.anaconda.org/paulscherrerinstitute bsread
+conda install -c paulscherrerinstitute bsread
 ```
 
 
 # Development
 
-## Dependencies
-
-The current dependencies are
-* mflow
-* [pyzmq](http://zeromq.github.io/pyzmq/)
-* h5py
-* numpy
-
-A standard Anaconda distribution comes with all the required dependencies except mflow.
-
-## Anaconda
 To build the Anaconda package for this library
 
 1. Update the version numbers in conda-recipe/meta.yaml
