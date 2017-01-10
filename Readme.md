@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/paulscherrerinstitute/bsread_python.svg?branch=master)](https://travis-ci.org/paulscherrerinstitute/bsread_python)
+
 # Overview
 This is a Python (>=3.5) package to deal with beam synchronous data. It is based on the streaming library [mflow](https://github.com/datastreaming/mflow) and provides the required message handlers to it.
 
