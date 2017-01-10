@@ -4,7 +4,7 @@ To work and test with beam synchronous data sources there is the __bs__ command.
 
 Beside that the __bs__ command provides a way to configure the channels that should be streamed out from an IOC.
 
-__Warning / Attention:__ Please ensure that you don't connect to a production source directly nor that you connect twice to a single source unless you are knowing what you are doing! Due to the current data delivery scheme (PUSH/PULL) data might be lost otherwise! If you are in doubt please ask for assistance from the Controls HA group (daq@psi.ch).
+__Warning / Attention:__ Please ensure that you don't connect to a production source directly nor that you connect twice to a single source unless you are knowing what you are doing! Due to the current data delivery scheme (PUSH/PULL) data might be lost otherwise! If you are in doubt please ask for assistance from the Controls HA group (daq<at>psi.ch).
 
 ----
 
