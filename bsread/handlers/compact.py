@@ -19,15 +19,16 @@ class Handler:
         message = Message()
         message.pulse_id = header['pulse_id']
         message.hash = header['hash']
-            
-        if 'sec' in header['global_timestamp']:
-            message.global_timestamp = header['global_timestamp']['sec']
-        elif 'epoch' in header['global_timestamp']:
-            message.global_timestamp = header['global_timestamp']['epoch']
-        else:
-            raise RuntimeError("Invalid timestamp format in BSDATA header message {}".format(message))
 
-        message.global_timestamp_offset = header['global_timestamp']['ns']
+        if 'global_timestamp' in header:
+            if 'sec' in header['global_timestamp']:
+                message.global_timestamp = header['global_timestamp']['sec']
+            elif 'epoch' in header['global_timestamp']:
+                message.global_timestamp = header['global_timestamp']['epoch']
+            else:
+                raise RuntimeError("Invalid timestamp format in BSDATA header message {}".format(message))
+
+            message.global_timestamp_offset = header['global_timestamp']['ns']
 
         # Receiver data header
         if receiver.has_more() and (self.header_hash is None or not self.header_hash == header['hash']):
