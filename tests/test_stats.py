@@ -18,7 +18,7 @@ class TestGenerator(unittest.TestCase):
         # Enable debug logging
         pass
 
-    def test_data_consistency_check(self):
+    def test_data_consistency_check_increment_1(self):
         import bsread.stats
 
         class A:
@@ -48,6 +48,27 @@ class TestGenerator(unittest.TestCase):
         self.assertTrue(statistics.duplicated_pulse_ids == 0)
         self.assertTrue(statistics.missed_pulse_ids == 1)
         self.assertTrue(statistics.reverted_pulse_ids == 0)
+
+        message.data.pulse_id = 6
+        bsread.stats.data_consistency_check(message.data, statistics)
+
+        self.assertTrue(statistics.duplicated_pulse_ids == 0)
+        self.assertTrue(statistics.missed_pulse_ids == 3)
+        self.assertTrue(statistics.reverted_pulse_ids == 0)
+
+        message.data.pulse_id = 6
+        bsread.stats.data_consistency_check(message.data, statistics)
+
+        self.assertTrue(statistics.duplicated_pulse_ids == 1)
+        self.assertTrue(statistics.missed_pulse_ids == 3)
+        self.assertTrue(statistics.reverted_pulse_ids == 0)
+
+        message.data.pulse_id = 5
+        bsread.stats.data_consistency_check(message.data, statistics)
+
+        self.assertTrue(statistics.duplicated_pulse_ids == 1)
+        self.assertTrue(statistics.missed_pulse_ids == 3)
+        self.assertTrue(statistics.reverted_pulse_ids == 1)
 
 
 if __name__ == '__main__':
