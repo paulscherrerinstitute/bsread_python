@@ -35,11 +35,12 @@ class sender:
 
 class Sender:
 
-    def __init__(self, queue_size=10, port=9999, conn_type=BIND, mode=PUSH, block=True, start_pulse_id=0):
+    def __init__(self, queue_size=10, port=9999, address="tcp://*", conn_type=BIND, mode=PUSH, block=True, start_pulse_id=0):
 
         self.block = block
         self.queue_size = queue_size
         self.port = port
+        self.address = address
         self.conn_type = conn_type
         self.mode = mode
 
@@ -75,7 +76,7 @@ class Sender:
         self.channels[name] = Channel(function, metadata)
 
     def open(self):
-        self.stream = mflow.connect('tcp://*:%d' % self.port, queue_size=self.queue_size, conn_type=self.conn_type,
+        self.stream = mflow.connect('%s:%d' % (self.address, self.port), queue_size=self.queue_size, conn_type=self.conn_type,
                                     mode=self.mode)
 
         # Main header
@@ -106,7 +107,7 @@ class Sender:
         self.stream.disconnect()
         self.status_stream_open = False
 
-    def send(self, timestamp=time.time(), pulse_id=None, data=None, check_data=True, *args, **kwargs):
+    def send(self, *args, timestamp=time.time(), pulse_id=None, data=None, check_data=True,  **kwargs):
         """
             data:       Data to be send with the message send. If no data is specified data will be retrieved from the
                         functions registered with each channel
@@ -132,7 +133,7 @@ class Sender:
 
                 self._create_data_header()
             elif list_data:
-                if len(list_data) != self.channels:
+                if len(list_data) != len(self.channels):
                     raise ValueError("Length of passed data does not correspond to configured channels")
 
         # Call pre function if registered
