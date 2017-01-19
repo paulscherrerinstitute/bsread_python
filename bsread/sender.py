@@ -141,6 +141,7 @@ class Sender:
                     metadata['name'] = k
                     metadata['type'], metadata['shape'] = _get_type(list_data[i])
                     self.channels[k].metadata = metadata
+
                 self._create_data_header()
 
         # Call pre function if registered
@@ -197,6 +198,8 @@ def _get_bytearray(value):
     elif isinstance(value, str):
         return value.encode('utf-8')
     elif isinstance(value, numpy.ndarray):
+        return value.tobytes()
+    elif value.__class__ in [x for j in numpy.sctypes.values() for x in j if "__array_interface__" in dir(x)]:
         return value.tobytes()
     elif isinstance(value, list):
         message = bytearray()
