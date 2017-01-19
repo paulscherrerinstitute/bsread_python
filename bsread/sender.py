@@ -135,6 +135,13 @@ class Sender:
             elif list_data:
                 if len(list_data) != len(self.channels):
                     raise ValueError("Length of passed data does not correspond to configured channels")
+                # channels is Ordered dict, assumption is that channels are in the same order
+                for i, k in enumerate(self.channels):
+                    metadata = dict()
+                    metadata['name'] = k
+                    metadata['type'], metadata['shape'] = _get_type(list_data[i])
+                    self.channels[k].metadata = metadata
+                self._create_data_header()
 
         # Call pre function if registered
         if self.pre_function:
