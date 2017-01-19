@@ -134,7 +134,8 @@ class Sender:
                 self._create_data_header()
             elif list_data:
                 if len(list_data) != len(self.channels):
-                    raise ValueError("Length of passed data does not correspond to configured channels")
+                    raise ValueError("Length of passed data (%d) does not correspond to configured channels (%d)"
+                                     % (len(list_data), len(self.channels)))
                 # channels is Ordered dict, assumption is that channels are in the same order
                 for i, k in enumerate(self.channels):
                     metadata = dict()
