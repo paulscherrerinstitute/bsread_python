@@ -4,7 +4,7 @@ import json
 import logging
 
 base_url = 'http://localhost:8080'
-base_url = 'http://dispatcher-api.psi.ch/sf'
+base_url = 'https://dispatcher-api.psi.ch/sf'
 
 
 def add_input_sources(addresses):
