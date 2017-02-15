@@ -18,7 +18,7 @@ class source:
 
     def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None,
                  channels=None, config_address=None, all_channels=False,
-                 dispatcher_url='http://dispatcher-api.psi.ch/sf'):
+                 dispatcher_url='https://dispatcher-api.psi.ch/sf'):
         self.source = Source(host=host, port=port, config_port=config_port, conn_type=conn_type, mode=mode,
                              channels=channels, config_address=config_address, all_channels=all_channels,
                              dispatcher_url=dispatcher_url)
@@ -35,7 +35,7 @@ class Source:
 
     def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None,
                  channels=None, config_address=None, all_channels=False,
-                 dispatcher_url='http://dispatcher-api.psi.ch/sf', send_incomplete_messages=True):
+                 dispatcher_url='https://dispatcher-api.psi.ch/sf', send_incomplete_messages=True):
         """
 
         Args:
