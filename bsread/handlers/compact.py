@@ -19,15 +19,17 @@ class Handler:
         message = Message()
         message.pulse_id = header['pulse_id']
         message.hash = header['hash']
-            
-        if 'sec' in header['global_timestamp']:
-            message.global_timestamp = header['global_timestamp']['sec']
-        elif 'epoch' in header['global_timestamp']:
-            message.global_timestamp = header['global_timestamp']['epoch']
-        else:
-            raise RuntimeError("Invalid timestamp format in BSDATA header message {}".format(message))
 
-        message.global_timestamp_offset = header['global_timestamp']['ns']
+
+        if 'global_timestamp' in header:
+            if 'sec' in header['global_timestamp']:
+                message.global_timestamp = header['global_timestamp']['sec']
+            elif 'epoch' in header['global_timestamp']:
+                message.global_timestamp = header['global_timestamp']['epoch']
+            else:
+                raise RuntimeError("Invalid timestamp format in BSDATA header message {}".format(message))
+
+            message.global_timestamp_offset = header['global_timestamp']['ns']
 
         # Receiver data header
         if receiver.has_more() and (self.header_hash is None or not self.header_hash == header['hash']):
@@ -289,20 +291,25 @@ class BitshuffleStringProvider:
 
 
 class Message:
-    def __init__(self):
-        from collections import OrderedDict
+    from collections import OrderedDict
+    def __init__(self, pulse_id=None, global_timestamp=None, global_timestamp_offset=None, hash=None, data=OrderedDict()):
 
-        self.pulse_id = None
-        self.global_timestamp = None
-        self.global_timestamp_offset = None
-        self.hash = None
-        self.data = OrderedDict()  # Dictionary of values
+
+        self.pulse_id = pulse_id
+        self.global_timestamp = global_timestamp
+        self.global_timestamp_offset = global_timestamp_offset
+        self.hash = hash
+        self.data = data  # Dictionary of values
 
         self.format_changed = False
 
+    def __str__(self):
+        message = "pulse_id: %d \ndata: " % self.pulse_id + str(self.data)
+        return message
+
 
 class Value:
-    def __init__(self):
-        self.value = None
-        self.timestamp = None
-        self.timestamp_offset = None
+    def __init__(self, value=None, timestamp=None, timestamp_offset=None):
+        self.value = value
+        self.timestamp = timestamp
+        self.timestamp_offset = timestamp_offset
