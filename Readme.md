@@ -6,6 +6,8 @@ This is a Python (>=3.5) package to deal with beam synchronous data. It is based
 
 __The bsread command line tools are based on this package. These commands are described in [ReadmeCLI.md](ReadmeCLI.md)__
 
+__You can also use this package from within Matlab. How to do this is described in [ReadmeMatlab.md](ReadmeMatlab.md)__
+
 The format of the bsread stream is specified [here](https://git.psi.ch/sf_daq/bsread_specification).
 
 ----
