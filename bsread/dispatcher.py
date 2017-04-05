@@ -2,6 +2,7 @@ import requests
 import json
 
 import logging
+import datetime
 
 base_url = 'http://localhost:8080'
 base_url = 'https://dispatcher-api.psi.ch/sf'
@@ -160,3 +161,59 @@ def remove_stream(stream):
 
     if not response.ok:
         raise Exception('Unable to remove stream ' + stream + ' - ' + response.text)
+
+
+def get_data_policies():
+    logging.info('Request currently configured data policies')
+    response = requests.get(base_url + '/data/policies')
+
+    if not response.ok:
+        raise Exception('Unable to retrieve current data policies - ' + response.text)
+
+    return response.json
+
+
+def update_ttl(channels, start, end, ttl: datetime.timedelta, async=True):
+    """
+    Update the ttl of specific data:
+    https://git.psi.ch/sf_daq/ch.psi.daq.dispatcherrest#update-ttl
+    
+    :param start:  Start of range to update = either datetime or pulse_id
+    :param end: End of range to update - either datetime or pulse_id
+    :param channels: List of channels to update ttl
+    :param ttl: Time to live as datatime.timedelta 
+    :param async: Execute call asynchronously
+    
+    
+    :return: 
+    """
+
+    if not isinstance(ttl, datetime.timedelta):
+        raise RuntimeError('Invalid ttl - need to be of type timedelta')
+
+    update_request = {
+        "ttl": ttl.total_seconds(),
+        "asyncCall": async,
+        "channels": [],
+        "range": {}
+    }
+
+    channel_list = []
+    for channel in channels:
+        channel_list.append({"name": channel, "backend": "sf-databuffer"})
+    update_request["channels"] = channel_list
+
+    if isinstance(start, int) and isinstance(end, int):
+        update_request["range"] = {"startPulseId": start,
+                                   "endPulseId": end}
+    elif isinstance(start, datetime.datetime) and isinstance(end, datetime.datetime):
+        update_request["range"] = {"startDate": start.isoformat(timespec='microseconds'),
+                                   "endDate": end.isoformat(timespec='microseconds')}
+    else:
+        raise RuntimeError("Invalid start and/or end time/pulse_id")
+
+    headers = {'content-type': 'application/json'}
+    response = requests.post(base_url + '/data/update/ttl', data=json.dumps(update_request), headers=headers)
+
+    if not response.ok:
+        raise Exception('Unable to update ttl for specified channels - ' + response.text)
