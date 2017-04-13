@@ -207,8 +207,8 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta, async=True):
         update_request["range"] = {"startPulseId": start,
                                    "endPulseId": end}
     elif isinstance(start, datetime.datetime) and isinstance(end, datetime.datetime):
-        update_request["range"] = {"startDate": start.isoformat(timespec='microseconds'),
-                                   "endDate": end.isoformat(timespec='microseconds')}
+        update_request["range"] = {"startDate": start.isoformat(),
+                                   "endDate": end.isoformat()}
     else:
         raise RuntimeError("Invalid start and/or end time/pulse_id")
 
