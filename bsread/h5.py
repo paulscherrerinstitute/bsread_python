@@ -126,6 +126,8 @@ def main():
     parser.add_argument('file', type=str, help='Destination file')
     parser.add_argument('channel', type=str, nargs='*',
                         help='Channels to retrieve (from dispatching layer)')
+    parser.add_argument('-m', '--mode', default='pull', choices=['pull', 'sub'], type=str,
+                        help='Communication mode - either pull or sub (default depends on the use of -s option)')
 
     arguments = parser.parse_args()
 
@@ -133,7 +135,7 @@ def main():
     address = arguments.source
     channels = arguments.channel
 
-    mode = zmq.PULL
+    mode = mflow.SUB if arguments.mode == 'sub' else mflow.PULL
     use_dispatching = False
 
     if not channels and not address:
