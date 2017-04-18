@@ -35,7 +35,7 @@ class Source:
 
     def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None, queue_size=100,
                  channels=None, config_address=None, all_channels=False,
-                 dispatcher_url='https://dispatcher-api.psi.ch/sf', send_incomplete_messages=True):
+                 dispatcher_url='https://dispatcher-api.psi.ch/sf'):
         """
 
         Args:
@@ -59,8 +59,6 @@ class Source:
             all_channels:   Whether to configure all channels to be streamed. This only appiles if host parameter is
                             set.
             dispatcher_url: URL of the dispatcher api
-            send_incomplete_messages:   Send incomplete message if dispatcher was not able to retrieve all data for a
-                                        given pulse-id
         """
 
         self.use_dispatching_layer = False
@@ -123,8 +121,7 @@ class Source:
             dispatcher.base_url = self.dispatcher_url
 
             stream_type = 'push_pull' if self.mode == PULL else 'pub_sub'
-            self.address = dispatcher.request_stream(channels, stream_type=stream_type,
-                                                     send_incomplete_messages=send_incomplete_messages)
+            self.address = dispatcher.request_stream(channels, stream_type=stream_type)
 
             # # TODO REMOVE Workaround
             # import re

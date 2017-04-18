@@ -81,7 +81,7 @@ if __name__ == '__main__':
     print(sources)
 
 
-def request_stream(channels, stream_type='pub_sub', send_incomplete_messages=True):
+def request_stream(channels, stream_type='pub_sub', inconsistency_resolution="adjust-individual"):
     """
     Request stream for specific channels
     Args:
@@ -90,14 +90,16 @@ def request_stream(channels, stream_type='pub_sub', send_incomplete_messages=Tru
                                     Example: ['ChannelA', {'name': 'ChannelC', 'modulo': 10},
                                              {'name': 'ChannelC', 'modulo': 10, 'offset': 1}]
         stream_type:                Type of stream, either pub_sub (default) or push_pull
-        send_incomplete_messages:   Send incomplete messages if not all channel values are available for a pulse-id
-                                    after some time
+        inconsistency_resolution:   How to resolve inconsistencies in frequencies of the requested channels
+                                    See: https://git.psi.ch/sf_daq/ch.psi.daq.dispatcherrest#channel-validation
 
     Returns: ZMQ endpoint to connect to for the stream
 
     """
     # Request stream
-    config = {"channels": [], "streamType": stream_type, "sendIncompleteMessages": send_incomplete_messages}
+    config = {"channels": [],
+              "streamType": stream_type,
+              "channelValidation": {"inconsistency": inconsistency_resolution}}
 
     for channel in channels:
         if isinstance(channel, str):
