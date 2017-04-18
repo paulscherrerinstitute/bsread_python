@@ -93,8 +93,9 @@ def main():
 
     parser.add_argument('-s', '--source', type=str, default=None,
                         help='source address, has to be in format "tcp://<address>:<port>"')
-    parser.add_argument('-m', '--monitor', action='count',
-                        help='Enable monitor mode, this will clear the screen on every message to allow easier monitoring.')
+    parser.add_argument('-c', '--clear', action='count', help='Monitor mode / clear the screen on every message')
+    parser.add_argument('-m', '--mode', default='pull', choices=['pull', 'sub'], type=str,
+                        help='Communication mode - either pull or sub (default depends on the use of -s option)')
     parser.add_argument('-n', default=1, type=int,
                         help='Limit message printing to every n messages, this will reduce CPU load. Note that all messages are still received, but are not displayed. If -n 0 is passed message display is disabled')
     parser.add_argument('-l', '--log', type=str,
@@ -106,8 +107,13 @@ def main():
     arguments = parser.parse_args()
     address = arguments.source
     channels = arguments.channel
+    clear = arguments.clear
+    show_values = arguments.value
+    show_nth_value = arguments.n
+    logfile = arguments.log
 
     use_dispatching = False
+    mode = mflow.SUB if arguments.mode == 'sub' else mflow.PULL
 
     if not channels and not address:
         print('\nNo source nor channels are specified - exiting!\n')
@@ -128,15 +134,16 @@ def main():
     else:
         # Connect via the dispatching layer
         use_dispatching = True
-        address = dispatcher.request_stream(channels, stream_type='push_pull')
+        address = dispatcher.request_stream(channels)
+        mode = mflow.SUB
 
-    if arguments.log:
-        handler = logging.FileHandler(arguments.log)
+    if logfile:
+        handler = logging.FileHandler(logfile)
         handler.setLevel(logging.DEBUG)
         logger.addHandler(handler)
 
     logger.info("Connecting to {} type PULL".format(address))
-    receiver = mflow.connect(address, conn_type="connect", mode=zmq.PULL)
+    receiver = mflow.connect(address, conn_type="connect", mode=mode)
     handler = Handler()
     logger.info("Connection opened")
 
@@ -156,12 +163,12 @@ def main():
             # Check consistency
             data_consistency_check(message.data, statistics)
 
-            if arguments.n != 0 and (messages_received % arguments.n) == 0:
+            if show_nth_value != 0 and (messages_received % show_nth_value) == 0:
 
-                if arguments.monitor:
+                if clear:
                     print(chr(27) + "[2J")
 
-                if arguments.value:
+                if show_values:
                     print_message_data(message.data)
 
                 now = time.time()

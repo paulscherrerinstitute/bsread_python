@@ -60,7 +60,7 @@ def main():
                         help='Source address - format "tcp://<address>:<port>"')
     parser.add_argument('-c', '--clear', action='count', help='Monitor mode / clear the screen on every message')
     parser.add_argument('-m', '--mode', default='pull', choices=['pull', 'sub'], type=str,
-                        help='Communication mode - either pull (default) or sub')
+                        help='Communication mode - either pull or sub (default depends on the use of -s option)')
     parser.add_argument('channel', type=str, nargs='*',
                         help='Channels to retrieve (from dispatching layer)')
 
