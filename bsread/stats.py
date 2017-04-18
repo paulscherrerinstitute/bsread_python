@@ -101,6 +101,8 @@ def main():
     parser.add_argument('-l', '--log', type=str,
                         help='Enable logging. All errors (pulse_id skip, etc..) will be logged in file specified')
     parser.add_argument('-v', '--value', action='count', help='Display values')
+    parser.add_argument('-q', '--queue', default=100, type=int,
+                        help='Queue size of incoming queue (default = 100)')
     parser.add_argument('channel', type=str, nargs='*', help='Channels to retrieve (from dispatching layer)')
 
     # Parse arguments
@@ -111,6 +113,7 @@ def main():
     show_values = arguments.value
     show_nth_value = arguments.n
     logfile = arguments.log
+    queue_size = arguments.queue
 
     use_dispatching = False
     mode = mflow.SUB if arguments.mode == 'sub' else mflow.PULL
@@ -143,7 +146,7 @@ def main():
         logger.addHandler(handler)
 
     logger.info("Connecting to {} type PULL".format(address))
-    receiver = mflow.connect(address, conn_type="connect", mode=mode)
+    receiver = mflow.connect(address, conn_type="connect", queue_size=queue_size, mode=mode)
     handler = Handler()
     logger.info("Connection opened")
 
