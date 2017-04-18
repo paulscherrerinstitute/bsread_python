@@ -13,8 +13,8 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(name)s - %(message)s')
 
 
-def receive(source, file_name, mode=zmq.PULL):
-    receiver = mflow.connect(source, conn_type="connect", mode=mode)
+def receive(source, file_name, queue_size=100, mode=zmq.PULL):
+    receiver = mflow.connect(source, conn_type="connect", queue_size=queue_size, mode=mode)
     handler = Handler()
 
     writer = wr.Writer()
@@ -128,12 +128,15 @@ def main():
                         help='Channels to retrieve (from dispatching layer)')
     parser.add_argument('-m', '--mode', default='pull', choices=['pull', 'sub'], type=str,
                         help='Communication mode - either pull or sub (default depends on the use of -s option)')
+    parser.add_argument('-q', '--queue', default=100, type=int,
+                        help='Queue size of incoming queue (default = 100)')
 
     arguments = parser.parse_args()
 
     filename = arguments.file
     address = arguments.source
     channels = arguments.channel
+    queue_size = arguments.queue
 
     mode = mflow.SUB if arguments.mode == 'sub' else mflow.PULL
     use_dispatching = False
@@ -161,7 +164,7 @@ def main():
         mode = zmq.SUB
 
     try:
-        receive(address, filename, mode=mode)
+        receive(address, filename, queue_size=queue_size, mode=mode)
 
     except(TypeError, AttributeError):
         # Usually AttributeError is thrown if the receiving is terminated via ctrl+c
