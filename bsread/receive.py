@@ -6,13 +6,13 @@ import zmq
 import numpy
 
 
-def receive(source=None, clear=False, mode=zmq.PULL):
+def receive(source=None, clear=False, queue_size=100, mode=zmq.PULL):
     numpy.set_printoptions(threshold=5)
     numpy.set_printoptions(linewidth=100)
 
     print('Trying to connect to %s' % source)
 
-    receiver = mflow.connect(source, conn_type="connect", mode=mode)
+    receiver = mflow.connect(source, conn_type="connect", queue_size=queue_size, mode=mode)
     handler = Handler()
 
     while True:
@@ -61,6 +61,9 @@ def main():
     parser.add_argument('-c', '--clear', action='count', help='Monitor mode / clear the screen on every message')
     parser.add_argument('-m', '--mode', default='pull', choices=['pull', 'sub'], type=str,
                         help='Communication mode - either pull or sub (default depends on the use of -s option)')
+    parser.add_argument('-q', '--queue', default=100, type=int,
+                        help='Queue size of incoming queue (default = 100)')
+
     parser.add_argument('channel', type=str, nargs='*',
                         help='Channels to retrieve (from dispatching layer)')
 
@@ -68,6 +71,7 @@ def main():
     address = arguments.source  # Either use dispatcher or environment variables
     channels = arguments.channel
     clear = arguments.clear
+    queue_size = arguments.queue
 
     mode = mflow.SUB if arguments.mode == 'sub' else mflow.PULL
     use_dispatching = False
@@ -96,7 +100,7 @@ def main():
         mode = zmq.SUB
 
     try:
-        receive(source=address, clear=clear, mode=mode)
+        receive(source=address, clear=clear, queue_size=queue_size, mode=mode)
 
     except AttributeError:
         # Usually AttributeError is thrown if the receiving is terminated via ctrl+c
