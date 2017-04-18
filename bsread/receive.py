@@ -58,15 +58,18 @@ def main():
 
     parser.add_argument('-s', '--source', default=None, type=str,
                         help='Source address - format "tcp://<address>:<port>"')
-    parser.add_argument('-m', '--monitor', action='count', help='Monitor mode / clear the screen on every message')
+    parser.add_argument('-c', '--clear', action='count', help='Monitor mode / clear the screen on every message')
+    parser.add_argument('-m', '--mode', default='pull', choices=['pull', 'sub'], type=str,
+                        help='Communication mode - either pull (default) or sub')
     parser.add_argument('channel', type=str, nargs='*',
                         help='Channels to retrieve (from dispatching layer)')
 
     arguments = parser.parse_args()
     address = arguments.source  # Either use dispatcher or environment variables
     channels = arguments.channel
+    clear = arguments.clear
 
-    mode = zmq.PULL
+    mode = mflow.SUB if arguments.mode == 'sub' else mflow.PULL
     use_dispatching = False
 
     if not channels and not address:
@@ -93,7 +96,7 @@ def main():
         mode = zmq.SUB
 
     try:
-        receive(source=address, clear=arguments.monitor, mode=mode)
+        receive(source=address, clear=clear, mode=mode)
 
     except AttributeError:
         # Usually AttributeError is thrown if the receiving is terminated via ctrl+c
