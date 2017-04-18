@@ -16,12 +16,12 @@ BIND = "bind"
 # Support of "with" statement
 class source:
 
-    def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None,
+    def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None, queue_size=100,
                  channels=None, config_address=None, all_channels=False,
                  dispatcher_url='https://dispatcher-api.psi.ch/sf'):
         self.source = Source(host=host, port=port, config_port=config_port, conn_type=conn_type, mode=mode,
-                             channels=channels, config_address=config_address, all_channels=all_channels,
-                             dispatcher_url=dispatcher_url)
+                             queue_size=queue_size, channels=channels, config_address=config_address,
+                             all_channels=all_channels, dispatcher_url=dispatcher_url)
 
     def __enter__(self):
         self.source.connect()
@@ -33,7 +33,7 @@ class source:
 
 class Source:
 
-    def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None,
+    def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None, queue_size=100,
                  channels=None, config_address=None, all_channels=False,
                  dispatcher_url='https://dispatcher-api.psi.ch/sf', send_incomplete_messages=True):
         """
@@ -72,6 +72,7 @@ class Source:
         self.port = port
         self.config_port = config_port
         self.conn_type = conn_type
+        self.queue_size = queue_size
 
         self.dispatcher_url = dispatcher_url
 
@@ -137,7 +138,7 @@ class Source:
         self.handler = Handler()
 
     def connect(self):
-        self.stream = mflow.connect(self.address, conn_type=self.conn_type, mode=self.mode)
+        self.stream = mflow.connect(self.address, conn_type=self.conn_type, queue_size=self.queue_size, mode=self.mode)
         return self  # Return self to be backward compatible
 
     def disconnect(self):
