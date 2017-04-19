@@ -1,5 +1,6 @@
 from . import dispatcher
 import re
+import sys
 
 
 def main():
@@ -19,15 +20,18 @@ def main():
 
     pattern = '.*' + pattern + '.*'
 
-    channels = dispatcher.get_current_channels()
-    for channel in channels:
-        if re.match(pattern, channel['name']):
-            if print_metadata:
-                print("{:50} {} {} {} {} {}".format(channel['name'], channel['type'], channel['shape'],
-                                                          channel['modulo'], channel['offset'], channel['source']))
-                # print(channel)
-            else:
-                print(channel['name'])
+    try:
+        channels = dispatcher.get_current_channels()
+        for channel in channels:
+            if re.match(pattern, channel['name']):
+                if print_metadata:
+                    print("{:50} {} {} {} {} {}".format(channel['name'], channel['type'], channel['shape'],
+                                                              channel['modulo'], channel['offset'], channel['source']))
+                    # print(channel)
+                else:
+                    print(channel['name'])
+    except Exception as e:
+        print('Unable to retrieve channels\nReason:\n' + str(e), file=sys.stderr)
 
 if __name__ == "__main__":
     main()
