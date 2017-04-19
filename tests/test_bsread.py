@@ -57,7 +57,7 @@ class TestGenerator(unittest.TestCase):
 
         def filter_method(m):
             print(m.data.data['two'].value)
-            return m.data.data['two'].value < 4
+            return m.data.data['two'].value <= 4
 
         with source(host="localhost", port=9999) as in_stream:
 
@@ -71,8 +71,8 @@ class TestGenerator(unittest.TestCase):
 
                 # Receive and check data
                 # If timeout is not working - this will hang forever - and therefore the test will fail
-                # message = in_stream.receive(filter=lambda m: m.data.data['two'].value < 4)
-                message = in_stream.receive(filter=filter_method)
+                message = in_stream.receive(filter=lambda m: m.data.data['two'].value <= 4)
+                # message = in_stream.receive(filter=filter_method)
                 print(message.data.data['one'].value)
                 # message = in_stream.receive(filter=filter_method)
 

@@ -23,6 +23,7 @@ __Note:__ The bsread module, by default, accesses the SwissFEL Dispatching Layer
 You can get a customized, synchronized stream from any combination of beam synchronous channels by using this piece of code:
 
 ```python
+from bsread import source
 with source(channels=['YOUR_CHANNEL', 'YOUR_SECOND_CHANNEL']) as stream:
     while True:
         message = stream.receive()
@@ -32,6 +33,7 @@ with source(channels=['YOUR_CHANNEL', 'YOUR_SECOND_CHANNEL']) as stream:
 If you want to request non 100Hz data for particular channels you can simply configure this as follows:
 
 ```python
+from bsread import source
 with source(channels=['YOUR_CHANNEL', {'name': 'YOUR_SECOND_CHANNEL', 'modulo': '10', 'offset': 0}]) as stream:
     while True:
         message = stream.receive()
@@ -77,7 +79,7 @@ message.statistics
 ```
 
 
-By default the receive function of bsread is blocking. Due to the nature of the underlying protocol, the desired receive timeout needs to be specified while creating the source.
+By default the receive function of bsread is blocking. Due to the nature of the underlying protocol, a desired receive timeout needs to be specified while creating the source.
 
 ```python
 from bsread import source
@@ -87,6 +89,29 @@ with source(host='ioc', port=9999, receive_timeout=100) as stream:
 ```
 
 `receive_timeout` is specified in milliseconds, -1 is used for infinite.
+
+
+## Filter Messages
+The receive function offers an easy way to define conditions data desired to receive has to match. 
+
+
+A very simple filter can be defined like this:
+
+```python
+message = stream.receive(filter=lambda m: m.data.data['CHANNEL_NAME'].value = 4)
+```
+
+For implementing more complex filters, define a filter method and pass the method as filter:
+ 
+```python
+def filter_method(m):
+    print(m.data.data['CHANNEL_NAME'].value)
+    return m.data.data['CHANNEL_NAME'].value <= 4
+    
+message = stream.receive(filter=filter_method)
+```
+
+
 
 ## Generating Streams
 For various purposes (e.g. testing) beam synchronous streams can be easily created as follows:
