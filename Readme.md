@@ -92,7 +92,23 @@ with source(host='ioc', port=9999, receive_timeout=100) as stream:
 For various purposes (e.g. testing) beam synchronous streams can be easily created as follows:
 
 ```python
-from bsread import Sender
+import numpy
+from bsread.sender import sender
+
+with sender(queue_size=10) as stream:
+    test_array = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
+    # Send Data
+    stream.send(one=1, two=2,
+                three=test_array)
+    stream.send(pulse_id=0, one=3, two=4,
+                three=test_array)
+```
+
+An other way is to send data as follows:
+
+
+```python
+from bsread.sender import Sender
 generator = Sender()
 # generator.set_pre_function(pre)
 generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
@@ -113,17 +129,19 @@ This can be used, for example, to update an object that the registered lambdas a
 To have the active loop in your code (instead of the Generator) you can
 
 ```python
-from bsread import Sender
+from bsread.sender import Sender
+import time
+
 generator = Sender()
 # generator.set_pre_function(pre)
 generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
 
-generator.open_stream()
+generator.open()
 while True:
     generator.send()
     time.sleep(0.01)
 
-generator.close_stream()
+generator.close()
 ```
 
 A more complete example can be fount in [examples/generator.py](examples/generator.py).
@@ -132,29 +150,16 @@ A more complete example can be fount in [examples/generator.py](examples/generat
 Besides using lambdas for generating data you can also explicitly pass the data to send to the Generator. However, keep in mind that the then the active loop is in your domain. This can be done like this:
 
 ```python
-from bsread import Sender
-generator = Generator()
+from bsread.sender import Sender
+generator = Sender()
 generator.add_channel('ABCD')
 generator.add_channel('ABCD2')
-generator.open_stream()
-generator.send_data(1.0, 1.1)
-generator.send_data(2.0, 2.1)
-generator.close_stream()
+generator.open()
+generator.send(1.0, 1.1)
+generator.send(2.0, 2.1)
+generator.close()
 ```
 
-An other way is to send data as follows:
-
-```python
-from bsread import sender
-
-with sender(queue_size=10) as stream:
-    test_array = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
-    # Send Data
-    stream.send(one=1, two=2,
-                three=test_array)
-    stream.send(pulse_id=0, one=3, two=4,
-                three=test_array)
-```
 
 *Note:* The types and order of the data needs to correspond to the sequence the channels are registered. Also if a lambda was registered with a channel this lambda will be ignored.
 
