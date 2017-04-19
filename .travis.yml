@@ -28,7 +28,7 @@ install:
   - conda update -q --all
   - conda install conda-build anaconda-client
   # build
-  - conda build -c $CONDA_CHANNEL conda-recipe
+  - conda build conda-recipe
 
 script:
   - echo "No test scripts to be run!"
