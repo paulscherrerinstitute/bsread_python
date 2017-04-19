@@ -115,23 +115,23 @@ class TestGenerator(unittest.TestCase):
                 # Check is data header hash is different as the second message contains more channels
                 self.assertTrue(hash_m1 != hash_m2, msg="{} {}".format(hash_m1, hash_m2))
 
-    def test_examples(self):
-        from bsread.sender import Sender
-        import time
-
-        with source(host="localhost", port=9999) as in_stream:
-            generator = Sender()
-            # generator.set_pre_function(pre)
-            generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
-
-            # generator.open()
-            try:
-                for i in range(10):
-                    generator.send()
-                    time.sleep(0.01)
-                    # in_stream.receive()
-            finally:
-                generator.close_stream()
+    # def test_examples(self):
+    #     from bsread.sender import Sender
+    #     import time
+    #
+    #     with source(host="localhost", port=9999) as in_stream:
+    #         generator = Sender()
+    #         # generator.set_pre_function(pre)
+    #         generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
+    #
+    #         # generator.open()
+    #         try:
+    #             for i in range(10):
+    #                 generator.send()
+    #                 time.sleep(0.01)
+    #                 in_stream.receive()
+    #         finally:
+    #             generator.close_stream()
 
 if __name__ == '__main_ _':
     unittest.main()
