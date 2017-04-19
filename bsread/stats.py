@@ -195,8 +195,8 @@ def main():
                 print("Reverted Pulse_IDs: {} ".format(statistics.reverted_pulse_ids))
             messages_received += 1
 
-    except AttributeError:
-        # Usually AttributeError is thrown if the receiving is terminated via ctrl+c
+    except KeyboardInterrupt:
+        # KeyboardInterrupt is thrown if the receiving is terminated via ctrl+c
         # As we don't want to see a stacktrace then catch this exception
         pass
     finally:
