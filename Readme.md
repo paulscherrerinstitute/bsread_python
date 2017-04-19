@@ -76,6 +76,18 @@ Beside the actual data the message also includes statistics information. This in
 message.statistics
 ```
 
+
+By default the receive function of bsread is blocking. Due to the nature of the underlying protocol, the desired receive timeout needs to be specified while creating the source.
+
+```python
+from bsread import source
+
+with source(host='ioc', port=9999, receive_timeout=100) as stream:
+    pass
+```
+
+`receive_timeout` is specified in milliseconds, -1 is used for infinite.
+
 ## Generating Streams
 For various purposes (e.g. testing) beam synchronous streams can be easily created as follows:
 

@@ -17,11 +17,11 @@ BIND = "bind"
 class source:
 
     def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None, queue_size=100,
-                 channels=None, config_address=None, all_channels=False,
+                 channels=None, config_address=None, all_channels=False, receive_timeout=None,
                  dispatcher_url='https://dispatcher-api.psi.ch/sf'):
         self.source = Source(host=host, port=port, config_port=config_port, conn_type=conn_type, mode=mode,
                              queue_size=queue_size, channels=channels, config_address=config_address,
-                             all_channels=all_channels, dispatcher_url=dispatcher_url)
+                             all_channels=all_channels, receive_timeout=receive_timeout, dispatcher_url=dispatcher_url)
 
     def __enter__(self):
         self.source.connect()
@@ -34,7 +34,7 @@ class source:
 class Source:
 
     def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None, queue_size=100,
-                 channels=None, config_address=None, all_channels=False,
+                 channels=None, config_address=None, all_channels=False, receive_timeout=None,
                  dispatcher_url='https://dispatcher-api.psi.ch/sf'):
         """
 
@@ -59,6 +59,7 @@ class Source:
             all_channels:   Whether to configure all channels to be streamed. This only appiles if host parameter is
                             set.
             dispatcher_url: URL of the dispatcher api
+            receive_timeout:Receive timeout in milliseconds (-1 infinite)
         """
 
         self.use_dispatching_layer = False
@@ -71,6 +72,7 @@ class Source:
         self.config_port = config_port
         self.conn_type = conn_type
         self.queue_size = queue_size
+        self.receive_timeout = receive_timeout
 
         self.dispatcher_url = dispatcher_url
 
@@ -135,7 +137,8 @@ class Source:
         self.handler = Handler()
 
     def connect(self):
-        self.stream = mflow.connect(self.address, conn_type=self.conn_type, queue_size=self.queue_size, mode=self.mode)
+        self.stream = mflow.connect(self.address, conn_type=self.conn_type, queue_size=self.queue_size, mode=self.mode,
+                                    receive_timeout=self.receive_timeout)
         return self  # Return self to be backward compatible
 
     def disconnect(self):
