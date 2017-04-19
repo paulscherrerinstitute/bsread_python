@@ -166,8 +166,8 @@ def main():
     try:
         receive(address, filename, queue_size=queue_size, mode=mode)
 
-    except(TypeError, AttributeError):
-        # Usually AttributeError is thrown if the receiving is terminated via ctrl+c
+    except KeyboardInterrupt:
+        # KeyboardInterrupt is thrown if the receiving is terminated via ctrl+c
         # As we don't want to see a stacktrace then catch this exception
         pass
     finally:
