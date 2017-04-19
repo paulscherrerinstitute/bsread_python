@@ -155,7 +155,16 @@ class Source:
                 dispatcher.base_url = self.dispatcher_url
                 dispatcher.remove_stream(self.address)
 
-    def receive(self):
-        return self.stream.receive(handler=self.handler.receive)
+    def receive(self, filter=None):
+        message = self.stream.receive(handler=self.handler.receive)
+
+        if filter:
+            while True:  # continue receiving new messages until condition is met
+                if filter(message):
+                    return message
+                else:
+                    message = self.stream.receive(handler=self.handler.receive)
+        else:
+            return message
 
 

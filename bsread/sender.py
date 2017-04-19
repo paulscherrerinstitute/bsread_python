@@ -122,7 +122,7 @@ class Sender:
             self.pulse_id = pulse_id
 
         if check_data:
-            if dict_data and not self.channels.keys() == dict_data.keys():
+            if dict_data:  # and not self.channels.keys() == dict_data.keys():
                 logging.info("Update channel metadata")
                 self.channels = OrderedDict()
                 for key, value in dict_data.items():
