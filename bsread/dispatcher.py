@@ -194,7 +194,7 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta, async=True):
         raise RuntimeError('Invalid ttl - need to be of type timedelta')
 
     update_request = {
-        "ttl": ttl.total_seconds(),
+        "ttl": int(ttl.total_seconds()),  # Value need to be a long
         "asyncCall": async,
         "channels": [],
         "range": {}
@@ -214,8 +214,11 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta, async=True):
     else:
         raise RuntimeError("Invalid start and/or end time/pulse_id")
 
+    logging.debug("Update TTL Request:\n" + json.dumps(update_request))
+
     headers = {'content-type': 'application/json'}
     response = requests.post(base_url + '/data/update/ttl', data=json.dumps(update_request), headers=headers)
+
 
     if not response.ok:
         raise Exception('Unable to update ttl for specified channels - ' + response.text)
