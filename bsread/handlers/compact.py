@@ -2,6 +2,7 @@ import numpy
 import bitshuffle
 import json
 import struct
+from collections import OrderedDict
 
 
 class Handler:
@@ -19,7 +20,6 @@ class Handler:
         message = Message()
         message.pulse_id = header['pulse_id']
         message.hash = header['hash']
-
 
         if 'global_timestamp' in header:
             if 'sec' in header['global_timestamp']:
@@ -291,15 +291,16 @@ class BitshuffleStringProvider:
 
 
 class Message:
-    from collections import OrderedDict
-    def __init__(self, pulse_id=None, global_timestamp=None, global_timestamp_offset=None, hash=None, data=OrderedDict()):
 
-
+    def __init__(self, pulse_id=None, global_timestamp=None, global_timestamp_offset=None, hash=None, data=None):
         self.pulse_id = pulse_id
         self.global_timestamp = global_timestamp
         self.global_timestamp_offset = global_timestamp_offset
         self.hash = hash
-        self.data = data  # Dictionary of values
+        if data:
+            self.data = data  # Dictionary of values
+        else:
+            self.data = OrderedDict()
 
         self.format_changed = False
 
