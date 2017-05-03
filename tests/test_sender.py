@@ -115,6 +115,25 @@ class TestGenerator(unittest.TestCase):
                 # Check is data header hash is different as the second message contains more channels
                 self.assertTrue(hash_m1 != hash_m2, msg="{} {}".format(hash_m1, hash_m2))
 
+    def test_timestamp(self):
+
+        with source(host="localhost", port=9999) as in_stream:
+            with sender(queue_size=10) as stream:
+
+                stream.send(one=1, two=2)
+                # import time
+                # time.sleep(2)
+                stream.send(one=3, two=4)
+
+                # Receive and check data
+                message_1 = in_stream.receive()
+                message_2 = in_stream.receive()
+
+                self.assertTrue(message_1.data.global_timestamp != message_2.data.global_timestamp or
+                                message_1.data.global_timestamp_offset != message_2.data.global_timestamp_offset)
+
+
+
     # def test_examples(self):
     #     from bsread.sender import Sender
     #     import time

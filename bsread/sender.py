@@ -107,12 +107,15 @@ class Sender:
         self.stream.disconnect()
         self.status_stream_open = False
 
-    def send(self, *args, timestamp=time.time(), pulse_id=None, data=None, check_data=True,  **kwargs):
+    def send(self, *args, timestamp=None, pulse_id=None, data=None, check_data=True,  **kwargs):
         """
             data:       Data to be send with the message send. If no data is specified data will be retrieved from the
                         functions registered with each channel
             interval:   Interval in seconds to repeatedly execute this method
         """
+
+        if timestamp is None:
+            timestamp = time.time()
 
         # If args are specified data will be overwritten
         list_data = args if args else None
