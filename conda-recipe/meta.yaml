@@ -17,6 +17,7 @@ requirements:
         - bitshuffle
         - numpy
         - pyzmq
+        - requests
 
 build:
   entry_points:
