@@ -131,14 +131,7 @@ class Sender:
                 for key, value in dict_data.items():
                     metadata = dict()
                     metadata['name'] = key
-                    if value is not None:
-                        metadata['type'], metadata['shape'] = _get_type(value)
-                    else:
-                        logging.warning('Unable to determine type of channel %s - default to type=float64 shape=[1]' % key)
-                        # Default to double shape one
-                        metadata['type'] = "float64"
-                        metadata['shape'] = [1]
-
+                    metadata['type'], metadata['shape'] = _get_type(value)
                     self.channels[key] = Channel(None, metadata)
 
                 self._create_data_header()
@@ -181,9 +174,13 @@ class Sender:
             else:
                 value = channel.function(self.pulse_id)
 
-            self.stream.send(_get_bytearray(value), send_more=True, block=self.block)
-            self.stream.send(struct.pack('q', current_timestamp_epoch) + struct.pack('q', count),
-                             send_more=(count > 0), block=self.block)
+            if value is None:
+                self.stream.send(b'', send_more=True, block=self.block)
+                self.stream.send(b'', send_more=(count > 0), block=self.block)
+            else:
+                self.stream.send(_get_bytearray(value), send_more=True, block=self.block)
+                self.stream.send(struct.pack('q', current_timestamp_epoch) + struct.pack('q', count),
+                                 send_more=(count > 0), block=self.block)
             count -= 1
             counter += 1
 
@@ -202,7 +199,9 @@ class Sender:
 
 
 def _get_bytearray(value):
-    if isinstance(value, float):
+    if value is None:
+        raise RuntimeError('None value cannot be serialized')
+    elif isinstance(value, float):
         return struct.pack('d', value)
     elif isinstance(value, int):
         return struct.pack('i', value)
@@ -222,6 +221,9 @@ def _get_bytearray(value):
 
 
 def _get_type(value):
+    if value is None:
+        logging.warning('Unable to determine type of channel - default to type=float64 shape=[1]')
+        return "float64", [1]  # Default to float64 shape one
     if isinstance(value, float):
         return "float64", [1]
     elif isinstance(value, int):

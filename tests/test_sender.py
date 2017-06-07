@@ -115,6 +115,21 @@ class TestGenerator(unittest.TestCase):
                 # Check is data header hash is different as the second message contains more channels
                 self.assertTrue(hash_m1 != hash_m2, msg="{} {}".format(hash_m1, hash_m2))
 
+    def test_send_stream(self):
+        with source(host="localhost", port=9999) as in_stream:
+
+            with sender(queue_size=1) as stream:
+
+                # Send none data
+                stream.send(one=1, two=None, three="one")
+
+                # Receive and check data
+                message = in_stream.receive()
+                self.assertEqual(message.data.pulse_id, 0)
+                self.assertEqual(message.data.data["one"].value, 1)
+                self.assertIsNone(message.data.data["two"].value)
+                self.assertEqual(message.data.data["three"].value, "one")
+
     def test_timestamp(self):
 
         with source(host="localhost", port=9999) as in_stream:

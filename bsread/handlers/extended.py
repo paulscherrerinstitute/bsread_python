@@ -82,6 +82,8 @@ class Handler:
                     timestamp_offset.append(timestamp_array[1])
                     pulse_ids.append(pulse_id)
             else:
+                if receiver.has_more():
+                    receiver.next()  # Read empty timestamp message
                 data.append(None)
                 timestamp.append(None)
                 timestamp_offset.append(None)

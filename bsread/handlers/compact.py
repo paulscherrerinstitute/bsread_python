@@ -3,6 +3,7 @@ import bitshuffle
 import json
 import struct
 from collections import OrderedDict
+import logging
 
 
 class Handler:
@@ -76,14 +77,20 @@ class Handler:
                 endianness = self.receive_functions[counter][0]["encoding"]
                 channel_value.value = self.receive_functions[counter][1].get_value(raw_data, endianness=endianness)
 
-            if receiver.has_more():
-                raw_timestamp = receiver.next()
-                if raw_timestamp:
-                    timestamp_array = numpy.fromstring(raw_timestamp, dtype=endianness+'u8')
-                    channel_value.timestamp = timestamp_array[0]  # Second past epoch
-                    channel_value.timestamp_offset = timestamp_array[1]  # Nanoseconds offset
+                if receiver.has_more():
+                    raw_timestamp = receiver.next()
+                    if raw_timestamp:
+                        timestamp_array = numpy.fromstring(raw_timestamp, dtype=endianness+'u8')
+                        channel_value.timestamp = timestamp_array[0]  # Second past epoch
+                        channel_value.timestamp_offset = timestamp_array[1]  # Nanoseconds offset
+            else:
+                # Consume empty timestamp message
+                if receiver.has_more():
+                    receiver.next()  # Read empty timestamp message
+                channel_value.timestamp = None  # Second past epoch
+                channel_value.timestamp_offset = None  # Nanoseconds offset
 
-            # TODO needs to be optimized
+                # TODO needs to be optimized
             channel_name = self.data_header['channels'][counter]['name']
             message.data[channel_name] = channel_value
             counter += 1
@@ -234,6 +241,7 @@ class NumberProvider:
             else:
                 return value[0]
         except:
+            logging.warning('Unable to decode value - returning None')
             return None
 
 
