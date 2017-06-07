@@ -131,7 +131,14 @@ class Sender:
                 for key, value in dict_data.items():
                     metadata = dict()
                     metadata['name'] = key
-                    metadata['type'], metadata['shape'] = _get_type(value)
+                    if value is not None:
+                        metadata['type'], metadata['shape'] = _get_type(value)
+                    else:
+                        logging.warning('Unable to determine type of channel %s - default to type=float64 shape=[1]' % key)
+                        # Default to double shape one
+                        metadata['type'] = "float64"
+                        metadata['shape'] = [1]
+
                     self.channels[key] = Channel(None, metadata)
 
                 self._create_data_header()
