@@ -6,7 +6,7 @@ import zmq
 import numpy
 
 
-def receive(source=None, clear=False, queue_size=100, mode=zmq.PULL):
+def receive(source=None, clear=False, queue_size=100, mode=zmq.PULL, channel_filter=None):
     numpy.set_printoptions(threshold=5)
     numpy.set_printoptions(linewidth=100)
 
@@ -33,20 +33,41 @@ def receive(source=None, clear=False, queue_size=100, mode=zmq.PULL):
             keys = "pulse_id" + separator + "global_timestamp" + separator + "global_timestamp_offset"
 
             for key in message.data.keys():
+
+                if channel_filter and key not in channel_filter:
+                    # continue with next element as this one is not in the filter list
+                    continue
+
                 if keys:
                     keys = keys + separator + key
                 else:
                     keys = key
+
             print(keys)
 
         # pprint.pprint(message.data.values())
         # Have pulse_id in first column
-        values = str(message.pulse_id) + separator + str(message.global_timestamp) + separator + str(message.global_timestamp_offset)
-        for value in message.data.values():
+        values = str(message.pulse_id) + separator + str(message.global_timestamp) + separator + str(
+            message.global_timestamp_offset)
+
+        for key in message.data.keys():
+
+            if channel_filter and key not in channel_filter:
+                # continue with next element as this one is not in the filter list
+                continue
+
+            value = message.data[key]
             if values:
                 values = values + separator + str(value.value)
             else:
                 values = str(value.value)
+
+        # for value in message.data.values():
+        #
+        #     if values:
+        #         values = values + separator + str(value.value)
+        #     else:
+        #         values = str(value.value)
 
         print(values)
 
@@ -59,7 +80,7 @@ def main():
     parser.add_argument('-s', '--source', default=None, type=str,
                         help='Source address - format "tcp://<address>:<port>"')
     parser.add_argument('-c', '--clear', action='count', help='Monitor mode / clear the screen on every message')
-    parser.add_argument('-m', '--mode', default='pull', choices=['pull', 'sub'], type=str,
+    parser.add_argument('-m', '--mode', default='sub', choices=['pull', 'sub'], type=str,
                         help='Communication mode - either pull or sub (default depends on the use of -s option)')
     parser.add_argument('-q', '--queue', default=100, type=int,
                         help='Queue size of incoming queue (default = 100)')
@@ -75,6 +96,7 @@ def main():
 
     mode = mflow.SUB if arguments.mode == 'sub' else mflow.PULL
     use_dispatching = False
+    channel_filter = None
 
     if not channels and not address:
         print('\nNo source nor channels are specified - exiting!\n')
@@ -93,6 +115,10 @@ def main():
             print('\nInvalid URI - %s\n' % address)
 
             sys.exit(-1)
+
+        if channels:
+            channel_filter = channels
+
     else:
         # Connect via the dispatching layer
         use_dispatching = True
@@ -100,7 +126,7 @@ def main():
         mode = zmq.SUB
 
     try:
-        receive(source=address, clear=clear, queue_size=queue_size, mode=mode)
+        receive(source=address, clear=clear, queue_size=queue_size, mode=mode, channel_filter=channel_filter)
 
     except KeyboardInterrupt:
         # KeyboardInterrupt is thrown if the receiving is terminated via ctrl+c
