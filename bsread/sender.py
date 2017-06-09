@@ -126,7 +126,7 @@ class Sender:
 
         if check_data:
             if dict_data:  # and not self.channels.keys() == dict_data.keys():
-                logging.info("Update channel metadata")
+                logging.debug("Update channel metadata")
                 self.channels = OrderedDict()
                 for key, value in dict_data.items():
                     metadata = dict()
@@ -222,7 +222,7 @@ def _get_bytearray(value):
 
 def _get_type(value):
     if value is None:
-        logging.warning('Unable to determine type of channel - default to type=float64 shape=[1]')
+        logging.debug('Unable to determine type of channel - default to type=float64 shape=[1]')
         return "float64", [1]  # Default to float64 shape one
     if isinstance(value, float):
         return "float64", [1]

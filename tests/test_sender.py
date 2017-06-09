@@ -130,6 +130,16 @@ class TestGenerator(unittest.TestCase):
                 self.assertIsNone(message.data.data["two"].value)
                 self.assertEqual(message.data.data["three"].value, "one")
 
+                # Test sending compressed stream - compression kicks in if shape > 1
+                stream.send(one=[1, 2, 3, 4, 5])
+
+                # Receive and check data
+                message = in_stream.receive()
+                self.assertTrue((message.data.data["one"].value == [1, 2, 3, 4, 5]).all())
+
+
+
+
     def test_timestamp(self):
 
         with source(host="localhost", port=9999) as in_stream:
