@@ -81,7 +81,7 @@ if __name__ == '__main__':
     print(sources)
 
 
-def request_stream(channels, stream_type='pub_sub', inconsistency_resolution="adjust-individual"):
+def request_stream(channels, stream_type='pub_sub', inconsistency_resolution="adjust-individual", verify=True):
     """
     Request stream for specific channels
     Args:
@@ -92,6 +92,9 @@ def request_stream(channels, stream_type='pub_sub', inconsistency_resolution="ad
         stream_type:                Type of stream, either pub_sub (default) or push_pull
         inconsistency_resolution:   How to resolve inconsistencies in frequencies of the requested channels
                                     See: https://git.psi.ch/sf_daq/ch.psi.daq.dispatcherrest#channel-validation
+                                    values: adjust-individual, keep-as-is
+        verify:                     Check whether all channels are currently available and connected. Checks for 
+                                    frequencies, etc. .
 
     Returns: ZMQ endpoint to connect to for the stream
 
@@ -99,6 +102,7 @@ def request_stream(channels, stream_type='pub_sub', inconsistency_resolution="ad
     # Request stream
     config = {"channels": [],
               "streamType": stream_type,
+              "verify": verify,
               "channelValidation": {"inconsistency": inconsistency_resolution}}
 
     for channel in channels:
