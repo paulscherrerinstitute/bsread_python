@@ -94,11 +94,16 @@ def request_stream(channels, stream_type='pub_sub', inconsistency_resolution="ad
                                     See: https://git.psi.ch/sf_daq/ch.psi.daq.dispatcherrest#channel-validation
                                     values: adjust-individual, keep-as-is
         verify:                     Check whether all channels are currently available and connected. Checks for 
-                                    frequencies, etc. .
+                                    frequencies, etc. . If false inconsistency_resolution will be set to keep-as-is
 
     Returns: ZMQ endpoint to connect to for the stream
 
     """
+
+    if not verify:
+        logging.debug("Set inconsistency_resolution to 'keep-as-is' ")
+        inconsistency_resolution = "keep-as-is"
+
     # Request stream
     config = {"channels": [],
               "streamType": stream_type,
