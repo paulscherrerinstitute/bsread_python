@@ -18,10 +18,11 @@ class source:
 
     def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None, queue_size=100,
                  channels=None, config_address=None, all_channels=False, receive_timeout=None,
-                 dispatcher_url='https://dispatcher-api.psi.ch/sf'):
+                 dispatcher_url='https://dispatcher-api.psi.ch/sf', dispatcher_verify_request=True):
         self.source = Source(host=host, port=port, config_port=config_port, conn_type=conn_type, mode=mode,
                              queue_size=queue_size, channels=channels, config_address=config_address,
-                             all_channels=all_channels, receive_timeout=receive_timeout, dispatcher_url=dispatcher_url)
+                             all_channels=all_channels, receive_timeout=receive_timeout, dispatcher_url=dispatcher_url,
+                             dispatcher_verify_request=dispatcher_verify_request)
 
     def __enter__(self):
         self.source.connect()
@@ -35,7 +36,7 @@ class Source:
 
     def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None, queue_size=100,
                  channels=None, config_address=None, all_channels=False, receive_timeout=None,
-                 dispatcher_url='https://dispatcher-api.psi.ch/sf'):
+                 dispatcher_url='https://dispatcher-api.psi.ch/sf', dispatcher_verify_request=True):
         """
 
         Args:
@@ -123,7 +124,9 @@ class Source:
             dispatcher.base_url = self.dispatcher_url
 
             stream_type = 'push_pull' if self.mode == PULL else 'pub_sub'
-            self.address = dispatcher.request_stream(channels, stream_type=stream_type)
+            self.address = dispatcher.request_stream(channels,
+                                                     stream_type=stream_type,
+                                                     verify=dispatcher_verify_request)
 
             # # TODO REMOVE Workaround
             # import re
