@@ -211,7 +211,13 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta, async=True):
 
     channel_list = []
     for channel in channels:
-        channel_list.append({"name": channel, "backend": "sf-databuffer"})
+        if channel.startswith("sf-databuffer/"):
+            channel_list.append({"name": channel.replace("sf-databuffer/", ""), "backend": "sf-databuffer"})
+        elif channel.startswith("sf-archiverappliance/"):
+            channel_list.append(
+                {"name": channel.replace("sf-archiverappliance/", ""), "backend": "sf-archiverappliance"})
+        else:
+            channel_list.append({"name": channel, "backend": "sf-databuffer"})
     update_request["channels"] = channel_list
 
     if isinstance(start, int) and isinstance(end, int):
