@@ -1,9 +1,6 @@
 import numpy
-import json
-import bitshuffle
-import struct
 
-from bsread.data.receiver import get_receive_functions
+from bsread.data.receiver import get_receive_functions, get_data_header
 
 
 class Handler:
@@ -30,17 +27,7 @@ class Handler:
         if receiver.has_more() and (self.header_hash is None or not self.header_hash == header['hash']):
 
             self.header_hash = header['hash']
-
-            if 'dh_compression' in header and header['dh_compression'] == 'bitshuffle_lz4':
-                data_header_bytes = receiver.next()
-                data_header_bytes = numpy.frombuffer(data_header_bytes, dtype=numpy.uint8)
-                length = struct.unpack(">q", data_header_bytes[:8].tobytes())[0]
-                byte_array = bitshuffle.decompress_lz4(data_header_bytes[12:], shape=(length,),
-                                                       dtype=numpy.dtype('uint8'))
-                data_header = json.loads(byte_array.tobytes().decode())
-            else:
-                # Interpret data header
-                data_header = receiver.next(as_json=True)
+            data_header = get_data_header(header, receiver)
 
             # If a message with ho channel information is received,
             # ignore it and return from function with no data.

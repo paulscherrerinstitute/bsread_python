@@ -1,3 +1,4 @@
+import json
 import struct
 
 import bitshuffle
@@ -75,6 +76,36 @@ class BitshuffleStringProvider:
             return byte_array.tobytes().decode()
         except:
             return None
+
+
+class BitshuffleDataHeaderProvider(object):
+    def __call__(self, data_header_bytes):
+        data_header_bytes = numpy.frombuffer(data_header_bytes, dtype=numpy.uint8)
+        length = struct.unpack(">q", data_header_bytes[:8].tobytes())[0]
+        byte_array = bitshuffle.decompress_lz4(data_header_bytes[12:], shape=(length,),
+                                               dtype=numpy.dtype('uint8'))
+
+        return byte_array.tobytes().decode()
+
+
+def get_data_header(header, receiver):
+    """
+    Based on the main header, get the data header.
+    :param header: Main header.
+    :param receiver: Receiver.
+    :return: Data header.
+    """
+    # Bitshuffle lz4 compressed data header.
+    if header.get('dh_compression') == 'bitshuffle_lz4':
+        data_header_bytes = receiver.next()
+        return json.loads(BitshuffleDataHeaderProvider(data_header_bytes))
+    # Data header without compression.
+    elif 'dh_compression' not in header:
+        return receiver.next(as_json=True)
+    # Unknown compression?
+    else:
+        raise ValueError("Unknown data header compression '%s'." % header.get('dh_compression'))
+
 
 # Mapping from type to dtype + provider (based on compression)
 number_provider_mapping = {
