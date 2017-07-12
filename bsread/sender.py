@@ -9,7 +9,7 @@ import json
 import logging
 from collections import OrderedDict
 
-from bsread.data.compression import compression_provider_mapping
+from bsread.data.utils import compression_provider_mapping, get_value_bytes, get_channel_type
 
 PULL = mflow.PULL
 PUSH = mflow.PUSH
@@ -109,7 +109,7 @@ class Sender:
         self.data_header['htype'] = "bsr_d-1.1"
         self.data_header['channels'] = [channel.metadata for channel in self.channels.values()]
 
-        self.data_header_bytes = json.dumps(self.data_header).encode('utf-8')
+        self.data_header_bytes = get_value_bytes(json.dumps(self.data_header), self.data_header_compression)
         self.main_header['hash'] = hashlib.md5(self.data_header_bytes).hexdigest()
 
     def close(self):
@@ -140,7 +140,7 @@ class Sender:
                 for key, value in dict_data.items():
                     metadata = dict()
                     metadata['name'] = key
-                    metadata['type'], metadata['shape'] = _get_type(value)
+                    metadata['type'], metadata['shape'] = get_channel_type(value)
                     self.channels[key] = Channel(None, metadata)
 
                 self._create_data_header()
@@ -152,7 +152,7 @@ class Sender:
                 for i, k in enumerate(self.channels):
                     metadata = dict()
                     metadata['name'] = k
-                    metadata['type'], metadata['shape'] = _get_type(list_data[i])
+                    metadata['type'], metadata['shape'] = get_channel_type(list_data[i])
                     self.channels[k].metadata = metadata
 
                 self._create_data_header()
@@ -231,24 +231,6 @@ def _get_bytearray(value):
     else:
         return bytearray(value)
 
-
-def _get_type(value):
-    if value is None:
-        logging.debug('Unable to determine type of channel - default to type=float64 shape=[1]')
-        return "float64", [1]  # Default to float64 shape one
-    if isinstance(value, float):
-        return "float64", [1]
-    elif isinstance(value, int):
-        return "int32", [1]
-    elif isinstance(value, str):
-        return "string", [1]
-    elif isinstance(value, numpy.ndarray):
-        return value.dtype.name, list(value.shape)
-    elif isinstance(value, numpy.generic):
-        return value.dtype.name, [1]
-    elif isinstance(value, list):
-        dtype, _ = _get_type(value[0])
-        return dtype, [len(value)]
 
 
 class Channel:

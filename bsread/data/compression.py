@@ -89,34 +89,3 @@ class StringSerializer:
     def deserialize(numpy_array):
         # Return string variables as actual strings (UTF-8 is assumed).
         return numpy_array.tobytes().decode()
-
-
-# Channel type to numpy dtype mapping.
-channel_type_mapping = {
-    # Default value if no channel_type specified.
-    None: ("f8", NumberSerializer),
-    'double': ('f8', NumberSerializer),
-    'float': ('f4', NumberSerializer),
-    'integer': ('i4', NumberSerializer),
-    'long': ('i4', NumberSerializer),
-    'ulong': ('i4', NumberSerializer),
-    'short': ('i2', NumberSerializer),
-    'ushort': ('u2', NumberSerializer),
-    'int8': ('i1', NumberSerializer),
-    'uint8': ('u1', NumberSerializer),
-    'int16': ('i2', NumberSerializer),
-    'uint16': ('u2', NumberSerializer),
-    'int32': ('i4', NumberSerializer),
-    'uint32': ('u4', NumberSerializer),
-    'int64': ('i8', NumberSerializer),
-    'uint64': ('u8', NumberSerializer),
-    'float32': ('f4', NumberSerializer),
-    'float64': ('f8', NumberSerializer),
-    'string': ('u1', StringSerializer)
-}
-
-# Compression string to compression provider mapping.
-compression_provider_mapping = {
-    None: NoCompression,
-    "bitshuffle_lz4": BitshuffleLZ4
-}
