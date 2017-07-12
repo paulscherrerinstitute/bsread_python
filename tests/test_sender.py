@@ -1,6 +1,9 @@
 import unittest
 import numpy
 import logging
+
+from bsread.data.utils import get_channel_type
+
 logging.basicConfig(level=logging.DEBUG)  # Changeing of debug level needs to be done before the import for unit testing
 
 import bsread.sender
@@ -46,44 +49,44 @@ class TestGenerator(unittest.TestCase):
 
     def test__get_type(self):
         value = 1
-        data_type, shape = bsread.sender._get_type(value)
+        data_type, shape = get_channel_type(value)
         self.assertEqual(data_type, "int32")
         self.assertEqual(shape, [1])
 
         value = 1.2
-        data_type, shape = bsread.sender._get_type(value)
+        data_type, shape = get_channel_type(value)
         self.assertEqual(data_type, "float64")
         self.assertEqual(shape, [1])
 
         value = "this is a test"
-        data_type, shape = bsread.sender._get_type(value)
+        data_type, shape = get_channel_type(value)
         self.assertEqual(data_type, "string")
         self.assertEqual(shape, [1])
 
         value = [1, 2, 3]
-        data_type, shape = bsread.sender._get_type(value)
+        data_type, shape = get_channel_type(value)
         self.assertEqual(data_type, "int32")
         self.assertEqual(shape, [3])
 
         value = [1.0, 2.2, 3.4, 5.3]
-        data_type, shape = bsread.sender._get_type(value)
+        data_type, shape = get_channel_type(value)
         self.assertEqual(data_type, "float64")
         self.assertEqual(shape, [4])
 
         value = numpy.array([1, 2, 3], dtype=numpy.uint16)
-        data_type, shape = bsread.sender._get_type(value)
+        data_type, shape = get_channel_type(value)
         self.assertEqual(data_type, "uint16")
         self.assertEqual(shape, [3])
 
         value = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
         print(value)
-        data_type, shape = bsread.sender._get_type(value)
+        data_type, shape = get_channel_type(value)
         self.assertEqual(data_type, "uint16")
         self.assertEqual(shape, [2, 3])
 
         value = numpy.float32(1.0)
         print(isinstance(value, numpy.generic))
-        data_type, shape = bsread.sender._get_type(value)
+        data_type, shape = get_channel_type(value)
         self.assertEqual(data_type, "float32")
         self.assertEqual(shape, [1])
 
