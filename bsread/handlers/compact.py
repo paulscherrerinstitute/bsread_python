@@ -1,19 +1,16 @@
-from logging import getLogger
-
+import json
+import logging
 import numpy
 from collections import OrderedDict
 
-from bsread.data.receiver import get_receive_functions, get_data_header
-
-_logger = getLogger(__name__)
+from bsread.data.utils import get_channel_reader, get_value_reader
 
 
 class Handler:
-
     def __init__(self):
-        self.header_hash = None
-        self.receive_functions = None
-        self.data_header = None
+        # Used for detecting if the data header has changed - we need to reconstruct the channel definitions.
+        self.data_header_hash = None
+        self.channels_definitions = None
 
     def receive(self, receiver):
 
@@ -34,27 +31,40 @@ class Handler:
 
             message.global_timestamp_offset = header['global_timestamp']['ns']
 
-        # Receiver data header
-        if receiver.has_more() and (self.header_hash is None or not self.header_hash == header['hash']):
+        # Receiver data header, check if header has changed - and in this case recreate the channel definitions.
+        if receiver.has_more() and (self.data_header_hash != header['hash']):
+            # Set the current header hash as the new hash.
+            self.data_header_hash = header['hash']
 
-            self.header_hash = header['hash']
-            self.data_header = get_data_header(header, receiver)
+            # Read the data header.
+            data_header_bytes = receiver.next()
+            data_header = json.loads(get_value_reader("string", header.get('dh_compression'))(data_header_bytes))
 
             # If a message with ho channel information is received,
             # ignore it and return from function with no data.
-            if not self.data_header['channels']:
-                _logger.warning("Received message without channels.")
+            if not data_header['channels']:
+                logging.warning("Received message without channels.")
                 while receiver.has_more():
                     # Drain rest of the messages - if entering this code there is actually something wrong
-                    raw_data = receiver.next()
+                    receiver.next()
 
                 return message
 
-            self.receive_functions = get_receive_functions(self.data_header)
+            # TODO: Why do we need to pre-process the message? Source change?
+            for channel in data_header['channels']:
+                # Define endianness of data
+                # > - big endian
+                # < - little endian (default)
+                channel["encoding"] = '>' if channel.get("encoding") == "big" else '<'
 
+            # Construct the channel definitions.
+            self.channels_definitions = [(channel["name"], channel["encoding"], get_channel_reader(channel))
+                                         for channel in data_header['channels']]
+
+            # Signal that the format has changed.
             message.format_changed = True
         else:
-            # Skip second header
+            # Skip second header - we already have the receive functions setup.
             receiver.next()
 
         # Receiving data
@@ -62,28 +72,27 @@ class Handler:
 
         # Todo add some more error checking
         while receiver.has_more():
+            channel_name, channel_endianness, channel_reader = self.channels_definitions[counter]
+
             raw_data = receiver.next()
             channel_value = Value()
 
             if raw_data:
-                endianness = self.receive_functions[counter][0]["encoding"]
-                channel_value.value = self.receive_functions[counter][1].get_value(raw_data, endianness=endianness)
+                channel_value.value = channel_reader(raw_data)
 
                 if receiver.has_more():
+
                     raw_timestamp = receiver.next()
+
                     if raw_timestamp:
-                        timestamp_array = numpy.fromstring(raw_timestamp, dtype=endianness+'u8')
+                        timestamp_array = numpy.fromstring(raw_timestamp, dtype=channel_endianness + 'u8')
                         channel_value.timestamp = timestamp_array[0]  # Second past epoch
                         channel_value.timestamp_offset = timestamp_array[1]  # Nanoseconds offset
             else:
                 # Consume empty timestamp message
                 if receiver.has_more():
                     receiver.next()  # Read empty timestamp message
-                channel_value.timestamp = None  # Second past epoch
-                channel_value.timestamp_offset = None  # Nanoseconds offset
 
-                # TODO needs to be optimized
-            channel_name = self.data_header['channels'][counter]['name']
             message.data[channel_name] = channel_value
             counter += 1
 
@@ -91,7 +100,6 @@ class Handler:
 
 
 class Message:
-
     def __init__(self, pulse_id=None, global_timestamp=None, global_timestamp_offset=None, hash=None, data=None):
         self.pulse_id = pulse_id
         self.global_timestamp = global_timestamp

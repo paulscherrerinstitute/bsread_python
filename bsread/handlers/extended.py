@@ -1,13 +1,16 @@
+import json
+
+import logging
 import numpy
 
-from bsread.data.receiver import get_receive_functions, get_data_header
+from bsread.data.utils import get_value_reader, get_channel_reader
 
 
 class Handler:
 
     def __init__(self):
         self.header_hash = None
-        self.receive_functions = None
+        self.channels_definitions = None
 
     def receive(self, receiver):
 
@@ -24,16 +27,23 @@ class Handler:
         pulse_id = header['pulse_id']
         pulse_id_array.append(pulse_id)
 
-        if receiver.has_more() and (self.header_hash is None or not self.header_hash == header['hash']):
+        if receiver.has_more() and (self.data_header_hash != header['hash']):
 
             self.header_hash = header['hash']
-            data_header = get_data_header(header, receiver)
+
+            # Read the data header.
+            data_header_bytes = receiver.next()
+            data_header = json.loads(get_value_reader("string", header.get('dh_compression'))(data_header_bytes))
 
             # If a message with ho channel information is received,
             # ignore it and return from function with no data.
             if not data_header['channels']:
+
+                logging.warning("Received message without channels.")
+
                 while receiver.has_more():
-                    raw_data = receiver.next()
+                    receiver.next()
+
                 return_value['header'] = header
                 return_value['pulse_id_array'] = pulse_id_array
 
@@ -44,7 +54,16 @@ class Handler:
 
                 return return_value
 
-            self.receive_functions = get_receive_functions(data_header)
+            # TODO: Why do we need to pre-process the message? Source change?
+            for channel in data_header['channels']:
+                # Define endianness of data
+                # > - big endian
+                # < - little endian (default)
+                channel["encoding"] = '>' if channel.get("encoding") == "big" else '<'
+
+            # Construct the channel definitions.
+            self.channels_definitions = [(channel["name"], channel["encoding"], get_channel_reader(channel))
+                                         for channel in data_header['channels']]
 
             return_value['data_header'] = data_header
         else:
@@ -53,18 +72,18 @@ class Handler:
 
         # Receiving data
         counter = 0
-        msg_data_size = 0
+        # msg_data_size = 0
         while receiver.has_more():
             raw_data = receiver.next()
-            msg_data_size += len(raw_data)
+            # msg_data_size += len(raw_data)
 
             if raw_data:
-                endianness = self.receive_functions[counter][0]["encoding"]
-                data.append(self.receive_functions[counter][1].get_value(raw_data, endianness=endianness))
+                channel_name, channel_endianness, channel_reader = self.channels_definitions[counter]
+                data.append(channel_reader(raw_data))
 
                 if receiver.has_more():
                     raw_timestamp = receiver.next()
-                    timestamp_array = numpy.fromstring(raw_timestamp, dtype=endianness+'u8')
+                    timestamp_array = numpy.fromstring(raw_timestamp, dtype=channel_endianness+'u8')
                     # secPastEpoch = value[0]
                     # nsec = value[1]
                     timestamp.append(timestamp_array[0])
