@@ -78,6 +78,8 @@ class Handler:
             # msg_data_size += len(raw_data)
 
             if raw_data:
+                pulse_ids.append(pulse_id)
+
                 channel_name, channel_endianness, channel_reader = self.channels_definitions[counter]
                 data.append(channel_reader(raw_data))
 
@@ -88,7 +90,6 @@ class Handler:
                     # nsec = value[1]
                     timestamp.append(timestamp_array[0])
                     timestamp_offset.append(timestamp_array[1])
-                    pulse_ids.append(pulse_id)
             else:
                 if receiver.has_more():
                     receiver.next()  # Read empty timestamp message
