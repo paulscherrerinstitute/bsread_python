@@ -9,6 +9,8 @@ import json
 import logging
 from collections import OrderedDict
 
+from bsread.data.compression import compression_provider_mapping
+
 PULL = mflow.PULL
 PUSH = mflow.PUSH
 PUB = mflow.PUB
@@ -21,9 +23,10 @@ BIND = "bind"
 # Support of "with" statement
 class sender:
 
-    def __init__(self, queue_size=10, port=9999, conn_type=BIND, mode=PUSH, block=True, start_pulse_id=0):
+    def __init__(self, queue_size=10, port=9999, conn_type=BIND, mode=PUSH, block=True, start_pulse_id=0,
+                 data_header_compression=None):
         self.sender = Sender(queue_size=queue_size, port=port, conn_type=conn_type, mode=mode, block=block,
-                             start_pulse_id=start_pulse_id)
+                             start_pulse_id=start_pulse_id, data_header_compression=data_header_compression)
 
     def __enter__(self):
         self.sender.open()
@@ -35,7 +38,8 @@ class sender:
 
 class Sender:
 
-    def __init__(self, queue_size=10, port=9999, address="tcp://*", conn_type=BIND, mode=PUSH, block=True, start_pulse_id=0):
+    def __init__(self, queue_size=10, port=9999, address="tcp://*", conn_type=BIND, mode=PUSH, block=True,
+                 start_pulse_id=0, data_header_compression=None):
 
         self.block = block
         self.queue_size = queue_size
@@ -57,9 +61,15 @@ class Sender:
 
         # Internal state
         self.data_header = None
-        self.data_header_json = None
+        self.data_header_bytes = None
         self.main_header = None
 
+        # Raise exception if invalid compression is used.
+        if data_header_compression not in compression_provider_mapping:
+            raise ValueError("Data header compression '%s' not supported. Available: %s" %
+                             compression_provider_mapping.keys())
+
+        self.data_header_compression = data_header_compression
         self.status_stream_open = False
 
     def add_channel(self, name, function=None, metadata=None):
@@ -82,6 +92,8 @@ class Sender:
         # Main header
         self.main_header = dict()
         self.main_header['htype'] = "bsr_m-1.1"
+        if self.data_header_compression:
+            self.main_header['dh_compression'] = self.data_header_compression
 
         # Data header
         self._create_data_header()
@@ -95,13 +107,10 @@ class Sender:
     def _create_data_header(self):
         self.data_header = dict()
         self.data_header['htype'] = "bsr_d-1.1"
-        channels = []
-        for name, channel in self.channels.items():
-            channels.append(channel.metadata)
-        self.data_header['channels'] = channels
-        self.data_header_json = json.dumps(self.data_header)
+        self.data_header['channels'] = [channel.metadata for channel in self.channels.values()]
 
-        self.main_header['hash'] = hashlib.md5(self.data_header_json.encode('utf-8')).hexdigest()
+        self.data_header_bytes = json.dumps(self.data_header).encode('utf-8')
+        self.main_header['hash'] = hashlib.md5(self.data_header_bytes).hexdigest()
 
     def close(self):
         self.stream.disconnect()
@@ -162,7 +171,8 @@ class Sender:
         # Main header
         self.stream.send(json.dumps(self.main_header).encode('utf-8'), send_more=True, block=self.block)
         # Data header
-        self.stream.send(self.data_header_json.encode('utf-8'), send_more=True, block=self.block)
+        # TODO: Adapt this guy.
+        self.stream.send(self.data_header_bytes, send_more=True, block=self.block)
 
         counter = 0
         count = len(self.channels) - 1  # use of count to make value timestamps unique and to detect last item
@@ -178,7 +188,9 @@ class Sender:
                 self.stream.send(b'', send_more=True, block=self.block)
                 self.stream.send(b'', send_more=(count > 0), block=self.block)
             else:
+                # TODO: Adapt this guy.
                 self.stream.send(_get_bytearray(value), send_more=True, block=self.block)
+
                 self.stream.send(struct.pack('q', current_timestamp_epoch) + struct.pack('q', count),
                                  send_more=(count > 0), block=self.block)
             count -= 1
