@@ -59,6 +59,7 @@ class BitshuffleLZ4:
 
     @staticmethod
     def pack_data(bytes_array):
+        # TODO: Implement this to make the tests pass.
         pass
 
 

@@ -1,14 +1,13 @@
 import unittest
 import numpy
 import logging
+import bsread.sender
 
 from bsread.data.utils import get_channel_type
-
-logging.basicConfig(level=logging.DEBUG)  # Changeing of debug level needs to be done before the import for unit testing
-
-import bsread.sender
 from bsread.sender import sender
 from bsread import source
+
+logging.basicConfig(level=logging.DEBUG)  # Changeing of debug level needs to be done before the import for unit testing
 
 
 def pre():
@@ -140,9 +139,6 @@ class TestGenerator(unittest.TestCase):
                 message = in_stream.receive()
                 self.assertTrue((message.data.data["one"].value == [1, 2, 3, 4, 5]).all())
 
-
-
-
     def test_timestamp(self):
 
         with source(host="localhost", port=9999) as in_stream:
@@ -160,7 +156,57 @@ class TestGenerator(unittest.TestCase):
                 self.assertTrue(message_1.data.global_timestamp != message_2.data.global_timestamp or
                                 message_1.data.global_timestamp_offset != message_2.data.global_timestamp_offset)
 
+    def test_compression(self):
 
+        def register_channel(stream, name, value):
+            channel_type, data_shape = get_channel_type(value)
+
+            # Add normal channel.
+            stream.add_channel("normal_" + name,
+                               lambda pulse_id: value,
+                               {"type": channel_type,
+                                "shape": data_shape})
+
+            # Add compressed channel.
+            stream.add_channel("compressed_" + name,
+                               lambda pulse_id: value,
+                               {"type": channel_type,
+                                "shape": data_shape,
+                                "compression": "bitshuffle_lz4"})
+
+        with source(host="localhost") as receive_stream:
+            with sender() as send_stream:
+                values = {
+                    "array": [1, 2, 3, 4, 5],
+                    "int": -12,
+                    "float": 99.0,
+                    "string": "testing string",
+                    "numpy_array": numpy.array([1., 2., 3., 4, 5., 6], dtype=numpy.float32).reshape(2, 3),
+                    "numpy_int": numpy.int64(999999),
+                    "numpy_float": numpy.float64(999999.0)
+                }
+
+                # Register all test values in channels.
+                for name, value in values.items():
+                    register_channel(send_stream, name, value)
+
+                send_stream.send()
+                response = receive_stream.receive()
+
+                for name, value in values.items():
+
+                    plain_received_value = response.data.data["normal_" + name].value
+                    compressed_received_value = response.data.data["compressed_" + name].value
+
+                    # Compare numpy arrays.
+                    if isinstance(plain_received_value, numpy.ndarray):
+                        numpy.testing.assert_array_equal(plain_received_value, value)
+                        numpy.testing.assert_array_equal(compressed_received_value, value)
+
+                    # Everything else.
+                    else:
+                        self.assertEqual(plain_received_value, value, "Plain channel values not as expected")
+                        self.assertEqual(compressed_received_value, value, "Compressed channel values not as expected")
 
     # def test_examples(self):
     #     from bsread.sender import Sender
@@ -179,6 +225,7 @@ class TestGenerator(unittest.TestCase):
     #                 in_stream.receive()
     #         finally:
     #             generator.close_stream()
+
 
 if __name__ == '__main_ _':
     unittest.main()
