@@ -85,7 +85,7 @@ class Handler:
                     raw_timestamp = receiver.next()
 
                     if raw_timestamp:
-                        timestamp_array = numpy.fromstring(raw_timestamp, dtype=channel_endianness + 'u8')
+                        timestamp_array = numpy.frombuffer(raw_timestamp, dtype=channel_endianness + 'u8')
                         channel_value.timestamp = timestamp_array[0]  # Second past epoch
                         channel_value.timestamp_offset = timestamp_array[1]  # Nanoseconds offset
             else:

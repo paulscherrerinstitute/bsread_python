@@ -85,7 +85,7 @@ class Handler:
 
                 if receiver.has_more():
                     raw_timestamp = receiver.next()
-                    timestamp_array = numpy.fromstring(raw_timestamp, dtype=channel_endianness+'u8')
+                    timestamp_array = numpy.frombuffer(raw_timestamp, dtype=channel_endianness+'u8')
                     # secPastEpoch = value[0]
                     # nsec = value[1]
                     timestamp.append(timestamp_array[0])

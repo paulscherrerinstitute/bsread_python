@@ -14,7 +14,7 @@ class NoCompression:
         :param shape: Shape of the result.
         :return: Numpy array of dtype and shape.
         """
-        raw_data = numpy.fromstring(raw_string, dtype=dtype)
+        raw_data = numpy.frombuffer(raw_string, dtype=dtype)
 
         # Do not reshape scalars.
         if shape is not None and shape != [1]:

@@ -44,7 +44,7 @@ class TestGenerator(unittest.TestCase):
         value = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
         bytes = bsread.sender._get_bytearray(value)
 
-        new_value = numpy.fromstring(bytes, dtype=numpy.uint16).reshape((2, 3))
+        new_value = numpy.frombuffer(bytes, dtype=numpy.uint16).reshape((2, 3))
         print(new_value)
 
     def test__get_type(self):

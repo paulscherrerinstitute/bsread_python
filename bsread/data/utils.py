@@ -1,3 +1,4 @@
+import struct
 import traceback
 from logging import getLogger
 
@@ -137,3 +138,25 @@ def get_value_reader(channel_type, compression, shape=None, endianness=""):
 
 def get_value_bytes(value, compression=None):
     return value.encode('utf-8')
+
+
+def _get_bytearray(value):
+    if value is None:
+        raise RuntimeError('None value cannot be serialized')
+    elif isinstance(value, float):
+        return struct.pack('d', value)
+    elif isinstance(value, int):
+        return struct.pack('i', value)
+    elif isinstance(value, str):
+        return value.encode('utf-8')
+    elif isinstance(value, numpy.ndarray):
+        return value.tobytes()
+    elif value.__class__ in [x for j in numpy.sctypes.values() for x in j if "__array_interface__" in dir(x)]:
+        return value.tobytes()
+    elif isinstance(value, list):
+        message = bytearray()
+        for v in value:
+            message.extend(_get_bytearray(v))
+        return message
+    else:
+        return bytearray(value)
