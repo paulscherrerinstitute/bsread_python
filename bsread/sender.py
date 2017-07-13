@@ -1,3 +1,5 @@
+from threading import Lock
+
 import mflow
 import time
 import sys
@@ -63,6 +65,8 @@ class Sender:
         self.data_header_bytes = None
         self.main_header = None
 
+        self.channels_lock = Lock()
+
         # Raise exception if invalid compression is used.
         if data_header_compression not in compression_provider_mapping:
             raise ValueError("Data header compression '%s' not supported. Available: %s" %
@@ -82,7 +86,12 @@ class Sender:
         metadata['name'] = name
 
         # Add channel
-        self.channels[name] = Channel(function, metadata)
+        with self.channels_lock:
+            self.channels[name] = Channel(function, metadata)
+
+            # If the stream is already open, recreate the header.
+            if self.status_stream_open:
+                self._create_data_header()
 
     def open(self):
         self.stream = mflow.connect('%s:%d' % (self.address, self.port), queue_size=self.queue_size, conn_type=self.conn_type,
@@ -95,7 +104,8 @@ class Sender:
             self.main_header['dh_compression'] = self.data_header_compression
 
         # Data header
-        self._create_data_header()
+        with self.channels_lock:
+            self._create_data_header()
 
         # Set initial pulse_id
         self.pulse_id = self.start_pulse_id
@@ -132,66 +142,70 @@ class Sender:
         if pulse_id is not None:
             self.pulse_id = pulse_id
 
-        if check_data:
-            if dict_data:  # and not self.channels.keys() == dict_data.keys():
-                logging.debug("Update channel metadata")
-                self.channels = OrderedDict()
-                for key, value in dict_data.items():
-                    metadata = dict()
-                    metadata['name'] = key
-                    metadata['type'], metadata['shape'] = get_channel_type(value)
-                    self.channels[key] = Channel(None, metadata)
+        # Lock the channel while sending data - prevent data corruption.
+        with self.channels_lock:
 
-                self._create_data_header()
-            elif list_data:
-                if len(list_data) != len(self.channels):
-                    raise ValueError("Length of passed data (%d) does not correspond to configured channels (%d)"
-                                     % (len(list_data), len(self.channels)))
-                # channels is Ordered dict, assumption is that channels are in the same order
-                for i, k in enumerate(self.channels):
-                    metadata = dict()
-                    metadata['name'] = k
-                    metadata['type'], metadata['shape'] = get_channel_type(list_data[i])
-                    self.channels[k].metadata = metadata
+            if check_data:
+                if dict_data:  # and not self.channels.keys() == dict_data.keys():
+                    logging.debug("Update channel metadata")
+                    self.channels = OrderedDict()
+                    for key, value in dict_data.items():
+                        metadata = dict()
+                        metadata['name'] = key
+                        metadata['type'], metadata['shape'] = get_channel_type(value)
+                        self.channels[key] = Channel(None, metadata)
 
-                self._create_data_header()
+                    self._create_data_header()
+                elif list_data:
+                    if len(list_data) != len(self.channels):
+                        raise ValueError("Length of passed data (%d) does not correspond to configured channels (%d)"
+                                         % (len(list_data), len(self.channels)))
+                    # channels is Ordered dict, assumption is that channels are in the same order
+                    for i, k in enumerate(self.channels):
+                        metadata = dict()
+                        metadata['name'] = k
+                        metadata['type'], metadata['shape'] = get_channel_type(list_data[i])
+                        self.channels[k].metadata = metadata
 
-        # Call pre function if registered
-        if self.pre_function:
-            self.pre_function()
+                    self._create_data_header()
 
-        current_timestamp_epoch = int(timestamp)
-        current_timestamp_ns = int(math.modf(timestamp)[0] * 1e9)
+            # Call pre function if registered
+            if self.pre_function:
+                self.pre_function()
 
-        self.main_header['pulse_id'] = self.pulse_id
-        self.main_header['global_timestamp'] = {"sec": current_timestamp_epoch, "ns": current_timestamp_ns}
+            current_timestamp_epoch = int(timestamp)
+            current_timestamp_ns = int(math.modf(timestamp)[0] * 1e9)
 
-        # Send headers
-        # Main header
-        self.stream.send(json.dumps(self.main_header).encode('utf-8'), send_more=True, block=self.block)
-        # Data header
-        self.stream.send(self.data_header_bytes, send_more=True, block=self.block)
+            self.main_header['pulse_id'] = self.pulse_id
+            self.main_header['global_timestamp'] = {"sec": current_timestamp_epoch, "ns": current_timestamp_ns}
 
-        counter = 0
-        count = len(self.channels) - 1  # use of count to make value timestamps unique and to detect last item
-        for name, channel in self.channels.items():
-            if dict_data:
-                value = dict_data[name]
-            elif list_data:
-                value = list_data[counter]
-            else:
-                value = channel.function(self.pulse_id)
+            # Send headers
+            # Main header
+            self.stream.send(json.dumps(self.main_header).encode('utf-8'), send_more=True, block=self.block)
+            # Data header
+            self.stream.send(self.data_header_bytes, send_more=True, block=self.block)
 
-            if value is None:
-                self.stream.send(b'', send_more=True, block=self.block)
-                self.stream.send(b'', send_more=(count > 0), block=self.block)
-            else:
-                self.stream.send(get_value_bytes(value, channel.metadata.get("compression")), send_more=True, block=self.block)
+            counter = 0
+            count = len(self.channels) - 1  # use of count to make value timestamps unique and to detect last item
+            for name, channel in self.channels.items():
+                if dict_data:
+                    value = dict_data[name]
+                elif list_data:
+                    value = list_data[counter]
+                else:
+                    value = channel.function(self.pulse_id)
 
-                self.stream.send(struct.pack('q', current_timestamp_epoch) + struct.pack('q', count),
-                                 send_more=(count > 0), block=self.block)
-            count -= 1
-            counter += 1
+                if value is None:
+                    self.stream.send(b'', send_more=True, block=self.block)
+                    self.stream.send(b'', send_more=(count > 0), block=self.block)
+                else:
+                    self.stream.send(get_value_bytes(value, channel.metadata.get("compression")), send_more=True,
+                                     block=self.block)
+
+                    self.stream.send(struct.pack('q', current_timestamp_epoch) + struct.pack('q', count),
+                                     send_more=(count > 0), block=self.block)
+                count -= 1
+                counter += 1
 
         self.pulse_id += 1
 
@@ -205,7 +219,6 @@ class Sender:
         while True:
             self.send()
             time.sleep(0.01)
-
 
 
 class Channel:
