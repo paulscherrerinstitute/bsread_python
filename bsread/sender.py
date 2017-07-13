@@ -186,7 +186,7 @@ class Sender:
                 self.stream.send(b'', send_more=True, block=self.block)
                 self.stream.send(b'', send_more=(count > 0), block=self.block)
             else:
-                self.stream.send(get_value_bytes(value, channel.get("compression")), send_more=True, block=self.block)
+                self.stream.send(get_value_bytes(value, channel.metadata.get("compression")), send_more=True, block=self.block)
 
                 self.stream.send(struct.pack('q', current_timestamp_epoch) + struct.pack('q', count),
                                  send_more=(count > 0), block=self.block)
