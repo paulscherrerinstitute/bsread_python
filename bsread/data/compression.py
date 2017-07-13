@@ -23,8 +23,8 @@ class NoCompression:
         return raw_data
 
     @staticmethod
-    def pack_data():
-        pass
+    def pack_data(bytes_array):
+        return bytes_array
 
 
 class BitshuffleLZ4:
@@ -58,7 +58,7 @@ class BitshuffleLZ4:
         return byte_array
 
     @staticmethod
-    def pack_data():
+    def pack_data(bytes_array):
         pass
 
 
@@ -80,10 +80,6 @@ class StringSerializer:
     """
     Serialization/Deserialization for strings.
     """
-
-    @staticmethod
-    def serialize(value):
-        pass
 
     @staticmethod
     def deserialize(numpy_array):

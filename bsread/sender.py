@@ -4,12 +4,11 @@ import sys
 import hashlib
 import math
 import struct
-import numpy
 import json
 import logging
 from collections import OrderedDict
 
-from bsread.data.utils import compression_provider_mapping, get_value_bytes, get_channel_type, _get_bytearray
+from bsread.data.utils import compression_provider_mapping, get_value_bytes, get_channel_type, get_value_byte_array
 
 PULL = mflow.PULL
 PUSH = mflow.PUSH
@@ -171,7 +170,6 @@ class Sender:
         # Main header
         self.stream.send(json.dumps(self.main_header).encode('utf-8'), send_more=True, block=self.block)
         # Data header
-        # TODO: Adapt this guy.
         self.stream.send(self.data_header_bytes, send_more=True, block=self.block)
 
         counter = 0
@@ -188,8 +186,7 @@ class Sender:
                 self.stream.send(b'', send_more=True, block=self.block)
                 self.stream.send(b'', send_more=(count > 0), block=self.block)
             else:
-                # TODO: Adapt this guy.
-                self.stream.send(_get_bytearray(value), send_more=True, block=self.block)
+                self.stream.send(get_value_bytes(value, channel.get("compression")), send_more=True, block=self.block)
 
                 self.stream.send(struct.pack('q', current_timestamp_epoch) + struct.pack('q', count),
                                  send_more=(count > 0), block=self.block)

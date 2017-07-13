@@ -42,7 +42,7 @@ class TestGenerator(unittest.TestCase):
 
     def test__get_bytearray(self):
         value = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
-        bytes = bsread.sender._get_bytearray(value)
+        bytes = bsread.sender.get_value_byte_array(value)
 
         new_value = numpy.frombuffer(bytes, dtype=numpy.uint16).reshape((2, 3))
         print(new_value)

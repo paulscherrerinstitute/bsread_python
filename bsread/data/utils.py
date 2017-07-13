@@ -137,10 +137,27 @@ def get_value_reader(channel_type, compression, shape=None, endianness=""):
 
 
 def get_value_bytes(value, compression=None):
-    return value.encode('utf-8')
+    """
+    Based on the value, get the compressed bytes.
+    :param value: Value to compress.
+    :param compression: Compression to use.
+    :return: Bytes ready to be sent over the channel.
+    """
+
+    if compression not in compression_provider_mapping:
+        error_message = "Channel compression '%s' not supported." % compression
+        _logger.error(error_message)
+        raise ValueError(error_message)
+
+    compressor = compression_provider_mapping[compression].pack_data
+
+    bytes_array = get_value_byte_array(value)
+    compressed_bytes = compressor(bytes_array)
+
+    return compressed_bytes
 
 
-def _get_bytearray(value):
+def get_value_byte_array(value):
     if value is None:
         raise RuntimeError('None value cannot be serialized')
     elif isinstance(value, float):
@@ -156,7 +173,7 @@ def _get_bytearray(value):
     elif isinstance(value, list):
         message = bytearray()
         for v in value:
-            message.extend(_get_bytearray(v))
+            message.extend(get_value_byte_array(v))
         return message
     else:
         return bytearray(value)
