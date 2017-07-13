@@ -46,24 +46,6 @@ scalar_channel_type_mapping = {
 }
 
 
-def _resolve_list_type(value):
-    """
-    Recursive function to find the element type of a list.
-    :param value: Value to resolve.
-    :return: Tuple of (value type, shape)
-    """
-    value_type, _ = get_channel_type(value[0])
-    shape = [len(value)]
-    return value_type, shape
-
-# Mapping between vector type to send and channel type.
-vector_channel_type_mapping = {
-    list: _resolve_list_type,
-    numpy.ndarray: lambda value: (value.dtype.name, list(value.shape)),
-    numpy.generic: lambda value: (value.dtype.name, [1])
-}
-
-
 def get_channel_type(value):
     """
     Get the bsread channel type from the value to be sent.
@@ -71,14 +53,21 @@ def get_channel_type(value):
     :raise ValueError if the channel type is unsupported.
     :return: Tuple of (value type, shape)
     """
+    if value is None:
+        _logger.debug('Channel Value is None - Unable to determine type of channel - default to type=float64 shape=[1]')
+
     value_type = type(value)
 
-    # Check if value is a scalar.
+    # Check if value is a python scalar.
     if value_type in scalar_channel_type_mapping:
         return scalar_channel_type_mapping[value_type]
-    # Check if value is a vector
-    elif value_type in vector_channel_type_mapping:
-        return vector_channel_type_mapping[value_type](value)
+    elif isinstance(value, numpy.ndarray):
+        return value.dtype.name, list(value.shape)
+    elif isinstance(value, numpy.generic):
+        return value.dtype.name, [1]
+    elif isinstance(value, list):
+        dtype, _ = get_channel_type(value[0])
+        return dtype, [len(value)]
     # We do not support this kind of values.
     else:
         raise ValueError("Unsupported channel type %s." % value_type)
