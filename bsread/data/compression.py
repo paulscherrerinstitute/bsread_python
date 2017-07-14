@@ -28,6 +28,8 @@ class NoCompression:
 
 
 class BitshuffleLZ4:
+    default_compression_block_size = 0
+
     # numpy type definitions can be found at: http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html
     @staticmethod
     def unpack_data(raw_bytes, dtype, shape=None):
@@ -59,30 +61,39 @@ class BitshuffleLZ4:
 
     @staticmethod
     def pack_data(bytes_array):
-        # TODO: Implement this to make the tests pass.
-        pass
+        # Uncompressed block size, big endian, int64 (long long)
+        unpacked_length = struct.pack(">q", len(bytes_array))
+
+        # Compression block size, big endian, int32 (int)
+        compression_block_size = struct.pack(">i", BitshuffleLZ4.default_compression_block_size)
+
+        compressed_bytes = bitshuffle.compress_lz4(bytes_array, BitshuffleLZ4.default_compression_block_size)
+
+        return unpacked_length + compression_block_size + compressed_bytes
 
 
-class NumberSerializer:
-    """
-    Serialization/Deserialization for numbers.
-    """
-
-    @staticmethod
-    def deserialize(numpy_array):
-        # Return single value arrays as a scalar.
-        if len(numpy_array) == 1:
-            return numpy_array[0]
-        else:
-            return numpy_array
+def deserialize_number(numpy_array):
+    # Return single value arrays as a scalar.
+    if len(numpy_array) == 1:
+        return numpy_array[0]
+    else:
+        return numpy_array
 
 
-class StringSerializer:
-    """
-    Serialization/Deserialization for strings.
-    """
+def deserialize_string(numpy_array):
+    # Return string variables as actual strings (UTF-8 is assumed).
+    return numpy_array.tobytes().decode()
 
-    @staticmethod
-    def deserialize(numpy_array):
-        # Return string variables as actual strings (UTF-8 is assumed).
-        return numpy_array.tobytes().decode()
+
+def serialize_numpy(numpy_array, dtype):
+    # Numpy arrays are easily serializable.
+    return numpy_array.tobytes()
+
+
+def serialize_python_number(value, dtype):
+    return numpy.array(value, dtype=dtype)
+
+
+def serialize_python_string(value, dtype):
+    # UTF-8 is assumed.
+    return numpy.frombuffer(value.encode(), dtype=dtype)
