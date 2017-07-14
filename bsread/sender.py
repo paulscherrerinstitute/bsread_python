@@ -10,7 +10,7 @@ import json
 import logging
 from collections import OrderedDict
 
-from bsread.data.utils import compression_provider_mapping, get_value_bytes, get_channel_type, get_value_byte_array
+from bsread.data.serialization import compression_provider_mapping, get_value_bytes, get_channel_type, get_value_byte_array
 
 PULL = mflow.PULL
 PUSH = mflow.PUSH

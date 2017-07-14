@@ -3,7 +3,7 @@ import numpy
 import logging
 import bsread.sender
 
-from bsread.data.utils import get_channel_type
+from bsread.data.serialization import get_channel_type
 from bsread.sender import sender
 from bsread import source
 
@@ -168,11 +168,11 @@ class TestGenerator(unittest.TestCase):
                                 "shape": data_shape})
 
             # Add compressed channel.
-            stream.add_channel("compressed_" + name,
-                               lambda pulse_id: value,
-                               {"type": channel_type,
-                                "shape": data_shape,
-                                "compression": "bitshuffle_lz4"})
+            # stream.add_channel("compressed_" + name,
+            #                    lambda pulse_id: value,
+            #                    {"type": channel_type,
+            #                     "shape": data_shape,
+            #                     "compression": "bitshuffle_lz4"})
 
         with source(host="localhost") as receive_stream:
             with sender() as send_stream:
@@ -196,17 +196,17 @@ class TestGenerator(unittest.TestCase):
                 for name, value in values.items():
 
                     plain_received_value = response.data.data["normal_" + name].value
-                    compressed_received_value = response.data.data["compressed_" + name].value
+                    # compressed_received_value = response.data.data["compressed_" + name].value
 
                     # Compare numpy arrays.
                     if isinstance(plain_received_value, numpy.ndarray):
                         numpy.testing.assert_array_equal(plain_received_value, value)
-                        numpy.testing.assert_array_equal(compressed_received_value, value)
+                        # numpy.testing.assert_array_equal(compressed_received_value, value)
 
                     # Everything else.
                     else:
                         self.assertEqual(plain_received_value, value, "Plain channel values not as expected")
-                        self.assertEqual(compressed_received_value, value, "Compressed channel values not as expected")
+                        # self.assertEqual(compressed_received_value, value, "Compressed channel values not as expected")
 
     # def test_examples(self):
     #     from bsread.sender import Sender

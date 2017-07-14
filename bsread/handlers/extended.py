@@ -3,7 +3,7 @@ import json
 import logging
 import numpy
 
-from bsread.data.utils import get_value_reader, get_channel_reader
+from bsread.data.serialization import get_value_reader, get_channel_reader
 
 
 class Handler:

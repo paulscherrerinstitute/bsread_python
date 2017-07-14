@@ -4,38 +4,60 @@ from logging import getLogger
 
 import numpy
 
-from bsread.data.compression import NumberSerializer, StringSerializer, NoCompression, BitshuffleLZ4
+from bsread.data.compression import NoCompression, BitshuffleLZ4, deserialize_number, deserialize_string, \
+    serialize_python_number, serialize_python_string, serialize_numpy
 
 _logger = getLogger(__name__)
-
-# Channel type to numpy dtype mapping.
-channel_type_serializer_mapping = {
-    # Default value if no channel_type specified.
-    None: ("f8", NumberSerializer),
-    'double': ('f8', NumberSerializer),
-    'float': ('f4', NumberSerializer),
-    'integer': ('i4', NumberSerializer),
-    'long': ('i4', NumberSerializer),
-    'ulong': ('i4', NumberSerializer),
-    'short': ('i2', NumberSerializer),
-    'ushort': ('u2', NumberSerializer),
-    'int8': ('i1', NumberSerializer),
-    'uint8': ('u1', NumberSerializer),
-    'int16': ('i2', NumberSerializer),
-    'uint16': ('u2', NumberSerializer),
-    'int32': ('i4', NumberSerializer),
-    'uint32': ('u4', NumberSerializer),
-    'int64': ('i8', NumberSerializer),
-    'uint64': ('u8', NumberSerializer),
-    'float32': ('f4', NumberSerializer),
-    'float64': ('f8', NumberSerializer),
-    'string': ('u1', StringSerializer)
-}
 
 # Compression string to compression provider mapping.
 compression_provider_mapping = {
     None: NoCompression,
     "bitshuffle_lz4": BitshuffleLZ4
+}
+
+# Channel type to numpy dtype and serializer mapping.
+# channel_type: (dtype, deserializer)
+channel_type_deserializer_mapping = {
+    # Default value if no channel_type specified.
+    None: ("f8", deserialize_number),
+    'double': ('f8', deserialize_number),
+    'float': ('f4', deserialize_number),
+    'integer': ('i4', deserialize_number),
+    'long': ('i4', deserialize_number),
+    'ulong': ('i4', deserialize_number),
+    'short': ('i2', deserialize_number),
+    'ushort': ('u2', deserialize_number),
+    'int8': ('i1', deserialize_number),
+    'uint8': ('u1', deserialize_number),
+    'int16': ('i2', deserialize_number),
+    'uint16': ('u2', deserialize_number),
+    'int32': ('i4', deserialize_number),
+    'uint32': ('u4', deserialize_number),
+    'int64': ('i8', deserialize_number),
+    'uint64': ('u8', deserialize_number),
+    'float32': ('f4', deserialize_number),
+    'float64': ('f8', deserialize_number),
+    'string': ('u1', deserialize_string)
+}
+
+# Value to send to channel type and serializer mapping.
+# type(value)
+channel_type_serializer_mapping = {
+    # Default value if no channel_type specified.
+    type(None): ("f8", serialize_python_number),
+    float: ('f8', "double", serialize_python_number),
+    int: ('i8', "long", serialize_python_number),
+    str: ('u1', "string", serialize_python_string),
+    numpy.int8: ('i1', 'i1', serialize_numpy),
+    numpy.uint8: ('u1', 'u1', serialize_numpy),
+    numpy.int16: ('i2', 'i2', serialize_numpy),
+    numpy.uint16: ('u2', 'u2', serialize_numpy),
+    numpy.int32: ('i4', 'i4', serialize_numpy),
+    numpy.uint32: ('u4', 'u4', serialize_numpy),
+    numpy.int64: ('i8', 'i8', serialize_numpy),
+    numpy.uint64: ('u8', 'u8', serialize_numpy),
+    numpy.float32: ('f4', 'f4', serialize_numpy),
+    numpy.float64: ('f8', 'f8', serialize_numpy)
 }
 
 # Mapping between scalar type to send and channel type.
@@ -104,7 +126,7 @@ def get_value_reader(channel_type, compression, shape=None, endianness=""):
     :return: Object capable of reading the data, when get_value() is called on it.
     """
     # If the type is unknown, NoneProvider should be used.
-    if channel_type not in channel_type_serializer_mapping:
+    if channel_type not in channel_type_deserializer_mapping:
         _logger.warning("Channel type '%s' not found in mapping." % channel_type)
         # If the channel is not supported, always return None.
         return lambda x: None
@@ -116,11 +138,9 @@ def get_value_reader(channel_type, compression, shape=None, endianness=""):
         return lambda x: None
 
     decompressor = compression_provider_mapping[compression].unpack_data
-    dtype, serializer = channel_type_serializer_mapping[channel_type]
+    dtype, serializer = channel_type_deserializer_mapping[channel_type]
     # Expand the dtype with the correct endianess.
     dtype = endianness + dtype
-    # Reference the serializer deserialize method only.
-    serializer = serializer.deserialize
 
     def value_reader(raw_data):
         try:
