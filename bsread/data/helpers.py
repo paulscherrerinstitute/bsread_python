@@ -1,37 +1,65 @@
-import struct
 import traceback
 
 import numpy
 
-from bsread.data.serialization import _logger, scalar_channel_type_mapping, channel_type_deserializer_mapping, \
-    compression_provider_mapping, channel_type_serializer_mapping
+from bsread.data.serialization import _logger, channel_type_deserializer_mapping, \
+    compression_provider_mapping, channel_type_scalar_serializer_mapping
 
 
-def get_channel_type(value):
+def get_channel_specs(value, extended=False):
     """
-    Get the bsread channel type from the value to be sent.
+    Get the bsread channel specification from the value to be sent.
     :param value: Value of which to determine the channel type.
     :raise ValueError if the channel type is unsupported.
-    :return: Tuple of (value type, shape)
+    :param extended: If False (default) return (channel_type, shape);
+                     If True return (dtype, channel_type, serializer, shape)
+    :return: Tuple of (channel_type, shape) or (dtype, channel_type, serializer, shape)
     """
     if value is None:
         _logger.debug('Channel Value is None - Unable to determine type of channel - default to type=float64 shape=[1]')
 
-    value_type = type(value)
+    # Determine ndarray channel specs.
+    if isinstance(value, numpy.ndarray):
+        # dtype and shape already in ndarray.
+        dtype = value.dtype.type
+        shape = list(value.shape)
 
-    # Check if value is a python scalar.
-    if value_type in scalar_channel_type_mapping:
-        return scalar_channel_type_mapping[value_type]
-    elif isinstance(value, numpy.ndarray):
-        return value.dtype.name, list(value.shape)
-    elif isinstance(value, numpy.generic):
-        return value.dtype.name, [1]
+        # Object already serialized.
+        serializer = None
+
+        # We need to retrieve only channel type.
+        channel_type = channel_type_scalar_serializer_mapping[dtype][1]
+
+    # Determine list channel specs
     elif isinstance(value, list):
-        dtype, _ = get_channel_type(value[0])
-        return dtype, [len(value)]
-    # We do not support this kind of values.
+        # Get to the bottom of the list.
+        base_value = value
+        while isinstance(base_value, list):
+            base_value = base_value[0]
+
+        # Lists have a special serializer.
+        def serializer(x, y): return numpy.array(x, dtype=dtype)
+
+        # Shape is the length of the list
+        shape = [len(value)]
+
+        # Get the basic list element type.
+        dtype, channel_type, _, _ = channel_type_scalar_serializer_mapping[type(base_value)]
+
+    # Determine scalars channel specs
     else:
-        raise ValueError("Unsupported channel type %s." % value_type)
+        dtype, channel_type, serializer, shape = channel_type_scalar_serializer_mapping[type(value)]
+
+    # Shape can also be a function to evaluate the shape.
+    if callable(shape):
+        shape = shape(value)
+
+    # We can return an extended...
+    if extended:
+        return dtype, channel_type, serializer, shape
+    # ...or a simple spec.
+    else:
+        return channel_type, shape
 
 
 def get_channel_reader(channel):
@@ -107,35 +135,12 @@ def get_value_bytes(value, compression=None):
         _logger.error(error_message)
         raise ValueError(error_message)
 
-    if type(value) not in channel_type_serializer_mapping:
-        raise ValueError("Type %s not supported as channel value." % type(value))
-
+    dtype, _, serializer, _ = get_channel_specs(value, extended=True)
     compressor = compression_provider_mapping[compression].pack_data
-    dtype, _, serializer = channel_type_serializer_mapping[type(value)]
 
-    numpy_array = serializer(value, dtype)
-    compressed_bytes_array = compressor(numpy_array)
+    if serializer:
+        value = serializer(value, dtype)
+
+    compressed_bytes_array = compressor(value)
 
     return compressed_bytes_array
-
-
-def get_value_byte_array(value):
-    if value is None:
-        raise RuntimeError('None value cannot be serialized')
-    elif isinstance(value, float):
-        return struct.pack('d', value)
-    elif isinstance(value, int):
-        return struct.pack('i', value)
-    elif isinstance(value, str):
-        return value.encode('utf-8')
-    elif isinstance(value, numpy.ndarray):
-        return value.tobytes()
-    elif value.__class__ in [x for j in numpy.sctypes.values() for x in j if "__array_interface__" in dir(x)]:
-        return value.tobytes()
-    elif isinstance(value, list):
-        message = bytearray()
-        for v in value:
-            message.extend(get_value_byte_array(v))
-        return message
-    else:
-        return bytearray(value)

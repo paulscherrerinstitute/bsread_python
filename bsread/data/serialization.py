@@ -59,31 +59,13 @@ def serialize_python_string(value, dtype):
     return numpy.frombuffer(value.encode(), dtype=dtype)
 
 
-def serialize_ndarray(value, dtype=None):
-    """
-    numpy.ndarrays are already serialized. Just return the same value.
-    :param value: Value to return.
-    :param dtype: Ignored. Here just to have a consistent interface.
-    :return:
-    """
-    return value
-
-
-def serialize_python_list(value, dtype=None):
+def serialize_python_list(value, dtype):
     """
     Convert python list into ndarray.
     :param value: List to convert.
     :param dtype: Ignored. Type if retrieved from the list items.
     :return: Numpy array.
     """
-    base_value = value
-    while isinstance(base_value, list):
-        base_value = base_value[0]
-
-    if type(base_value) not in channel_type_serializer_mapping:
-        raise ValueError("Type %s not supported as channel value." % type(base_value))
-    dtype = channel_type_serializer_mapping[type(base_value)][0]
-
     return numpy.array(value, dtype=dtype)
 
 
@@ -99,13 +81,6 @@ compression_provider_mapping = {
 channel_type_deserializer_mapping = {
     # Default value if no channel_type specified.
     None: ("f8", deserialize_number),
-    'double': ('f8', deserialize_number),
-    'float': ('f4', deserialize_number),
-    'integer': ('i4', deserialize_number),
-    'long': ('i4', deserialize_number),
-    'ulong': ('i4', deserialize_number),
-    'short': ('i2', deserialize_number),
-    'ushort': ('u2', deserialize_number),
     'int8': ('i1', deserialize_number),
     'uint8': ('u1', deserialize_number),
     'int16': ('i2', deserialize_number),
@@ -121,32 +96,21 @@ channel_type_deserializer_mapping = {
 
 
 # Value to send to channel type and serializer mapping.
-# type(value)
-channel_type_serializer_mapping = {
+# type(value): (dtype, channel_type, serializer, shape)
+channel_type_scalar_serializer_mapping = {
     # Default value if no channel_type specified.
-    type(None): ("f8", serialize_python_number),
-    float: ('f8', "double", serialize_python_number),
-    int: ('i8', "long", serialize_python_number),
-    str: ('u1', "string", serialize_python_string),
-    list: (None, None, serialize_python_list),
-    numpy.int8: ('i1', 'i1', serialize_numpy),
-    numpy.uint8: ('u1', 'u1', serialize_numpy),
-    numpy.int16: ('i2', 'i2', serialize_numpy),
-    numpy.uint16: ('u2', 'u2', serialize_numpy),
-    numpy.int32: ('i4', 'i4', serialize_numpy),
-    numpy.uint32: ('u4', 'u4', serialize_numpy),
-    numpy.int64: ('i8', 'i8', serialize_numpy),
-    numpy.uint64: ('u8', 'u8', serialize_numpy),
-    numpy.float32: ('f4', 'f4', serialize_numpy),
-    numpy.float64: ('f8', 'f8', serialize_numpy),
-    numpy.ndarray: (None, None, serialize_ndarray)
-}
-
-
-# Mapping between scalar type to send and channel type.
-scalar_channel_type_mapping = {
-    type(None): ("float64", [1]),
-    float: ("float64", [1]),
-    int: ("int64", [1]),
-    str: ("string", [1])
+    type(None): ("f8", "float64", serialize_python_number, [1]),
+    float: ('f8', "float64", serialize_python_number, [1]),
+    int: ('i8', "int64", serialize_python_number, [1]),
+    str: ('u1', "string", serialize_python_string, [1]),
+    numpy.int8: ('i1', 'int8', serialize_numpy, [1]),
+    numpy.uint8: ('u1', 'uint8', serialize_numpy, [1]),
+    numpy.int16: ('i2', 'int16', serialize_numpy, [1]),
+    numpy.uint16: ('u2', 'uint16', serialize_numpy, [1]),
+    numpy.int32: ('i4', 'int32', serialize_numpy, [1]),
+    numpy.uint32: ('u4', 'uint32', serialize_numpy, [1]),
+    numpy.int64: ('i8', 'int64', serialize_numpy, [1]),
+    numpy.uint64: ('u8', 'uint64', serialize_numpy, [1]),
+    numpy.float32: ('f4', 'float32', serialize_numpy, [1]),
+    numpy.float64: ('f8', 'float64', serialize_numpy, [1]),
 }

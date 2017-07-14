@@ -5,7 +5,7 @@ import logging
 import bsread.data.helpers
 import bsread.sender
 
-from bsread.data.helpers import get_channel_type
+from bsread.data.helpers import get_channel_specs
 from bsread.sender import sender
 from bsread import source
 
@@ -43,51 +43,53 @@ class TestGenerator(unittest.TestCase):
 
     def test__get_bytearray(self):
         value = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
-        bytes = bsread.data.helpers.get_value_byte_array(value)
+        bytes = bsread.data.helpers.get_value_bytes(value)
 
         new_value = numpy.frombuffer(bytes, dtype=numpy.uint16).reshape((2, 3))
         print(new_value)
 
     def test__get_type(self):
+        # Integers are 64bit.
         value = 1
-        data_type, shape = get_channel_type(value)
-        self.assertEqual(data_type, "int32")
+        data_type, shape = get_channel_specs(value)
+        self.assertEqual(data_type, "int64")
         self.assertEqual(shape, [1])
 
+        # Floats are doubles in python 3.
         value = 1.2
-        data_type, shape = get_channel_type(value)
+        data_type, shape = get_channel_specs(value)
         self.assertEqual(data_type, "float64")
         self.assertEqual(shape, [1])
 
         value = "this is a test"
-        data_type, shape = get_channel_type(value)
+        data_type, shape = get_channel_specs(value)
         self.assertEqual(data_type, "string")
         self.assertEqual(shape, [1])
 
         value = [1, 2, 3]
-        data_type, shape = get_channel_type(value)
-        self.assertEqual(data_type, "int32")
+        data_type, shape = get_channel_specs(value)
+        self.assertEqual(data_type, "int64")
         self.assertEqual(shape, [3])
 
         value = [1.0, 2.2, 3.4, 5.3]
-        data_type, shape = get_channel_type(value)
+        data_type, shape = get_channel_specs(value)
         self.assertEqual(data_type, "float64")
         self.assertEqual(shape, [4])
 
         value = numpy.array([1, 2, 3], dtype=numpy.uint16)
-        data_type, shape = get_channel_type(value)
+        data_type, shape = get_channel_specs(value)
         self.assertEqual(data_type, "uint16")
         self.assertEqual(shape, [3])
 
         value = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
         print(value)
-        data_type, shape = get_channel_type(value)
+        data_type, shape = get_channel_specs(value)
         self.assertEqual(data_type, "uint16")
         self.assertEqual(shape, [2, 3])
 
         value = numpy.float32(1.0)
         print(isinstance(value, numpy.generic))
-        data_type, shape = get_channel_type(value)
+        data_type, shape = get_channel_specs(value)
         self.assertEqual(data_type, "float32")
         self.assertEqual(shape, [1])
 
@@ -161,7 +163,7 @@ class TestGenerator(unittest.TestCase):
     def test_compression(self):
 
         def register_channel(stream, name, value):
-            channel_type, data_shape = get_channel_type(value)
+            channel_type, data_shape = get_channel_specs(value)
 
             # Add normal channel.
             stream.add_channel("normal_" + name,

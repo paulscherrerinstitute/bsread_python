@@ -51,6 +51,10 @@ class BitshuffleLZ4:
         # Uncompressed block size, big endian, int64 (long long)
         unpacked_length = struct.unpack(">q", raw_data[0:8].tobytes())[0]
 
+        # TODO: This is so ugly.. discuss if strings really need a shape [1].
+        if shape is None or shape == [1] and unpacked_length > 1:
+            shape = (unpacked_length,)
+
         # Compression block size, big endian, int32 (int)
         compression_block_size = struct.unpack(">i", raw_data[8:12].tobytes())[0]
 

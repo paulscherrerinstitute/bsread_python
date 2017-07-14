@@ -11,7 +11,7 @@ import logging
 from collections import OrderedDict
 
 from bsread.data.serialization import compression_provider_mapping
-from bsread.data.helpers import get_channel_type, get_value_bytes, get_value_byte_array
+from bsread.data.helpers import get_channel_specs, get_value_bytes
 
 PULL = mflow.PULL
 PUSH = mflow.PUSH
@@ -153,7 +153,7 @@ class Sender:
                     for key, value in dict_data.items():
                         metadata = dict()
                         metadata['name'] = key
-                        metadata['type'], metadata['shape'] = get_channel_type(value)
+                        metadata['type'], metadata['shape'] = get_channel_specs(value)
                         self.channels[key] = Channel(None, metadata)
 
                     self._create_data_header()
@@ -165,7 +165,7 @@ class Sender:
                     for i, k in enumerate(self.channels):
                         metadata = dict()
                         metadata['name'] = k
-                        metadata['type'], metadata['shape'] = get_channel_type(list_data[i])
+                        metadata['type'], metadata['shape'] = get_channel_specs(list_data[i])
                         self.channels[k].metadata = metadata
 
                     self._create_data_header()
