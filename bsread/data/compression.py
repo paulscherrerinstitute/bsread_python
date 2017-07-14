@@ -23,13 +23,13 @@ class NoCompression:
         return raw_data
 
     @staticmethod
-    def pack_data(bytes_array):
+    def pack_data(numpy_array):
         """
-        Packing data with byte arrays just return the same byte array - need this method to have the same interface.
-        :param bytes_array: Byte array to return.
-        :return: Same byte array that was passed to the function.
+        Convert numpy array to byte array.
+        :param numpy_array: Numpy array to convert.
+        :return: Bytes array of provided numpy array.
         """
-        return bytes_array
+        return numpy_array.tobytes()
 
 
 class BitshuffleLZ4:
@@ -72,63 +72,11 @@ class BitshuffleLZ4:
         :return: Header (unpacked length, compression block size) + Compressed data
         """
         # Uncompressed block size, big endian, int64 (long long)
-        unpacked_length = struct.pack(">q", len(numpy_array))
+        unpacked_length = struct.pack(">q", numpy_array.size)
 
         # Compression block size, big endian, int32 (int)
         compression_block_size = struct.pack(">i", BitshuffleLZ4.default_compression_block_size)
 
-        compressed_bytes = bitshuffle.compress_lz4(numpy_array, BitshuffleLZ4.default_compression_block_size)
+        compressed_bytes = bitshuffle.compress_lz4(numpy_array, BitshuffleLZ4.default_compression_block_size).tobytes()
 
         return unpacked_length + compression_block_size + compressed_bytes
-
-
-def deserialize_number(numpy_array):
-    """
-    Return single value arrays as a scalar.
-    :param numpy_array: Numpy array containing a number to deserialize.
-    :return: Array or scalar, based on array size.
-    """
-    if len(numpy_array) == 1:
-        return numpy_array[0]
-    else:
-        return numpy_array
-
-
-def deserialize_string(numpy_array):
-    """
-    Return string that is serialized as a numpy array.
-    :param numpy_array: Array to deserialize (UTF-8 is assumed)
-    :return: String.
-    """
-    return numpy_array.tobytes().decode()
-
-
-def serialize_numpy(numpy_array, dtype=None):
-    """
-    Serialize the provided numpy array.
-    :param numpy_array: Array to serialize.
-    :param dtype: Ignored. Here just to have a consistent interface.
-    :return: Bytes array with data.
-    """
-    # Numpy arrays are easily serializable.
-    return numpy_array.tobytes()
-
-
-def serialize_python_number(value, dtype):
-    """
-    Serialize a python number by converting it into a numpy array and getting its bytes.
-    :param value: Value to serialize.
-    :param dtype: Numpy value representation.
-    :return: Bytes array with data.
-    """
-    return numpy.array(value, dtype=dtype).tobytes()
-
-
-def serialize_python_string(value, dtype):
-    """
-    Serialize string into numpy array.
-    :param value: Value to serialize.
-    :param dtype: Dtype to use (UTF-8 is assumed, use u1)
-    :return: Bytes array.
-    """
-    return numpy.frombuffer(value.encode(), dtype=dtype).tobytes()
