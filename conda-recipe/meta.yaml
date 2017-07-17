@@ -1,11 +1,14 @@
 package:
     name: bsread
-    version: 0.8.14
+    version: 0.9.0
 #source:
 #    git_tag: 0.0.14
 #    git_url: git@git.psi.ch:sf_daq/bsread_python.git
 source:
     path: ..
+
+build:
+    number: 0
 
 requirements:
     build:
