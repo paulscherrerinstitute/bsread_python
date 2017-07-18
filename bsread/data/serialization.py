@@ -72,6 +72,7 @@ def serialize_python_list(value, dtype):
 # Compression string to compression provider mapping.
 compression_provider_mapping = {
     None: NoCompression,
+    "none": NoCompression, "none": NoCompression,
     "bitshuffle_lz4": BitshuffleLZ4
 }
 
