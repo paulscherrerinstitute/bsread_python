@@ -94,9 +94,10 @@ class Sender:
             if self.status_stream_open:
                 self._create_data_header()
 
-    def open(self):
+    def open(self, no_client_action=None, no_client_timeout=None):
         self.stream = mflow.connect('%s:%d' % (self.address, self.port), queue_size=self.queue_size, conn_type=self.conn_type,
-                                    mode=self.mode)
+                                    mode=self.mode, no_client_action=no_client_action,
+                                    no_client_timeout=no_client_timeout)
 
         # Main header
         self.main_header = dict()
