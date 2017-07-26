@@ -41,7 +41,7 @@ class sender:
 class Sender:
 
     def __init__(self, queue_size=10, port=9999, address="tcp://*", conn_type=BIND, mode=PUSH, block=True,
-                 start_pulse_id=0, data_header_compression=None):
+                 start_pulse_id=0, data_header_compression=None, send_timeout=None):
 
         self.block = block
         self.queue_size = queue_size
@@ -49,6 +49,7 @@ class Sender:
         self.address = address
         self.conn_type = conn_type
         self.mode = mode
+        self.send_timeout = send_timeout
 
         self.stream = None
 
@@ -95,9 +96,9 @@ class Sender:
                 self._create_data_header()
 
     def open(self, no_client_action=None, no_client_timeout=None):
-        self.stream = mflow.connect('%s:%d' % (self.address, self.port), queue_size=self.queue_size, conn_type=self.conn_type,
-                                    mode=self.mode, no_client_action=no_client_action,
-                                    no_client_timeout=no_client_timeout)
+        self.stream = mflow.connect('%s:%d' % (self.address, self.port), queue_size=self.queue_size,
+                                    conn_type=self.conn_type, mode=self.mode, no_client_action=no_client_action,
+                                    no_client_timeout=no_client_timeout, send_timeout=self.send_timeout)
 
         # Main header
         self.main_header = dict()

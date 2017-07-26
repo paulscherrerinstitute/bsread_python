@@ -1,6 +1,6 @@
 package:
     name: bsread
-    version: 0.9.2
+    version: 0.9.3
 #source:
 #    git_tag: 0.0.14
 #    git_url: git@git.psi.ch:sf_daq/bsread_python.git
@@ -16,7 +16,7 @@ requirements:
         - setuptools
     run:
         - python
-        - mflow >=0.0.22
+        - mflow >=0.0.23
         - bitshuffle
         - numpy
         - pyzmq
