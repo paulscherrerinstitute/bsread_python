@@ -76,7 +76,7 @@ class BitshuffleLZ4:
         :return: Header (unpacked length, compression block size) + Compressed data
         """
         # Uncompressed block size, big endian, int64 (long long)
-        unpacked_length = struct.pack(">q", numpy_array.size)
+        unpacked_length = struct.pack(">q", numpy_array.nbytes)
 
         # Compression block size, big endian, int32 (int)
         compression_block_size = struct.pack(">i", BitshuffleLZ4.default_compression_block_size)
