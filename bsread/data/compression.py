@@ -16,6 +16,10 @@ class NoCompression:
         """
         raw_data = numpy.frombuffer(raw_string, dtype=dtype)
 
+        # Not an empty ndarray, but a None.
+        if raw_data.size == 0 and shape == [1]:
+            return None
+
         # Do not reshape scalars.
         if shape is not None and shape != [1]:
             raw_data = raw_data.reshape(shape)
@@ -48,8 +52,16 @@ class BitshuffleLZ4:
         # Interpret the bytes as a numpy array.
         raw_data = numpy.frombuffer(raw_bytes, dtype=numpy.uint8)
 
+        # If the numpy array is empty, return it as such.
+        if raw_data.size == 0:
+            return None
+
         # Uncompressed block size, big endian, int64 (long long)
         unpacked_length = struct.unpack(">q", raw_data[0:8].tobytes())[0]
+
+        # Empty array was transmitted.
+        if unpacked_length == 0:
+            return numpy.array([], dtype=dtype)
 
         # Type of the output array.
         dtype = numpy.dtype(dtype)

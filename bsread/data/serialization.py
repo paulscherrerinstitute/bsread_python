@@ -13,6 +13,9 @@ def deserialize_number(numpy_array):
     :param numpy_array: Numpy array containing a number to deserialize.
     :return: Array or scalar, based on array size.
     """
+    if numpy_array is None:
+        return numpy_array
+
     if len(numpy_array) == 1:
         return numpy_array[0]
     else:

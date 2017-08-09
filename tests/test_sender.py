@@ -123,7 +123,7 @@ class TestGenerator(unittest.TestCase):
         with source(host="localhost", port=9999) as in_stream:
             with sender(queue_size=1) as stream:
                 # Send none data
-                stream.send(one=1, two=None, three="one")
+                stream.send(one=1, two=None, three="one", four=numpy.array([]))
 
                 # Receive and check data
                 message = in_stream.receive()
@@ -131,6 +131,7 @@ class TestGenerator(unittest.TestCase):
                 self.assertEqual(message.data.data["one"].value, 1)
                 self.assertIsNone(message.data.data["two"].value)
                 self.assertEqual(message.data.data["three"].value, "one")
+                self.assertTrue(numpy.array_equal(message.data.data["four"].value, numpy.array([])))
 
                 # Test sending compressed stream - compression kicks in if shape > 1
                 stream.send(one=[1, 2, 3, 4, 5])
@@ -166,7 +167,7 @@ class TestGenerator(unittest.TestCase):
                                {"type": channel_type,
                                 "shape": data_shape})
 
-            # Add compressed channel.
+            # # Add compressed channel.
             stream.add_channel("compressed_" + name,
                                lambda pulse_id: value,
                                {"type": channel_type,
@@ -184,6 +185,7 @@ class TestGenerator(unittest.TestCase):
                     "no_char": "",
                     "test_none": None,
                     "numpy_array": numpy.array([1., 2., 3., 4, 5., 6], dtype=numpy.float32).reshape(2, 3),
+                    "empty_numpy_array": numpy.array([], dtype=numpy.float32),
                     "numpy_int": numpy.int64(999999),
                     "numpy_float": numpy.float64(999999.0)
                 }
