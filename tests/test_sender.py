@@ -21,7 +21,6 @@ def post():
 
 
 class TestGenerator(unittest.TestCase):
-
     def setUp(self):
         # Enable debug logging
         pass
@@ -95,7 +94,6 @@ class TestGenerator(unittest.TestCase):
 
     def test_stream(self):
         with source(host="localhost", port=9999) as in_stream:
-
             with sender(queue_size=10) as stream:
                 test_array = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
                 # Send Data
@@ -123,9 +121,7 @@ class TestGenerator(unittest.TestCase):
 
     def test_send_stream(self):
         with source(host="localhost", port=9999) as in_stream:
-
             with sender(queue_size=1) as stream:
-
                 # Send none data
                 stream.send(one=1, two=None, three="one")
 
@@ -147,7 +143,6 @@ class TestGenerator(unittest.TestCase):
 
         with source(host="localhost", port=9999) as in_stream:
             with sender(queue_size=10) as stream:
-
                 stream.send(one=1, two=2)
                 # import time
                 # time.sleep(2)
@@ -178,57 +173,49 @@ class TestGenerator(unittest.TestCase):
                                 "shape": data_shape,
                                 "compression": "bitshuffle_lz4"})
 
-        # with source(host="localhost") as receive_stream:
-        with sender() as send_stream:
-            values = {
-                # "array": [1, 2, 3, 4, 5],
-                "int": -12,
-                "float": 99.0,
-                "string": "testing string",
-                # "numpy_array": numpy.array([1., 2., 3., 4, 5., 6], dtype=numpy.float32).reshape(2, 3),
-                # "numpy_int": numpy.int64(999999),
-                # "numpy_float": numpy.float64(999999.0)
-            }
+        with source(host="localhost") as receive_stream:
+            with sender() as send_stream:
+                values = {
+                    "array": [1, 2, 3, 4, 5],
+                    "int": -12,
+                    "float": 99.0,
+                    "string": "testing string",
+                    "char": "a",
+                    "no_char": "",
+                    "test_none": None,
+                    "numpy_array": numpy.array([1., 2., 3., 4, 5., 6], dtype=numpy.float32).reshape(2, 3),
+                    "numpy_int": numpy.int64(999999),
+                    "numpy_float": numpy.float64(999999.0)
+                }
 
-            # Register all test values in channels.
-            for name, value in values.items():
-                register_channel(send_stream, name, value)
+                # Register all test values in channels.
+                for name, value in values.items():
+                    register_channel(send_stream, name, value)
 
-            send_stream.send()
-            # response = receive_stream.receive()
-            #
-            # for name, value in values.items():
-            #
-            #     plain_received_value = response.data.data["normal_" + name].value
-            #     compressed_received_value = response.data.data["compressed_" + name].value
-            #
-            #     # Compare numpy arrays.
-            #     if isinstance(plain_received_value, numpy.ndarray):
-            #         numpy.testing.assert_array_equal(plain_received_value, value)
-            #         numpy.testing.assert_array_equal(compressed_received_value, value)
-            #
-            #     # Everything else.
-            #     else:
-            #         self.assertEqual(plain_received_value, value, "Plain channel values not as expected")
-            #         self.assertEqual(compressed_received_value, value, "Compressed channel values not as expected")
+                send_stream.send()
+                response = receive_stream.receive()
 
-    # def test_examples(self):
-    #     from bsread.sender import Sender
-    #     import time
-    #
-    #     with source(host="localhost", port=9999) as in_stream:
-    #         generator = Sender()
-    #         # generator.set_pre_function(pre)
-    #         generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
-    #
-    #         # generator.open()
-    #         try:
-    #             for i in range(10):
-    #                 generator.send()
-    #                 time.sleep(0.01)
-    #                 in_stream.receive()
-    #         finally:
-    #             generator.close_stream()
+                for name, value in values.items():
+
+                    plain_received_value = response.data.data["normal_" + name].value
+                    compressed_received_value = response.data.data["compressed_" + name].value
+
+                    # Compare numpy arrays.
+                    if isinstance(plain_received_value, numpy.ndarray):
+                        numpy.testing.assert_array_equal(plain_received_value, value)
+                        numpy.testing.assert_array_equal(compressed_received_value, value)
+
+                    # Everything else.
+                    else:
+                        # Empty strings are transfered as None.
+                        if plain_received_value is None and value == '':
+                            plain_received_value = ''
+
+                        if compressed_received_value is None and value == '':
+                            compressed_received_value = ''
+
+                        self.assertEqual(plain_received_value, value, "Plain channel values not as expected")
+                        self.assertEqual(compressed_received_value, value, "Compressed channel values not as expected")
 
 
 if __name__ == '__main_ _':

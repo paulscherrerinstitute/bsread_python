@@ -51,9 +51,22 @@ class BitshuffleLZ4:
         # Uncompressed block size, big endian, int64 (long long)
         unpacked_length = struct.unpack(">q", raw_data[0:8].tobytes())[0]
 
+        # Type of the output array.
+        dtype = numpy.dtype(dtype)
+        n_bytes_per_element = dtype.itemsize
+
+        # Either the unpacked length or the dtype is wrong.
+        if unpacked_length % n_bytes_per_element != 0:
+            raise ValueError("Invalid unpacked length or dtype for raw bytes.")
+
+        # How many bytes per element we use.
+        n_elements = int(unpacked_length / n_bytes_per_element)
+
         # TODO: This is so ugly.. discuss if strings really need a shape [1].
-        if shape is None or shape == [1] and unpacked_length > 1:
-            shape = (unpacked_length,)
+
+        # shape == [1] and n_elements > 1 is used for strings.
+        if shape is None or (shape == [1] and n_elements > 1):
+            shape = (n_elements,)
 
         # Compression block size, big endian, int32 (int)
         compression_block_size = struct.unpack(">i", raw_data[8:12].tobytes())[0]
@@ -64,7 +77,7 @@ class BitshuffleLZ4:
 
         # Actual data.
         byte_array = bitshuffle.decompress_lz4(raw_data[12:], block_size=compression_block_size,
-                                               shape=shape, dtype=numpy.dtype(dtype))
+                                               shape=shape, dtype=dtype)
 
         return byte_array
 
