@@ -17,6 +17,10 @@ class Handler:
         # Receive main header
         header = receiver.next(as_json=True)
 
+        # We cannot process an empty Header.
+        if not header:
+            return None
+
         message = Message()
         message.pulse_id = header['pulse_id']
         message.hash = header['hash']

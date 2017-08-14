@@ -16,6 +16,10 @@ class Handler:
 
         header = receiver.next(as_json=True)
 
+        # We cannot process an empty Header.
+        if not header:
+            return None
+
         return_value = {}
 
         data = []
