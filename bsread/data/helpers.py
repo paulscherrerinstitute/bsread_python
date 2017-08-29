@@ -82,6 +82,19 @@ def get_channel_reader(channel):
     return value_reader
 
 
+def get_serialization_type(channel_type):
+    default_serialization_type = "uint8"
+
+    # If the type is unknown, NoneProvider should be used.
+    if channel_type not in channel_type_deserializer_mapping:
+        _logger.warning("Channel type '%s' not found in mapping. Using %s." %
+                        (channel_type, default_serialization_type))
+        # If the channel is not supported, always return None.
+        return channel_type_deserializer_mapping[default_serialization_type][0]
+
+    return channel_type_deserializer_mapping[channel_type][0]
+
+
 def get_value_reader(channel_type, compression, shape=None, endianness=""):
     """
     Get the correct value reader for the specific channel type and compression.
@@ -122,11 +135,12 @@ def get_value_reader(channel_type, compression, shape=None, endianness=""):
     return value_reader
 
 
-def get_value_bytes(value, compression=None):
+def get_value_bytes(value, compression=None, channel_type=None):
     """
     Based on the value, get the compressed bytes.
     :param value: Value to compress.
     :param compression: Compression to use.
+    :param channel_type: dtype to use for channel serialization. If not specified, derive from value.
     :return: Bytes ready to be sent over the channel.
     """
 
@@ -137,6 +151,9 @@ def get_value_bytes(value, compression=None):
 
     dtype, _, serializer, _ = get_channel_specs(value, extended=True)
     compressor = compression_provider_mapping[compression].pack_data
+
+    if channel_type:
+        dtype = get_serialization_type(channel_type)
 
     if serializer:
         value = serializer(value, dtype)

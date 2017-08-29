@@ -5,7 +5,7 @@ import logging
 import bsread.data.helpers
 import bsread.sender
 
-from bsread.data.helpers import get_channel_specs
+from bsread.data.helpers import get_channel_specs, get_serialization_type
 from bsread.sender import sender
 from bsread import source
 
@@ -218,6 +218,32 @@ class TestGenerator(unittest.TestCase):
 
                         self.assertEqual(plain_received_value, value, "Plain channel values not as expected")
                         self.assertEqual(compressed_received_value, value, "Compressed channel values not as expected")
+
+    def test_non_native_types(self):
+        with source(host="localhost") as receive_stream:
+            with sender() as send_stream:
+                send_stream.add_channel("compact_type",
+                                        lambda x: 99,
+                                        {"type": "int32"})
+
+                send_stream.add_channel("override_type",
+                                        lambda x: 88,
+                                        {"type": "int32"})
+
+                send_stream.send()
+
+                data = receive_stream.receive()
+                compact_value = data.data.data["compact_type"].value
+
+                self.assertEqual(get_serialization_type("int32"), "i4")
+                self.assertEqual(compact_value.dtype, "i4")
+
+                send_stream.send(data={"extended_type": 88})
+
+                data = receive_stream.receive()
+
+                extended_value = data.data.data["extended_type"].value
+                self.assertEqual(extended_value.dtype, get_serialization_type("int64"))
 
 
 if __name__ == '__main_ _':
