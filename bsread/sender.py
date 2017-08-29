@@ -217,12 +217,24 @@ class Sender:
         if self.post_function:
             self.post_function()
 
-    def generate_stream(self):
+    def generate_stream(self, n_messages=None, interval=0.01):
+        """
+        Send a continues stream of data.
+        :param n_messages: Number of messages to send. None or negative number -> Send until interrupted.
+        :param interval: Interval in seconds between messages.
+        :return:
+        """
         self.open()
 
-        while True:
+        # Negative numbers will loop indefinitely.
+        if not n_messages:
+            n_messages = -1
+
+        while n_messages != 0:
             self.send()
-            time.sleep(0.01)
+            time.sleep(interval)
+
+            n_messages -= 1
 
 
 class Channel:
