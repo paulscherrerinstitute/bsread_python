@@ -46,7 +46,7 @@ def main():
     parser.add_argument('-p', '--port', type=int, default='9999', help='Port number of stream')
     parser.add_argument('-n', '--n_messages', type=int, default=None, help="Number of messages to generate."
                                                                            "None means infinity.")
-    parser.add_argument('-i', '--interval', type=int, default=0.01, help="Interval in seconds between messages."
+    parser.add_argument('-i', '--interval', type=float, default=0.01, help="Interval in seconds between messages."
                                                                          "Default: 0.01 second.")
 
     arguments = parser.parse_args()
