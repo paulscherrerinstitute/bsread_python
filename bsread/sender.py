@@ -206,7 +206,8 @@ class Sender:
                                                      channel_type=channel.metadata.get("type")),
                                      send_more=True, block=self.block)
 
-                    self.stream.send(struct.pack('q', current_timestamp_epoch) + struct.pack('q', count),
+                    # TODO: This timestamps should be individual per channel.
+                    self.stream.send(struct.pack('q', current_timestamp_epoch) + struct.pack('q', current_timestamp_ns),
                                      send_more=(count > 0), block=self.block)
                 count -= 1
                 counter += 1

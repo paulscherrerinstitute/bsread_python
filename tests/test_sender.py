@@ -245,6 +245,20 @@ class TestGenerator(unittest.TestCase):
                 extended_value = data.data.data["extended_type"].value
                 self.assertEqual(extended_value.dtype, get_serialization_type("int64"))
 
+    def test_values_timestamps(self):
+        with source(host="localhost") as receive_stream:
+            with sender() as send_stream:
+                send_stream.add_channel("x", lambda x: 1)
+
+                send_stream.send()
+
+                data = receive_stream.receive()
+                self.assertEqual(data.data.global_timestamp, data.data.data["x"].timestamp,
+                                 "Global and channel timestamps have to be the same.")
+                self.assertEqual(data.data.global_timestamp_offset, data.data.data["x"].timestamp_offset,
+                                 "Global and channel timestamps offset have to be the same.")
+
+
 
 if __name__ == '__main_ _':
     unittest.main()
