@@ -34,6 +34,6 @@ if __name__ == "__main__":
     generator.add_channel('XYZW', lambda x: 'hello', metadata={'type': 'string'})
     generator.add_channel('WWW', lambda x: [1.0, 2.0, 3.0, 4.0], metadata={'type': 'float64', 'shape': [4]})
     generator.add_channel('WAVE', waveform, metadata={'shape': [30]})
-    generator.add_channel('IMAGE', image, metadata={'shape': [2, 4]})
+    generator.add_channel('IMAGE', image, metadata={'shape': [4, 2]})
     generator.generate_stream()
 

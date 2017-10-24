@@ -25,7 +25,7 @@ simulated_channels = [{"name": 'ABC', "function": lambda x: x, "metadata": {'typ
                           {'type': 'float64', 'shape': [4]}
                        },
                       {"name": 'WAVE', "function": waveform, "metadata": {'shape': [30]}},
-                      {"name": 'IMAGE', "function": image, "metadata": {'shape': [2, 4]}}]
+                      {"name": 'IMAGE', "function": image, "metadata": {'shape': [4, 2]}}]
 
 
 def generate_stream(port, n_messages=None, interval=0.01):

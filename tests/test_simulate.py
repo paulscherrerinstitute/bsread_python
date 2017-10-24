@@ -11,7 +11,6 @@ class TestSimulate(unittest.TestCase):
 
         n_of_messages = 5
         generate_thread = Thread(target=simulate.generate_stream, args=(9999, n_of_messages,))
-        generate_thread.setDaemon(True)
         generate_thread.start()
 
         handler = extended.Handler().receive
@@ -54,6 +53,7 @@ class TestSimulate(unittest.TestCase):
                             self.assertEqual(value.dtype, get_serialization_type(send_type))
 
                         if send_shape:
-                            self.assertListEqual(list(value.shape), send_shape)
+                            # Numpy is slowest dimension first, but bsread is fastest dimension first.
+                            self.assertListEqual(list(value.shape), send_shape[::-1])
 
         generate_thread.join()

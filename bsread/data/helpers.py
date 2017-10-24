@@ -22,7 +22,9 @@ def get_channel_specs(value, extended=False):
     if isinstance(value, numpy.ndarray):
         # dtype and shape already in ndarray.
         dtype = value.dtype.type
-        shape = list(value.shape)
+
+        # Numpy is slowest dimension first, but bsread is fastest dimension first.
+        shape = list(value.shape)[::-1]
 
         # Object already serialized.
         serializer = None

@@ -68,8 +68,10 @@ def process_message(handler, receiver, writer, first_iteration):
             dtype = channel_type_deserializer_mapping[channel_type][0]
 
             if 'shape' in channel:
-                shape = [1] + channel['shape']
-                maxshape = [None] + channel['shape']
+                # H5 is slowest dimension first, but bsread is fastest dimension first.
+                shape = [1] + channel['shape'][::-1]
+                maxshape = [None] + channel['shape'][::-1]
+
                 print(shape, "  ", maxshape, channel['name'])
                 writer.add_dataset('/' + channel['name'] + '/data', dataset_group_name='data', shape=shape,
                                    maxshape=maxshape, dtype=dtype)

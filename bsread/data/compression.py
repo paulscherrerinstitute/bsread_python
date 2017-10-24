@@ -22,7 +22,8 @@ class NoCompression:
 
         # Do not reshape scalars.
         if shape is not None and shape != [1]:
-            raw_data = raw_data.reshape(shape)
+            # Numpy is slowest dimension first, but bsread is fastest dimension first.
+            raw_data = raw_data.reshape(shape[::-1])
 
         return raw_data
 
@@ -86,6 +87,9 @@ class BitshuffleLZ4:
         # If shape is not provided use the original length.
         if shape is None:
             shape = (unpacked_length,)
+
+        # Numpy is slowest dimension first, but bsread is fastest dimension first.
+        shape = shape[::-1]
 
         # Actual data.
         byte_array = bitshuffle.decompress_lz4(raw_data[12:], block_size=compression_block_size,

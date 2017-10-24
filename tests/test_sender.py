@@ -84,7 +84,13 @@ class TestGenerator(unittest.TestCase):
         print(value)
         data_type, shape = get_channel_specs(value)
         self.assertEqual(data_type, "uint16")
-        self.assertEqual(shape, [2, 3])
+        self.assertEqual(shape, [3, 2])
+
+        value = numpy.array([[1, 2, 3], [4, 5, 6]], dtype=numpy.uint16)
+        print(value)
+        data_type, shape = get_channel_specs(value)
+        self.assertEqual(data_type, "uint16")
+        self.assertEqual(shape, [3, 2])
 
         value = numpy.float32(1.0)
         print(isinstance(value, numpy.generic))
