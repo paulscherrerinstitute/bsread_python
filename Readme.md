@@ -112,6 +112,28 @@ message = stream.receive(filter=filter_method)
 ```
 
 
+## Check For Available Channels
+
+```python
+from bsread import dispatcher
+
+channels = dispatcher.get_current_channels()
+# channels is a list of dictionaries of the form
+# [
+#  {'backend': 'sf-databuffer',
+#   'modulo': 10,
+#   'name': 'S10CB04-RWVG400-DCP10:FOR-AMPLT-AVG',
+#   'offset': 0,
+#   'shape': [1],
+#   'source': 'tcp://S10CB04-CVME-LLRF1:20000',
+#   'type': 'float32'},
+#  ...
+# ]
+
+# To simply get the channel names use
+[x['name'] for x in channels] 
+```
+
 
 ## Generating Streams
 For various purposes (e.g. testing) beam synchronous streams can be easily created as follows:
