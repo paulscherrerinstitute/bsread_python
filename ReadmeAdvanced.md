@@ -17,5 +17,5 @@ timestamp = datetime.datetime.now()
 start = timestamp - datetime.timedelta(seconds=1)  # keep 1 second worth of data before now
 end = timestamp + datetime.timedelta(seconds=0.1)  # 1 second safety margin
 
-dispatcher.update_ttl(channels, start, end, ttl)
+dispatcher.update_time_to_live(channels, start, end, ttl)
 ```

@@ -184,6 +184,10 @@ def get_data_policies():
     return response.json
 
 
+def update_time_to_live(channels, start, end, ttl: datetime.timedelta, async=True):
+    update_ttl(channels, start, end, ttl, async=async)
+
+
 def update_ttl(channels, start, end, ttl: datetime.timedelta, async=True):
     """
     Update the ttl of specific data:
