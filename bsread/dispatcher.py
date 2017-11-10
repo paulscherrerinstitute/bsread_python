@@ -184,6 +184,10 @@ def get_data_policies():
     return response.json
 
 
+def update_time_to_live(channels, start, end, ttl: datetime.timedelta, async=True):
+    update_ttl(channels, start, end, ttl, async=async)
+
+
 def update_ttl(channels, start, end, ttl: datetime.timedelta, async=True):
     """
     Update the ttl of specific data:
@@ -237,3 +241,50 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta, async=True):
 
     if not response.ok:
         raise Exception('Unable to update ttl for specified channels - ' + response.text)
+
+    _log_ttl_update_info_to_central_server(channels, start, end, ttl)
+
+
+def _log_ttl_update_info_to_central_server(channels, start, end, ttl):
+    """
+    Logging function to central logstash server to keep track of who is updating what ttl (which channels, what ttl)
+
+    :param channels:
+    :param start:
+    :param end:
+    :param ttl:
+    :return:
+
+    """
+    import socket
+    import getpass
+    import json
+    from threading import Thread
+
+    log_message = "%s - %s - %s - %s" % (channels, start, end, ttl)
+
+    def send_info(message):
+        HOST = 'logstash.psi.ch'
+        PORT = 5678
+
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(0.5)
+            sock.connect((HOST, PORT))
+
+            msg = {'message': message, 'tags': ['python', 'library'], 'operation': 'update ttl',
+                   'username': getpass.getuser(), 'hostname': socket.gethostname()}
+            sock.send(json.dumps(msg).encode())
+
+        except socket.error:
+            print('error')
+            pass
+
+        finally:
+            try:
+                sock.close()
+            except:
+                pass
+
+    thread = Thread(target=send_info, args=(log_message,))
+    thread.start()
