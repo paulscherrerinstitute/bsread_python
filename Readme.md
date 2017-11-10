@@ -135,6 +135,7 @@ An other way is to send data as follows:
 ```python
 from bsread.sender import Sender
 generator = Sender()
+generator.open()
 # generator.set_pre_function(pre)
 generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
 generator.add_channel('ABCD', lambda x: x*10.0)
@@ -158,6 +159,7 @@ from bsread.sender import Sender
 import time
 
 generator = Sender()
+generator.open()
 # generator.set_pre_function(pre)
 generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
 
@@ -177,6 +179,7 @@ Besides using lambdas for generating data you can also explicitly pass the data 
 ```python
 from bsread.sender import Sender
 generator = Sender()
+generator.open()
 generator.add_channel('ABCD')
 generator.add_channel('ABCD2')
 generator.open()
