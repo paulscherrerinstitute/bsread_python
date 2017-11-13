@@ -138,6 +138,15 @@ class Sender:
         if timestamp is None:
             timestamp = time.time()
 
+        # If you pass a tuple for the timestamp, use this tuple value directly.
+        if isinstance(timestamp, tuple):
+            current_timestamp_epoch = timestamp[0]
+            current_timestamp_ns = timestamp[1]
+
+        else:
+            current_timestamp_epoch = int(timestamp)
+            current_timestamp_ns = int(math.modf(timestamp)[0] * 1e9)
+
         # If args are specified data will be overwritten
         list_data = args if args else None
         dict_data = data if data else kwargs  # data has precedence before **kwargs
@@ -175,9 +184,6 @@ class Sender:
             # Call pre function if registered
             if self.pre_function:
                 self.pre_function()
-
-            current_timestamp_epoch = int(timestamp)
-            current_timestamp_ns = int(math.modf(timestamp)[0] * 1e9)
 
             self.main_header['pulse_id'] = self.pulse_id
             self.main_header['global_timestamp'] = {"sec": current_timestamp_epoch, "ns": current_timestamp_ns}
