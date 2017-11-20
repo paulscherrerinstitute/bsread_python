@@ -280,6 +280,33 @@ class TestGenerator(unittest.TestCase):
                 self.assertEqual(data.data.global_timestamp_offset, data.data.data["x"].timestamp_offset,
                                  "Global and channel timestamps offset have to be the same.")
 
+    def test_byteorder(self):
+
+        send_data = {"test_1": numpy.ones(shape=1024, dtype=">i2") + 1,
+                     "test_2": numpy.ones(shape=1024, dtype=">i4") + 2,
+                     "test_3": numpy.ones(shape=1024, dtype=">i8") + 3,
+                     "test_5": numpy.ones(shape=1024, dtype=">f4") + 4,
+                     "test_6": numpy.ones(shape=1024, dtype=">f8") + 5}
+
+        with source(host="localhost") as receive_stream:
+            with sender() as send_stream:
+                send_stream.send(data=send_data)
+
+                received_message = receive_stream.receive()
+                received_data = received_message.data.data
+
+        for key_name in send_data.keys():
+            send_value = send_data[key_name]
+            received_value = received_data[key_name].value
+
+            # Use numpy comparison for ndarray types.
+            if isinstance(send_value, numpy.ndarray):
+                numpy.testing.assert_array_equal(send_value, received_value)
+
+            else:
+                self.assertEqual(send_value, received_value)
+
+
 
 if __name__ == '__main_ _':
     unittest.main()

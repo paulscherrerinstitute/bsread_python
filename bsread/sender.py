@@ -11,7 +11,7 @@ import logging
 from collections import OrderedDict
 
 from bsread.data.serialization import compression_provider_mapping
-from bsread.data.helpers import get_channel_specs, get_value_bytes
+from bsread.data.helpers import get_channel_specs, get_value_bytes, get_channel_encoding
 
 PULL = mflow.PULL
 PUSH = mflow.PUSH
@@ -165,6 +165,7 @@ class Sender:
                         metadata = dict()
                         metadata['name'] = key
                         metadata['type'], metadata['shape'] = get_channel_specs(value)
+                        metadata['encoding'] = get_channel_encoding(value)
                         self.channels[key] = Channel(None, metadata)
 
                     self._create_data_header()
@@ -177,6 +178,7 @@ class Sender:
                         metadata = dict()
                         metadata['name'] = k
                         metadata['type'], metadata['shape'] = get_channel_specs(list_data[i])
+                        metadata['encoding'] = get_channel_encoding(list_data[i])
                         self.channels[k].metadata = metadata
 
                     self._create_data_header()

@@ -1,9 +1,23 @@
 import traceback
 
 import numpy
+import sys
 
 from bsread.data.serialization import _logger, channel_type_deserializer_mapping, \
     compression_provider_mapping, channel_type_scalar_serializer_mapping
+
+
+def get_channel_encoding(value):
+    """
+    Return the channel encoding. Default is the system provided, otherwise is the ndarray provided.
+    :param value: Value to determine the byteorder of.
+    :return: "little" or "big" endian.
+    """
+    if isinstance(value, numpy.ndarray):
+        if value.dtype.byteorder == '>':
+            return "big"
+
+    return sys.byteorder
 
 
 def get_channel_specs(value, extended=False):
