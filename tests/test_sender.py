@@ -282,15 +282,18 @@ class TestGenerator(unittest.TestCase):
 
     def test_byteorder(self):
 
-        send_data = {"test_1": numpy.ones(shape=1024, dtype=">i2") + 1,
-                     "test_2": numpy.ones(shape=1024, dtype=">i4") + 2,
-                     "test_3": numpy.ones(shape=1024, dtype=">i8") + 3,
-                     "test_5": numpy.ones(shape=1024, dtype=">f4") + 4,
-                     "test_6": numpy.ones(shape=1024, dtype=">f8") + 5}
+        send_data = {"test_1": numpy.ones(shape=1024, dtype=">i2"),
+                     "test_2": numpy.ones(shape=1024, dtype=">i4"),
+                     "test_3": numpy.ones(shape=1024, dtype=">i8"),
+                     "test_5": numpy.ones(shape=1024, dtype=">f4"),
+                     "test_6": numpy.ones(shape=1024, dtype=">f8")}
+
+        send_timestamp = 123456789
+        send_timestamp_offset = 987654321
 
         with source(host="localhost") as receive_stream:
             with sender() as send_stream:
-                send_stream.send(data=send_data)
+                send_stream.send(data=send_data, timestamp=(123456789, 987654321))
 
                 received_message = receive_stream.receive()
                 received_data = received_message.data.data
@@ -298,6 +301,11 @@ class TestGenerator(unittest.TestCase):
         for key_name in send_data.keys():
             send_value = send_data[key_name]
             received_value = received_data[key_name].value
+            received_timestamp = received_data[key_name].timestamp
+            received_timestamp_offset = received_data[key_name].timestamp_offset
+
+            self.assertEqual(send_timestamp, received_timestamp)
+            self.assertEqual(send_timestamp_offset, received_timestamp_offset)
 
             # Use numpy comparison for ndarray types.
             if isinstance(send_value, numpy.ndarray):
@@ -305,6 +313,8 @@ class TestGenerator(unittest.TestCase):
 
             else:
                 self.assertEqual(send_value, received_value)
+
+
 
 
 

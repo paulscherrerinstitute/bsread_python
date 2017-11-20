@@ -24,7 +24,6 @@ BIND = "bind"
 
 # Support of "with" statement
 class sender:
-
     def __init__(self, queue_size=10, port=9999, conn_type=BIND, mode=PUSH, block=True, start_pulse_id=0,
                  data_header_compression=None):
         self.sender = Sender(queue_size=queue_size, port=port, conn_type=conn_type, mode=mode, block=block,
@@ -39,7 +38,6 @@ class sender:
 
 
 class Sender:
-
     def __init__(self, queue_size=10, port=9999, address="tcp://*", conn_type=BIND, mode=PUSH, block=True,
                  start_pulse_id=0, data_header_compression=None, send_timeout=None):
 
@@ -128,7 +126,7 @@ class Sender:
         self.stream.disconnect()
         self.status_stream_open = False
 
-    def send(self, *args, timestamp=None, pulse_id=None, data=None, check_data=True,  **kwargs):
+    def send(self, *args, timestamp=None, pulse_id=None, data=None, check_data=True, **kwargs):
         """
             data:       Data to be send with the message send. If no data is specified data will be retrieved from the
                         functions registered with each channel
@@ -214,9 +212,13 @@ class Sender:
                                                      channel_type=channel.metadata.get("type")),
                                      send_more=True, block=self.block)
 
+                    endianess = '>' if channel.metadata.get("encoding") == "big" else '<'
+
                     # TODO: This timestamps should be individual per channel.
-                    self.stream.send(struct.pack('q', current_timestamp_epoch) + struct.pack('q', current_timestamp_ns),
-                                     send_more=(count > 0), block=self.block)
+                    self.stream.send(struct.pack(endianess + 'q',
+                                                 current_timestamp_epoch) +
+                                     struct.pack(endianess + 'q',
+                                                 current_timestamp_ns), send_more=(count > 0), block=self.block)
                 count -= 1
                 counter += 1
 
