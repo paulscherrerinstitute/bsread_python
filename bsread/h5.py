@@ -41,6 +41,11 @@ def receive(source, file_name, queue_size=100, mode=zmq.PULL, n_messages=None):
 def process_message(handler, receiver, writer, first_iteration):
 
     message_data = receiver.receive(handler=handler.receive)
+
+    # In case you set a receive timeout, the returned message can be None.
+    if message_data is None:
+        return False
+
     message_data = message_data.data
 
     if message_data['header']['hash'] == '':
