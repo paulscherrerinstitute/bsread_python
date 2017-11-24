@@ -26,7 +26,7 @@ class TestDispatcher(unittest.TestCase):
         timestamp = datetime.datetime.now()
         start = timestamp - datetime.timedelta(seconds=0.8)  # keep all data up to 0.8 seconds before the interlock
         end = timestamp + datetime.timedelta(seconds=0.1)
-        ttl = datetime.timedelta(weeks=1)
+        ttl = datetime.timedelta(days=1)
 
         dispatcher.update_ttl(channels, start, end, ttl)
 
