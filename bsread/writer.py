@@ -76,7 +76,10 @@ class Writer:
                 if dataset.reference.shape[0] < required_size:
                     dataset.reference.resize(dataset.count + 1000, axis=0)
                 # TODO need to add an None check - i.e. for different frequencies
-                dataset.reference[dataset.count] = data[index]
+                # ADD else clause
+                if data is not None and data[index] is not None:
+                    dataset.reference[dataset.count] = data[index]
+
                 dataset.count += 1
 
     def compact_data(self):
