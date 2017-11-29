@@ -2,16 +2,8 @@ import unittest
 from threading import Thread
 
 import h5py
-import numpy
 import os
-
-from mflow import mflow, zmq
-
-from bsread import writer, simulate, h5
-from bsread.data.helpers import get_channel_specs
-from bsread.h5 import receive
-from bsread.handlers import extended
-from bsread.sender import sender
+from bsread import simulate, h5
 from bsread.simulate import simulated_channels
 
 
@@ -21,7 +13,8 @@ class TestWriter(unittest.TestCase):
 
     def tearDown(self):
         if os.path.exists(self.h5_test_filename):
-            os.remove(self.h5_test_filename)
+            pass
+            # os.remove(self.h5_test_filename)
 
     def test_receive(self):
 
@@ -39,10 +32,10 @@ class TestWriter(unittest.TestCase):
         file = h5py.File(self.h5_test_filename)
 
         expected_channels = set((x["name"] for x in simulated_channels))
-        # Strings are not supported in h5 file.
-        expected_channels.remove("XYZW")
         # Pulse id is added to the h5 file.
         expected_channels.add("pulse_id")
+        # Strings are currently not supported.
+        expected_channels.remove("XYZW")
 
         self.assertSetEqual(set(file.keys()), expected_channels)
 
@@ -77,6 +70,9 @@ class TestWriter(unittest.TestCase):
         # Pulse id is added to the h5 file.
         expected_channels.add("pulse_id")
 
+        # Strings are currently not supported.
+        expected_channels.remove("XYZW")
+
         self.assertSetEqual(set(file.keys()), expected_channels)
 
         # Pulse_id is a dataset, inspect it separately.
@@ -90,14 +86,6 @@ class TestWriter(unittest.TestCase):
 
         self.assertEqual(len(file["pulse_id"]), n_messages)
 
-
-simulated_channels = [{"name": 'ABC', "function": lambda x: x, "metadata": {'type': 'int32'}},
-                      {"name": 'ABCD', "function": lambda x: x * 10.0},
-                      {"name": 'ABCDF', "function": lambda x: None if x % 10 else x * 100.0},  # GENERATE NULL values
-                      {"name": 'XYZ', "function": lambda x: x * 200.0},
-                      {"name": 'WWW', "function": lambda x: [1.0, 2.0, 3.0, 4.0], "metadata":
-                          {'type': 'float64', 'shape': [4]}
-                       }]
 
 
 def generate_real_stream(port, n_messages=None, interval=0.01):

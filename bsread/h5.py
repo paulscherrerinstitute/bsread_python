@@ -62,6 +62,7 @@ def process_message(handler, receiver, writer, first_iteration):
         for channel in data_header['channels']:
             channel_type = channel.get('type')
 
+            # TODO: Add string support.
             if channel_type and channel_type.lower() == "string":
                 # we are skipping strings as they are not supported ...
                 writer.add_dataset_stub(dataset_group_name='data')
