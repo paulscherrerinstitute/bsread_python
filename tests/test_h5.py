@@ -34,8 +34,6 @@ class TestWriter(unittest.TestCase):
         expected_channels = set((x["name"] for x in simulated_channels))
         # Pulse id is added to the h5 file.
         expected_channels.add("pulse_id")
-        # Strings are currently not supported.
-        expected_channels.remove("XYZW")
 
         self.assertSetEqual(set(file.keys()), expected_channels)
 
@@ -47,6 +45,9 @@ class TestWriter(unittest.TestCase):
                                 set(("data", "timestamp", "timestamp_offset", "pulse_id")))
 
             self.assertEqual(len(file[channel_name]["data"]), n_messages)
+            self.assertEqual(len(file[channel_name]["timestamp"]), n_messages)
+            self.assertEqual(len(file[channel_name]["timestamp_offset"]), n_messages)
+            self.assertEqual(len(file[channel_name]["pulse_id"]), n_messages)
 
         self.assertEqual(len(file["pulse_id"]), n_messages)
 
@@ -66,12 +67,8 @@ class TestWriter(unittest.TestCase):
         file = h5py.File(self.h5_test_filename)
 
         expected_channels = set((x["name"] for x in simulated_channels))
-        # Strings are not supported in h5 file.
         # Pulse id is added to the h5 file.
         expected_channels.add("pulse_id")
-
-        # Strings are currently not supported.
-        expected_channels.remove("XYZW")
 
         self.assertSetEqual(set(file.keys()), expected_channels)
 
@@ -101,8 +98,6 @@ class TestWriter(unittest.TestCase):
         file = h5py.File(self.h5_test_filename)
 
         expected_channels = set((x["name"] for x in simulated_channels))
-        # Strings are currently not supported.
-        expected_channels.remove("XYZW")
 
         self.assertSetEqual(set(file["data"].keys()), expected_channels)
 
