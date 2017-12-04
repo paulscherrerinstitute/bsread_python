@@ -25,21 +25,6 @@ class TestGenerator(unittest.TestCase):
         # Enable debug logging
         pass
 
-    # def test_send(self):
-    #     generator = Sender(block=False)
-    #     generator.pre_function = pre
-    #     generator.add_channel('ABCD')
-    #     generator.add_channel('ABCD2')
-    #     generator.open()
-    #     generator.send_data(1.0, 1.1)
-    #     generator.send_data(2.0, 2.1)
-    #     generator.close()
-    #
-    # def test_send_interval(self):
-    #     generator = Sender()
-    #     generator.pre_function = lambda: print("x")
-    #     # generator.send(interval=1.0)
-
     def test__get_bytearray(self):
         value = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
         bytes = bsread.data.helpers.get_value_bytes(value)
@@ -314,8 +299,49 @@ class TestGenerator(unittest.TestCase):
             else:
                 self.assertEqual(send_value, received_value)
 
+    def test_data_compression_default(self):
+        send_data = {"test_1": numpy.ones(shape=1024, dtype=">i2"),
+                     "test_2": numpy.ones(shape=1024, dtype=">i4"),
+                     "test_3": numpy.ones(shape=1024, dtype=">i8"),
+                     "test_5": numpy.ones(shape=1024, dtype=">f4"),
+                     "test_6": numpy.ones(shape=1024, dtype=">f8")}
 
+        # Example without compression.
+        compression = None
 
+        with source(host="localhost") as receive_stream:
+            with sender(data_compression=compression) as send_stream:
+                send_stream.send(data=send_data)
+
+                for name in send_data:
+                    self.assertTrue("compression" not in send_stream.channels[name].metadata)
+
+                received_message = receive_stream.receive()
+
+        for name in send_data:
+            numpy.testing.assert_array_equal(send_data[name], received_message.data.data[name].value)
+
+    def test_data_compression_on_check_data(self):
+        send_data = {"test_1": numpy.ones(shape=1024, dtype=">i2"),
+                     "test_2": numpy.ones(shape=1024, dtype=">i4"),
+                     "test_3": numpy.ones(shape=1024, dtype=">i8"),
+                     "test_5": numpy.ones(shape=1024, dtype=">f4"),
+                     "test_6": numpy.ones(shape=1024, dtype=">f8")}
+
+        # Example with default data compression.
+        compression = "bitshuffle_lz4"
+
+        with source(host="localhost") as receive_stream:
+            with sender(data_compression=compression) as send_stream:
+                send_stream.send(data=send_data)
+
+                for name in send_data:
+                    self.assertEqual(send_stream.channels[name].metadata["compression"], compression)
+
+                received_message = receive_stream.receive()
+
+        for name in send_data:
+            numpy.testing.assert_array_equal(send_data[name], received_message.data.data[name].value)
 
 
 if __name__ == '__main_ _':

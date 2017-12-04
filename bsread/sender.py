@@ -25,9 +25,10 @@ BIND = "bind"
 # Support of "with" statement
 class sender:
     def __init__(self, queue_size=10, port=9999, conn_type=BIND, mode=PUSH, block=True, start_pulse_id=0,
-                 data_header_compression=None):
+                 data_header_compression=None, data_compression=None):
         self.sender = Sender(queue_size=queue_size, port=port, conn_type=conn_type, mode=mode, block=block,
-                             start_pulse_id=start_pulse_id, data_header_compression=data_header_compression)
+                             start_pulse_id=start_pulse_id, data_header_compression=data_header_compression,
+                             data_compression=data_compression)
 
     def __enter__(self):
         self.sender.open()
@@ -39,7 +40,7 @@ class sender:
 
 class Sender:
     def __init__(self, queue_size=10, port=9999, address="tcp://*", conn_type=BIND, mode=PUSH, block=True,
-                 start_pulse_id=0, data_header_compression=None, send_timeout=None):
+                 start_pulse_id=0, data_header_compression=None, send_timeout=None, data_compression=None):
 
         self.block = block
         self.queue_size = queue_size
@@ -72,7 +73,13 @@ class Sender:
             raise ValueError("Data header compression '%s' not supported. Available: %s" %
                              compression_provider_mapping.keys())
 
+        if data_compression not in compression_provider_mapping:
+            raise ValueError("Data compression '%s' not supported. Available: %s" %
+                             compression_provider_mapping.keys())
+
         self.data_header_compression = data_header_compression
+        self.data_compression = data_compression
+
         self.status_stream_open = False
 
     def add_channel(self, name, function=None, metadata=None):
@@ -84,6 +91,9 @@ class Sender:
             raise ValueError('metadata needs to be a dictionary')
 
         metadata['name'] = name
+
+        if "compression" not in metadata and self.data_compression is not None:
+            metadata["compression"] = self.data_compression
 
         # Add channel
         with self.channels_lock:
@@ -126,7 +136,19 @@ class Sender:
         self.stream.disconnect()
         self.status_stream_open = False
 
-    def send(self, *args, timestamp=None, pulse_id=None, data=None, check_data=True, **kwargs):
+    def add_channel_from_value(self, name, value):
+        metadata = dict()
+
+        metadata['name'] = name
+        metadata['type'], metadata['shape'] = get_channel_specs(value)
+        metadata['encoding'] = get_channel_encoding(value)
+
+        if self.data_compression is not None:
+            metadata['compression'] = self.data_compression
+
+        self.channels[name] = Channel(None, metadata)
+
+    def send(self, *args, timestamp=None, pulse_id=None, data=None, check_data=True,  **kwargs):
         """
             data:       Data to be send with the message send. If no data is specified data will be retrieved from the
                         functions registered with each channel
@@ -156,28 +178,25 @@ class Sender:
         with self.channels_lock:
 
             if check_data:
-                if dict_data:  # and not self.channels.keys() == dict_data.keys():
-                    logging.debug("Update channel metadata")
+                logging.debug("Update channel metadata.")
+
+                if dict_data:
+
                     self.channels = OrderedDict()
-                    for key, value in dict_data.items():
-                        metadata = dict()
-                        metadata['name'] = key
-                        metadata['type'], metadata['shape'] = get_channel_specs(value)
-                        metadata['encoding'] = get_channel_encoding(value)
-                        self.channels[key] = Channel(None, metadata)
+
+                    for name, value in dict_data.items():
+                        self.add_channel_from_value(name, value)
 
                     self._create_data_header()
+
                 elif list_data:
                     if len(list_data) != len(self.channels):
                         raise ValueError("Length of passed data (%d) does not correspond to configured channels (%d)"
                                          % (len(list_data), len(self.channels)))
+
                     # channels is Ordered dict, assumption is that channels are in the same order
-                    for i, k in enumerate(self.channels):
-                        metadata = dict()
-                        metadata['name'] = k
-                        metadata['type'], metadata['shape'] = get_channel_specs(list_data[i])
-                        metadata['encoding'] = get_channel_encoding(list_data[i])
-                        self.channels[k].metadata = metadata
+                    for index, name in enumerate(self.channels):
+                        self.add_channel_from_value(name, list_data[index])
 
                     self._create_data_header()
 
