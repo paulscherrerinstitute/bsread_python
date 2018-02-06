@@ -52,7 +52,8 @@ optional arguments:
 __bs receive__ can be used to receive and display bsread data from an IOC. If the client environment was set the __-s__ option can be omitted.
 
 ```bash
-usage: receive [-h] [-s SOURCE] [-m] [channel [channel ...]]
+usage: receive [-h] [-s SOURCE] [-c] [-m {pull,sub}] [-q QUEUE]
+               [channel [channel ...]]
 
 bsread receive utility
 
@@ -63,7 +64,12 @@ optional arguments:
   -h, --help            show this help message and exit
   -s SOURCE, --source SOURCE
                         Source address - format "tcp://<address>:<port>"
-  -m, --monitor         Monitor mode / clear the screen on every message
+  -c, --clear           Monitor mode / clear the screen on every message
+  -m {pull,sub}, --mode {pull,sub}
+                        Communication mode - either pull or sub (default
+                        depends on the use of -s option)
+  -q QUEUE, --queue QUEUE
+                        Queue size of incoming queue (default = 100)
 ```
 
 _Note:_ If `-s` is specified, the list of channels is ignored.
@@ -73,7 +79,8 @@ _Note:_ If `-s` is specified, the list of channels is ignored.
 __bs stats__ provides you with some basic statistics about the messages received. Also a basic check whether pulse_ids were missing in the stream is performed.
 
 ```bash
-usage: stats [-h] [-s SOURCE] [-m] [-n N] [-l LOG] [-v]
+usage: stats [-h] [-s SOURCE] [-c] [-m {pull,sub}] [-n N] [-l LOG] [-v]
+             [-q QUEUE]
              [channel [channel ...]]
 
 bsread statistics utility
@@ -86,8 +93,10 @@ optional arguments:
   -s SOURCE, --source SOURCE
                         source address, has to be in format
                         "tcp://<address>:<port>"
-  -m, --monitor         Enable monitor mode, this will clear the screen on
-                        every message to allow easier monitoring.
+  -c, --clear           Monitor mode / clear the screen on every message
+  -m {pull,sub}, --mode {pull,sub}
+                        Communication mode - either pull or sub (default
+                        depends on the use of -s option)
   -n N                  Limit message printing to every n messages, this will
                         reduce CPU load. Note that all messages are still
                         received, but are not displayed. If -n 0 is passed
@@ -95,6 +104,8 @@ optional arguments:
   -l LOG, --log LOG     Enable logging. All errors (pulse_id skip, etc..) will
                         be logged in file specified
   -v, --value           Display values
+  -q QUEUE, --queue QUEUE
+                        Queue size of incoming queue (default = 100)
 ```
 
 _Note:_ If `-s` is specified, the list of channels is ignored.
@@ -141,7 +152,9 @@ echo -e "one\ntwo\nthree" | bs config -c <ioc> -u
 __bs h5__ will dump the incoming stream into an hdf5 file for later analysis. As with the other commands, if the environment was set via `bs-source env` the __-s__ option can be omitted.
 
 ```bash
-usage: h5 [-h] [-s SOURCE] file [channel [channel ...]]
+usage: h5 [-h] [-s SOURCE] [-m {pull,sub}] [-q QUEUE] [-n N_MESSAGES]
+          [--compact]
+          file [channel [channel ...]]
 
 BSREAD hdf5 utility
 
@@ -153,6 +166,14 @@ optional arguments:
   -h, --help            show this help message and exit
   -s SOURCE, --source SOURCE
                         Source address - format "tcp://<address>:<port>"
+  -m {pull,sub}, --mode {pull,sub}
+                        Communication mode - either pull or sub (default
+                        depends on the use of -s option)
+  -q QUEUE, --queue QUEUE
+                        Queue size of incoming queue (default = 100)
+  -n N_MESSAGES, --n_messages N_MESSAGES
+                        Number of messages to receive.None means infinity.
+  --compact             Use the compact version of the file format
 ```
 
 __bs h5__ produces a very simple HDF5 structure. Each channel in the stream gets into a own group which holds the actual channel data, timestamp, timestamp_offset as well as the pulse_id of the channel.
