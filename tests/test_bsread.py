@@ -1,6 +1,8 @@
 import unittest
 import logging
 
+from bsread.data.helpers import get_value_reader
+
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -75,6 +77,20 @@ class TestGenerator(unittest.TestCase):
                 # message = in_stream.receive(filter=filter_method)
                 print(message.data.data['one'].value)
                 # message = in_stream.receive(filter=filter_method)
+
+    def test_failed_conversion(self):
+        channel_type = "int32"
+        compression = None
+        endianness = "<"
+        value = 10
+
+        value_reader = get_value_reader(channel_type, compression, shape=None, endianness=endianness)
+
+        result = value_reader(value.to_bytes(4, byteorder='little'))
+        self.assertEqual(value, result)
+
+        result = value_reader(value.to_bytes(3, byteorder='little'))
+        self.assertEqual(None, result)
 
 
 if __name__ == '__main__':
