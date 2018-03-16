@@ -146,6 +146,7 @@ def get_value_reader(channel_type, compression, shape=None, endianness=""):
         except Exception as e:
             # We do not want to throw exceptions in case we cannot decode a channel.
             _logger.warning('Unable to decode value - returning None. Exception: %s', traceback.format_exc())
+            _logger.info("Decoding failed for dtype='%s', compression='%s' and raw_data='%s'.", channel_type, compression, raw_data)
             return None
 
     return value_reader
