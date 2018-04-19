@@ -12,7 +12,10 @@ class TestWriter(unittest.TestCase):
     TEST_FILENAME = "ignore_test.h5"
 
     def tearDown(self):
-        os.remove(self.TEST_FILENAME)
+        try:
+            os.remove(self.TEST_FILENAME)
+        except:
+            pass
 
     def test_basic_workflow(self):
         writer = Writer()
