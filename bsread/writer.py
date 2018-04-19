@@ -134,7 +134,7 @@ class Writer:
                 self.compact_dataset(dataset)
 
     @staticmethod
-    def compact_dataset(self, dataset):
+    def compact_dataset(dataset):
         if dataset:  # Check for dataset stub, i.e. None
             # Compact if count is smaller than actual size
             if dataset.count < dataset.reference.shape[0]:
