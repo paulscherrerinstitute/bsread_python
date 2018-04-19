@@ -93,7 +93,6 @@ def process_message_compact(handler, receiver, writer, first_iteration):
     writer.write(data, dataset_group_name='data')
     writer.write(message_data['pulse_id_array'], dataset_group_name='pulse_id_array')
 
-
     return True
 
 

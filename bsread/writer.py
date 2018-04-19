@@ -31,7 +31,8 @@ class Writer:
     def add_dataset(self, dataset_name, dataset_group_name='data', shape=(1,), dtype="i8", maxshape=(None,), **kwargs):
         """
         Add and create a dataset to the writer.
-        :param dataset_name:
+        :param dataset_group_name: The group the this dataset belongs to.
+        :param dataset_name: Dataset complete name.
         :param shape:
         :param dtype:   b1, i1, i2, i4, i8, u1, u2, u4, u8, f2, f4, f8, c8, c16
                         http://docs.scipy.org/doc/numpy/user/basics.types.html
@@ -52,7 +53,8 @@ class Writer:
                         shape=(1,), dtype="i8", maxshape=(None,), **kwargs):
         """
         Replace an existing dataset in the writer.
-        :param dataset_name:
+        :param dataset_group_name: The group the this dataset belongs to.
+        :param dataset_name: Dataset complete name.
         :param shape:
         :param dtype:   b1, i1, i2, i4, i8, u1, u2, u4, u8, f2, f4, f8, c8, c16
                         http://docs.scipy.org/doc/numpy/user/basics.types.html
@@ -99,6 +101,7 @@ class Writer:
     def write(self, data, dataset_group_name='data'):
         """
         Write data to datasets. It is mandatory that the size of the data list is the same as the datasets
+        :param dataset_group_name: Name of the dataset the data belongs to.
         :param data: List of values to write to the configured datasets
         """
 
@@ -130,6 +133,7 @@ class Writer:
             for dataset in dataset_group.datasets:
                 self.compact_dataset(dataset)
 
+    @staticmethod
     def compact_dataset(self, dataset):
         if dataset:  # Check for dataset stub, i.e. None
             # Compact if count is smaller than actual size

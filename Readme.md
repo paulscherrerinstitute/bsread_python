@@ -98,7 +98,7 @@ The receive function offers an easy way to define conditions data desired to rec
 A very simple filter can be defined like this:
 
 ```python
-message = stream.receive(filter=lambda m: m.data.data['CHANNEL_NAME'].value = 4)
+message = stream.receive(filter=lambda m: m.data.data['CHANNEL_NAME'].value == 4)
 ```
 
 For implementing more complex filters, define a filter method and pass the method as filter:

@@ -1,10 +1,14 @@
 import traceback
+from logging import getLogger
 
 import numpy
 import sys
 
-from bsread.data.serialization import _logger, channel_type_deserializer_mapping, \
+from bsread.data.serialization import channel_type_deserializer_mapping, \
     compression_provider_mapping, channel_type_scalar_serializer_mapping
+
+
+_logger = getLogger(__name__)
 
 
 def get_channel_encoding(value):
@@ -146,7 +150,8 @@ def get_value_reader(channel_type, compression, shape=None, endianness=""):
         except Exception as e:
             # We do not want to throw exceptions in case we cannot decode a channel.
             _logger.warning('Unable to decode value - returning None. Exception: %s', traceback.format_exc())
-            _logger.info("Decoding failed for dtype='%s', compression='%s' and raw_data='%s'.", channel_type, compression, raw_data)
+            _logger.info("Decoding failed for dtype='%s', compression='%s' and raw_data='%s'. Exception: %s",
+                         channel_type, compression, raw_data, e)
             return None
 
     return value_reader

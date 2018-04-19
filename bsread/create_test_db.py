@@ -43,8 +43,8 @@ def generate_waveforms(numof=10, size=1024):
     for i in range(numof):
         output_records.append(template.substitute(num=i, size=size))
 
-    print(
-        "Generated  {} waveform records of size {} Name format: $(P):TEST_WVF-DOUBLE{}_[0-{}]".format(numof, size, size, numof))
+    print("Generated  {} waveform records of size {} Name format: $(P):TEST_WVF-DOUBLE{}_[0-{}]"
+          .format(numof, size, size, numof))
     return output_records
 
 
@@ -72,7 +72,7 @@ def create_db(input, filename=None):
 
     if len(g_output_records):
         print("Generated {} records with total payload size {:}kB".format(
-            len(g_output_records), g_total_payload_size/1024))
+            len(g_output_records), g_total_payload_size / 1024))
 
     if filename:
         print("Writing generated records to file {}".format(filename))
@@ -83,7 +83,6 @@ def create_db(input, filename=None):
 
 g_output_records = []
 g_total_payload_size = 0
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
