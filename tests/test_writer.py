@@ -152,5 +152,9 @@ class TestWriter(unittest.TestCase):
         self.assertIsNotNone(replaced_dataset_2)
         self.assertIsNotNone(replaced_dataset_3)
 
-        file.close()
+        self.assertListEqual(list(new_dataset[50:100]), list(range(50, 100)))
+        self.assertListEqual(list(replaced_dataset_1), list(range(50)))
+        self.assertListEqual(list(replaced_dataset_2), [0] * 50)
+        self.assertListEqual(list(replaced_dataset_3), [0] * 50)
 
+        file.close()
