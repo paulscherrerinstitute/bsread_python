@@ -214,6 +214,7 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta, async=True):
     """
 
     # TODO remove async parameter in next major version of this lib
+    # New way of doing this can be found here: https://git.psi.ch/sf_daq/ch.psi.daq.dispatcherrest/blob/master/Readme_Unofficial.md#update-ttl
 
     if not isinstance(ttl, datetime.timedelta):
         raise RuntimeError('Invalid ttl - need to be of type timedelta')
