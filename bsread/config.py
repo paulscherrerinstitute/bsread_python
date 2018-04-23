@@ -186,7 +186,6 @@ def main():
         # Get current configuration
         response = get_introspect(address)
 
-
     if arguments.verbose:
         print(json.dumps(response))
 

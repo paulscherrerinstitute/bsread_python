@@ -42,7 +42,7 @@ class TestWriter(unittest.TestCase):
 
         for channel_name in expected_channels:
             self.assertSetEqual(set(file[channel_name].keys()),
-                                set(("data", "timestamp", "timestamp_offset", "pulse_id")))
+                                {"data", "timestamp", "timestamp_offset", "pulse_id"})
 
             self.assertEqual(len(file[channel_name]["data"]), n_messages)
             self.assertEqual(len(file[channel_name]["timestamp"]), n_messages)
@@ -77,7 +77,7 @@ class TestWriter(unittest.TestCase):
 
         for channel_name in expected_channels:
             self.assertSetEqual(set(file[channel_name].keys()),
-                                set(("data", "timestamp", "timestamp_offset", "pulse_id")))
+                                {"data", "timestamp", "timestamp_offset", "pulse_id"})
 
             self.assertEqual(len(file[channel_name]["data"]), n_messages)
 

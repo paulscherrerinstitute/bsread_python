@@ -72,13 +72,19 @@ def data_consistency_check(message_data, statistics):
 
     if not previous_pulse_id:
         previous_pulse_id = current_pulse_id
+
     elif previous_pulse_id + 1 != current_pulse_id:
+
         if current_pulse_id == previous_pulse_id:
             statistics.duplicated_pulse_ids += 1
+
         elif current_pulse_id > previous_pulse_id:
-            logger.warning("Skipped message detected, expected {} but received {}".format(previous_pulse_id + 1, current_pulse_id))
+            logger.warning("Skipped message detected, expected {} but received {}".format(
+                previous_pulse_id + 1, current_pulse_id))
+
             statistics.missed_pulse_ids += current_pulse_id - previous_pulse_id - 1
             previous_pulse_id = current_pulse_id
+
         else:
             # current pulse id is smaller than previous one
             statistics.reverted_pulse_ids += 1
@@ -97,7 +103,9 @@ def main():
     parser.add_argument('-m', '--mode', default='pull', choices=['pull', 'sub'], type=str,
                         help='Communication mode - either pull or sub (default depends on the use of -s option)')
     parser.add_argument('-n', default=1, type=int,
-                        help='Limit message printing to every n messages, this will reduce CPU load. Note that all messages are still received, but are not displayed. If -n 0 is passed message display is disabled')
+                        help='Limit message printing to every n messages, this will reduce CPU load. Note that all '
+                             'messages are still received, but are not displayed. If -n 0 is passed message '
+                             'display is disabled')
     parser.add_argument('-l', '--log', type=str,
                         help='Enable logging. All errors (pulse_id skip, etc..) will be logged in file specified')
     parser.add_argument('-v', '--value', action='count', help='Display values')

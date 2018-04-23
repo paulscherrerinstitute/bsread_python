@@ -20,7 +20,7 @@ simulated_channels = [{"name": 'ABC', "function": lambda x: x, "metadata": {'typ
                       {"name": 'ABCD', "function": lambda x: x * 10.0},
                       {"name": 'ABCDF', "function": lambda x: x * 100.0},
                       {"name": 'XYZ', "function": lambda x: x * 200.0},
-                      {"name": 'XYZW', "function": lambda x: 'hello' * (x+1), "metadata": {'type': 'string'}},
+                      {"name": 'XYZW', "function": lambda x: 'hello' * (x + 1), "metadata": {'type': 'string'}},
                       {"name": 'WWW', "function": lambda x: [1.0, 2.0, 3.0, 4.0], "metadata":
                           {'type': 'float64', 'shape': [4]}
                        },
@@ -47,7 +47,7 @@ def main():
     parser.add_argument('-n', '--n_messages', type=int, default=None, help="Number of messages to generate."
                                                                            "None means infinity.")
     parser.add_argument('-i', '--interval', type=float, default=0.01, help="Interval in seconds between messages."
-                                                                         "Default: 0.01 second.")
+                                                                           "Default: 0.01 second.")
 
     arguments = parser.parse_args()
 

@@ -34,7 +34,7 @@ def deserialize_string(numpy_array):
 def serialize_numpy(numpy_number, dtype=None):
     """
     Serialize the provided numpy array.
-    :param numpy_array: Array to serialize.
+    :param numpy_number: Number to serialize.
     :param dtype: Ignored. Here just to have a consistent interface.
     :return: Numpy array.
     """

@@ -248,7 +248,6 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta, async=True):
     headers = {'content-type': 'application/json'}
     response = requests.post(base_url + '/data/update/ttl', data=json.dumps(update_request), headers=headers)
 
-
     if not response.ok:
         raise Exception('Unable to update ttl for specified channels - ' + response.text)
 
