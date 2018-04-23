@@ -41,6 +41,16 @@ def get_input_sources():
     return response.json()
 
 
+def get_output_sources():
+    """ Returns: list of current streams"""
+    response = requests.get(base_url+'/streams')
+
+    if not response.ok:
+        raise Exception('Unable to retrieve current streams - ' + response.text)
+
+    return response.json()
+
+
 def get_current_channels():
     """ Get current incoming channels """
     response = requests.get(base_url + '/channels/live')
