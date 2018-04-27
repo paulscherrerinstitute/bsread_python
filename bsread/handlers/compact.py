@@ -42,7 +42,8 @@ class Handler:
 
             # Read the data header.
             data_header_bytes = receiver.next()
-            data_header = json.loads(get_value_reader("string", header.get('dh_compression'))(data_header_bytes))
+            data_header = json.loads(get_value_reader("string", header.get('dh_compression'),
+                                                      value_name="data_header")(data_header_bytes))
 
             # If a message with ho channel information is received,
             # ignore it and return from function with no data.

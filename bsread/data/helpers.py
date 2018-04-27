@@ -94,11 +94,12 @@ def get_channel_reader(channel):
         _logger.warning("'type' channel field not found. Parse as 64-bit floating-point number float64 (default).")
         channel_type = "float64"
 
+    name = channel['name']
     compression = channel['compression'] if "compression" in channel else None
     shape = channel['shape'] if "shape" in channel else None
     endianness = channel['encoding']
 
-    value_reader = get_value_reader(channel_type, compression, shape, endianness)
+    value_reader = get_value_reader(channel_type, compression, shape, endianness, name)
     return value_reader
 
 
@@ -115,13 +116,14 @@ def get_serialization_type(channel_type):
     return channel_type_deserializer_mapping[channel_type][0]
 
 
-def get_value_reader(channel_type, compression, shape=None, endianness=""):
+def get_value_reader(channel_type, compression, shape=None, endianness="", value_name=None):
     """
     Get the correct value reader for the specific channel type and compression.
     :param channel_type: Channel type.
     :param compression: Compression on the channel.
     :param shape: Shape of the data.
     :param endianness: Encoding of the channel: < (small endian) or > (big endian)
+    :param value_name: Name of the value to decode. For logging.
     :return: Object capable of reading the data, when get_value() is called on it.
     """
     # If the type is unknown, NoneProvider should be used.
@@ -149,9 +151,12 @@ def get_value_reader(channel_type, compression, shape=None, endianness=""):
 
         except Exception as e:
             # We do not want to throw exceptions in case we cannot decode a channel.
-            _logger.warning('Unable to decode value - returning None. Exception: %s', traceback.format_exc())
-            _logger.info("Decoding failed for dtype='%s', compression='%s' and raw_data='%s'. Exception: %s",
-                         channel_type, compression, raw_data, e)
+            _logger.warning("Unable to decode value_name '%s' - returning None. Exception: %s",
+                            value_name, traceback.format_exc())
+
+            _logger.info("Decoding failed value name '%s' with dtype='%s', "
+                         "compression='%s' and raw_data='%s'. Exception: %s",
+                         value_name, channel_type, compression, raw_data, e)
             return None
 
     return value_reader
