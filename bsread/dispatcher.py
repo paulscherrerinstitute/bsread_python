@@ -41,6 +41,16 @@ def get_input_sources():
     return response.json()
 
 
+def get_output_sources():
+    """ Returns: list of current streams"""
+    response = requests.get(base_url+'/streams')
+
+    if not response.ok:
+        raise Exception('Unable to retrieve current streams - ' + response.text)
+
+    return response.json()
+
+
 def get_current_channels():
     """ Get current incoming channels """
     response = requests.get(base_url + '/channels/live')
@@ -196,19 +206,22 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta, async=True):
     :param start:  Start of range to update = either datetime or pulse_id
     :param end: End of range to update - either datetime or pulse_id
     :param channels: List of channels to update ttl
-    :param ttl: Time to live as datatime.timedelta 
-    :param async: Execute call asynchronously
-    
+    :param ttl: Time to live as datatime.timedelta
+    :param async: Not used any more - legacy to be removed in next major version
+
     
     :return: 
     """
+
+    # TODO remove async parameter in next major version of this lib
+    # New way of doing this can be found here: https://git.psi.ch/sf_daq/ch.psi.daq.dispatcherrest/blob/master/Readme_Unofficial.md#update-ttl
 
     if not isinstance(ttl, datetime.timedelta):
         raise RuntimeError('Invalid ttl - need to be of type timedelta')
 
     update_request = {
         "ttl": int(ttl.total_seconds()),  # Value need to be a long
-        "asyncCall": async,
+        # "asyncCall": async,
         "channels": [],
         "range": {}
     }
