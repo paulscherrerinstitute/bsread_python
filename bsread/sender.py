@@ -25,10 +25,10 @@ BIND = "bind"
 # Support of "with" statement
 class sender:
     def __init__(self, queue_size=10, port=9999, conn_type=BIND, mode=PUSH, block=True, start_pulse_id=0,
-                 data_header_compression=None, data_compression=None):
+                 data_header_compression=None, data_compression=None, send_timeout=None):
         self.sender = Sender(queue_size=queue_size, port=port, conn_type=conn_type, mode=mode, block=block,
                              start_pulse_id=start_pulse_id, data_header_compression=data_header_compression,
-                             data_compression=data_compression)
+                             data_compression=data_compression, send_timeout=send_timeout)
 
     def __enter__(self):
         self.sender.open()
