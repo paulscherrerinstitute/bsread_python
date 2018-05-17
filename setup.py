@@ -3,7 +3,7 @@
 
 from setuptools import setup
 
-VERSION = (1, 2, 1)
+VERSION = (1, 2, 2)
 VERSION_STR = ".".join([str(x) for x in VERSION])
 
 setup(
