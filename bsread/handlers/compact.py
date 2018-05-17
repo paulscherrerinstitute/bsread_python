@@ -82,7 +82,7 @@ class Handler:
             raw_data = receiver.next()
             channel_value = Value()
 
-            if raw_data is not None:
+            if raw_data:
                 channel_value.value = channel_reader(raw_data)
 
                 if receiver.has_more():
