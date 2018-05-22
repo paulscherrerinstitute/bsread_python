@@ -38,7 +38,7 @@ class NoCompression:
 
 
 class BitshuffleLZ4:
-    default_compression_block_size = 0
+    default_compression_block_size = 8192
 
     # numpy type definitions can be found at: http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html
     @staticmethod
