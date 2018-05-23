@@ -122,7 +122,7 @@ class TestGenerator(unittest.TestCase):
                 self.assertEqual(message.data.data["one"].value, 1)
                 self.assertIsNone(message.data.data["two"].value)
                 self.assertEqual(message.data.data["three"].value, "one")
-                self.assertTrue(numpy.array_equal(message.data.data["four"].value, numpy.array([])))
+                self.assertIsNone(message.data.data["four"].value)
 
                 # Test sending compressed stream - compression kicks in if shape > 1
                 stream.send(one=[1, 2, 3, 4, 5])
