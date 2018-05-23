@@ -193,20 +193,22 @@ class TestGenerator(unittest.TestCase):
                     plain_received_value = response.data.data["normal_" + name].value
                     compressed_received_value = response.data.data["compressed_" + name].value
 
+                    if isinstance(plain_received_value, numpy.ndarray):
+                        numpy.testing.assert_array_equal(plain_received_value, compressed_received_value)
+                    else:
+                        self.assertEqual(plain_received_value, compressed_received_value)
+
+                    # Empty arrays are transfered as None.
+                    if plain_received_value is None and not value:
+                        plain_received_value = value
+                        compressed_received_value = value
+
                     # Compare numpy arrays.
                     if isinstance(plain_received_value, numpy.ndarray):
                         numpy.testing.assert_array_equal(plain_received_value, value)
                         numpy.testing.assert_array_equal(compressed_received_value, value)
 
-                    # Everything else.
                     else:
-                        # Empty strings are transfered as None.
-                        if plain_received_value is None and value == '':
-                            plain_received_value = ''
-
-                        if compressed_received_value is None and value == '':
-                            compressed_received_value = ''
-
                         self.assertEqual(plain_received_value, value, "Plain channel values not as expected")
                         self.assertEqual(compressed_received_value, value, "Compressed channel values not as expected")
 
