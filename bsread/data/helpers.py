@@ -185,6 +185,6 @@ def get_value_bytes(value, compression=None, channel_type=None):
     if serializer:
         value = serializer(value, dtype)
 
-    compressed_bytes_array = compressor(value)
+    compressed_bytes_array = compressor(value, dtype)
 
     return compressed_bytes_array

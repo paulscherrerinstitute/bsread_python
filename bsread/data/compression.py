@@ -28,17 +28,17 @@ class NoCompression:
         return raw_data
 
     @staticmethod
-    def pack_data(numpy_array):
+    def pack_data(numpy_array, dtype=None):
         """
         Convert numpy array to byte array.
         :param numpy_array: Numpy array to convert.
+        :param dtype: Data type (Numpy).
         :return: Bytes array of provided numpy array.
         """
         return numpy_array.tobytes()
 
 
 class BitshuffleLZ4:
-    default_compression_block_size = 8192
 
     # numpy type definitions can be found at: http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html
     @staticmethod
@@ -81,8 +81,10 @@ class BitshuffleLZ4:
         if shape is None or (shape == [1] and n_elements > 1):
             shape = (n_elements,)
 
-        # Compression block size, big endian, int32 (int)
-        compression_block_size = struct.unpack(">i", raw_data[8:12].tobytes())[0]
+        # Compression block size, big endian, int32 (int). Divide by number of bytes per element.
+        header_compression_block_size = struct.unpack(">i", raw_data[8:12].tobytes())[0]
+        n_bytes_per_element = numpy.dtype(dtype).itemsize
+        compression_block_size = header_compression_block_size / n_bytes_per_element
 
         # If shape is not provided use the original length.
         if shape is None:
@@ -98,18 +100,43 @@ class BitshuffleLZ4:
         return byte_array
 
     @staticmethod
-    def pack_data(numpy_array):
+    def pack_data(numpy_array, dtype):
         """
         Compress the provided numpy array.
         :param numpy_array: Array to compress.
+        :param dtype: Data type (Numpy).
         :return: Header (unpacked length, compression block size) + Compressed data
         """
         # Uncompressed block size, big endian, int64 (long long)
-        unpacked_length = struct.pack(">q", numpy_array.nbytes)
+        unpacked_length_bytes = struct.pack(">q", numpy_array.nbytes)
 
-        # Compression block size, big endian, int32 (int)
-        compression_block_size = struct.pack(">i", BitshuffleLZ4.default_compression_block_size)
+        n_bytes_per_element = numpy.dtype(dtype).itemsize
+        compression_block_size = BitshuffleLZ4.get_compression_block_size(n_bytes_per_element)
 
-        compressed_bytes = bitshuffle.compress_lz4(numpy_array, BitshuffleLZ4.default_compression_block_size).tobytes()
+        # We multiply the compression block size by the n_bytes_per_element, because the HDF5 filter does so.
+        # https://github.com/kiyo-masui/bitshuffle/blob/04e58bd553304ec26e222654f1d9b6ff64e97d10/src/bshuf_h5filter.c#L167
+        header_compression_block_size = compression_block_size * n_bytes_per_element
+        # Compression block size, big endian, int32 (int).
+        block_size_bytes = struct.pack(">i", header_compression_block_size)
 
-        return unpacked_length + compression_block_size + compressed_bytes
+        compressed_bytes = bitshuffle.compress_lz4(numpy_array, compression_block_size).tobytes()
+
+        return unpacked_length_bytes + block_size_bytes + compressed_bytes
+
+    target_block_size = 8192
+    minimum_block_size = 128
+    block_size_multiplier = 8
+
+    @staticmethod
+    def get_compression_block_size(n_bytes_per_element):
+
+        block_size = BitshuffleLZ4.target_block_size / n_bytes_per_element
+
+        # Make the target block size the closest multiple of block_size_multiplier.
+        block_size = (block_size // BitshuffleLZ4.block_size_multiplier) * BitshuffleLZ4.block_size_multiplier
+
+        # Since it is a multiple of block_size_multiplier (which is an int) it is always an int.
+        block_size = int(block_size)
+
+        return max(block_size, BitshuffleLZ4.minimum_block_size)
+
