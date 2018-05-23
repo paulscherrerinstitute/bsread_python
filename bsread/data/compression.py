@@ -16,8 +16,8 @@ class NoCompression:
         """
         raw_data = numpy.frombuffer(raw_string, dtype=dtype)
 
-        # Not an empty ndarray, but a None.
-        if raw_data.size == 0 and shape == [1]:
+        # Empty data received.
+        if raw_data.size == 0:
             return None
 
         # Do not reshape scalars.
@@ -62,7 +62,7 @@ class BitshuffleLZ4:
 
         # Empty array was transmitted.
         if unpacked_length == 0:
-            return numpy.array([], dtype=dtype)
+            return None
 
         # Type of the output array.
         dtype = numpy.dtype(dtype)
