@@ -345,6 +345,31 @@ class TestGenerator(unittest.TestCase):
         for name in send_data:
             numpy.testing.assert_array_equal(send_data[name], received_message.data.data[name].value)
 
+    def test_send_boolean(self):
+        send_boolean_array = [[0, 1, 0, 1],
+                              [1, 0, 1, 0]]
+
+        with source(host="localhost") as receive_stream:
+            with sender() as send_stream:
+                send_stream.add_channel("boolean_type",
+                                        lambda x: 1,
+                                        {"type": "bool"})
+
+                send_stream.add_channel("boolean_type_array",
+                                        lambda x: send_boolean_array,
+                                        {"type": "bool",
+                                         "shape": [4, 2]})
+
+                send_stream.send()
+
+                data = receive_stream.receive()
+                boolean_type = data.data.data["boolean_type"].value
+                boolean_type_array = data.data.data["boolean_type_array"].value
+
+        self.assertTrue(bool(boolean_type))
+        numpy.testing.assert_array_equal(send_boolean_array, boolean_type_array)
+
+
 
 if __name__ == '__main_ _':
     unittest.main()

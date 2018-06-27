@@ -58,7 +58,8 @@ def get_channel_specs(value, extended=False):
             base_value = base_value[0]
 
         # Lists have a special serializer.
-        def serializer(x, y): return numpy.array(x, dtype=dtype)
+        def serializer(list_value, suggested_type):
+            return numpy.array(list_value, dtype=suggested_type)
 
         # Shape is the length of the list
         shape = [len(value)]

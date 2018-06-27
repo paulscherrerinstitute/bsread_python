@@ -95,7 +95,8 @@ channel_type_deserializer_mapping = {
     'uint64': ('u8', deserialize_number),
     'float32': ('f4', deserialize_number),
     'float64': ('f8', deserialize_number),
-    'string': ('u1', deserialize_string)
+    'string': ('u1', deserialize_string),
+    'bool': ('u1', deserialize_number)
 }
 
 
