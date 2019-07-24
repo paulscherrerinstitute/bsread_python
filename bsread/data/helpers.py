@@ -147,8 +147,11 @@ def get_value_reader(channel_type, compression, shape=None, endianness="", value
     def value_reader(raw_data):
         try:
             # Decompress and deserialize the received value.
-            numpy_array = decompressor(raw_data, dtype, shape)
-            return serializer(numpy_array)
+            if raw_data:
+                numpy_array = decompressor(raw_data, dtype, shape)
+                return serializer(numpy_array)
+            else:
+                return None
 
         except Exception as e:
             # We do not want to throw exceptions in case we cannot decode a channel.

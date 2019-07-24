@@ -1,4 +1,4 @@
-from bsread import Generator
+from bsread.sender import Sender 
 import math
 import struct
 
@@ -25,7 +25,7 @@ def image(pulse_id):
 
 if __name__ == "__main__":
 
-    generator = Generator()
+    generator = Sender()
     generator.add_channel('ABC', lambda x: x, metadata={'type': 'int32'})
     generator.add_channel('ABC_BIG', lambda x: struct.pack('>i', x), metadata={'type': 'int32', 'encoding': 'big'})
     generator.add_channel('ABCD', lambda x: x*10.0)
