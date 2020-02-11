@@ -8,12 +8,17 @@ source:
     path: ..
 
 build:
-    number: 1
+    noarch: python
+    number: 2
+    script: python -m pip install --no-deps --ignore-installed .
+    entry_points:
+        - bs = bsread.bs:main
 
 requirements:
     build:
         - python
         - setuptools
+        - pip
     run:
         - python
         - mflow >=0.0.23
@@ -21,10 +26,6 @@ requirements:
         - numpy
         - pyzmq
         - requests
-
-build:
-  entry_points:
-    - bs = bsread.bs:main
 
 about:
     home: git@git.psi.ch:sf_daq/bsread_python.git
