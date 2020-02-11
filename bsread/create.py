@@ -1,4 +1,4 @@
-from . import create_test_db
+from bsread import create_test_db
 
 
 def create_test_ioc_config(ioc_prefix, port, dbs_to_load=None):

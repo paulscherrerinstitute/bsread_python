@@ -4,8 +4,8 @@ import mflow
 from bsread.data.serialization import channel_type_deserializer_mapping
 from bsread.handlers import extended
 import zmq
-from . import writer as wr
-from . import dispatcher
+from bsread import writer as wr
+from bsread import dispatcher
 import logging
 
 # Logger configuration

@@ -1,11 +1,11 @@
 import mflow
-from .handlers.compact import Handler
+from bsread.handlers.compact import Handler
 import zmq
 import time
 import datetime
 import argparse
 import logging
-from . import dispatcher
+from bsread import dispatcher
 
 logger = logging.getLogger(__name__)
 

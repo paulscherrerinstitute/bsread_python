@@ -3,7 +3,7 @@
 
 from setuptools import setup
 
-VERSION = (1, 4, 2)
+VERSION = (1, 4, 6)
 VERSION_STR = ".".join([str(x) for x in VERSION])
 
 setup(
@@ -16,5 +16,6 @@ setup(
     url='https://git.psi.ch/sf_daq/bsread_python',
     packages=['bsread', 'bsread.handlers', 'bsread.data'],
     requires=['mflow', 'bitshuffle', 'numpy', 'pyzmq'],
+    zip_safe=False,
 
 )

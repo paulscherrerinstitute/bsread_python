@@ -1,9 +1,9 @@
-from . import dispatcher
-from .handlers.compact import Handler
+from bsread import dispatcher
+from bsread.handlers.compact import Handler
 import re
 import sys
 import time
-from . import Source
+from bsread.bsread import Source
 import zmq
 
 def pollStream(pattern, timeout):

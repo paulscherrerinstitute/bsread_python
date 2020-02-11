@@ -1,4 +1,4 @@
-from . import dispatcher
+from bsread import dispatcher
 import re
 import sys
 

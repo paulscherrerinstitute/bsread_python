@@ -1,7 +1,7 @@
 import mflow
 import json
 
-from .handlers.compact import Handler
+from bsread.handlers.compact import Handler
 
 
 PULL = mflow.PULL

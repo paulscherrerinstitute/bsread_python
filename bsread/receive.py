@@ -1,7 +1,7 @@
 import mflow
 # from .handlers.bsr_m_1_0 import Handler
-from .handlers.compact import Handler
-from . import dispatcher
+from bsread.handlers.compact import Handler
+from bsread import dispatcher
 import zmq
 import numpy
 
