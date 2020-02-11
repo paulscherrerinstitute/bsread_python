@@ -12,10 +12,10 @@ build:
 
 requirements:
     build:
-        - python
+        - python >=3.5
         - setuptools
     run:
-        - python
+        - python >=3.5
         - mflow >=0.0.23
         - bitshuffle
         - numpy
