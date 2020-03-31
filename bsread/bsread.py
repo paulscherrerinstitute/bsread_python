@@ -17,10 +17,10 @@ BIND = "bind"
 class source:
 
     def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None, queue_size=100,
-                 channels=None, config_address=None, all_channels=False, receive_timeout=None,
+                 copy=True, channels=None, config_address=None, all_channels=False, receive_timeout=None,
                  dispatcher_url='https://dispatcher-api.psi.ch/sf', dispatcher_verify_request=True):
         self.source = Source(host=host, port=port, config_port=config_port, conn_type=conn_type, mode=mode,
-                             queue_size=queue_size, channels=channels, config_address=config_address,
+                             queue_size=queue_size, copy=copy, channels=channels, config_address=config_address,
                              all_channels=all_channels, receive_timeout=receive_timeout, dispatcher_url=dispatcher_url,
                              dispatcher_verify_request=dispatcher_verify_request)
 
@@ -35,7 +35,7 @@ class source:
 class Source:
 
     def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None, queue_size=100,
-                 channels=None, config_address=None, all_channels=False, receive_timeout=None,
+                 copy=True, channels=None, config_address=None, all_channels=False, receive_timeout=None,
                  dispatcher_url='https://dispatcher-api.psi.ch/sf', dispatcher_verify_request=True):
         """
 
@@ -73,6 +73,7 @@ class Source:
         self.config_port = config_port
         self.conn_type = conn_type
         self.queue_size = queue_size
+        self.copy = copy
         self.receive_timeout = receive_timeout
 
         self.dispatcher_url = dispatcher_url
@@ -141,7 +142,7 @@ class Source:
 
     def connect(self):
         self.stream = mflow.connect(self.address, conn_type=self.conn_type, queue_size=self.queue_size, mode=self.mode,
-                                    receive_timeout=self.receive_timeout)
+                                    copy=self.copy, receive_timeout=self.receive_timeout)
         return self  # Return self to be backward compatible
 
     def disconnect(self):

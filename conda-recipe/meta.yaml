@@ -21,7 +21,7 @@ requirements:
         - pip
     run:
         - python
-        - mflow >=0.0.23
+        - mflow >=0.2.0
         - bitshuffle
         - numpy
         - pyzmq

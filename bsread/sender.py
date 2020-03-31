@@ -25,10 +25,10 @@ BIND = "bind"
 # Support of "with" statement
 class sender:
     def __init__(self, queue_size=10, port=9999, conn_type=BIND, mode=PUSH, block=True, start_pulse_id=0,
-                 data_header_compression=None, data_compression=None, send_timeout=None):
+                 data_header_compression=None, data_compression=None, send_timeout=None, copy=True):
         self.sender = Sender(queue_size=queue_size, port=port, conn_type=conn_type, mode=mode, block=block,
                              start_pulse_id=start_pulse_id, data_header_compression=data_header_compression,
-                             data_compression=data_compression, send_timeout=send_timeout)
+                             data_compression=data_compression, send_timeout=send_timeout, copy=copy)
 
     def __enter__(self):
         self.sender.open()
@@ -40,8 +40,10 @@ class sender:
 
 class Sender:
     def __init__(self, queue_size=10, port=9999, address="tcp://*", conn_type=BIND, mode=PUSH, block=True,
-                 start_pulse_id=0, data_header_compression=None, send_timeout=None, data_compression=None):
+                 start_pulse_id=0, data_header_compression=None, send_timeout=None, data_compression=None,
+                 copy=True):
 
+        self.copy = copy
         self.block = block
         self.queue_size = queue_size
         self.port = port
@@ -106,7 +108,7 @@ class Sender:
     def open(self, no_client_action=None, no_client_timeout=None):
         self.stream = mflow.connect('%s:%d' % (self.address, self.port), queue_size=self.queue_size,
                                     conn_type=self.conn_type, mode=self.mode, no_client_action=no_client_action,
-                                    no_client_timeout=no_client_timeout, send_timeout=self.send_timeout)
+                                    no_client_timeout=no_client_timeout, copy=self.copy, send_timeout=self.send_timeout)
 
         # Main header
         self.main_header = dict()
