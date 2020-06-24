@@ -12,17 +12,20 @@ SUB = mflow.SUB
 CONNECT = "connect"
 BIND = "bind"
 
+DEFAULT_DISPATCHER_URL = 'https://dispatcher-api.psi.ch/sf'
 
 # Support of "with" statement
 class source:
 
     def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None, queue_size=100,
                  copy=True, channels=None, config_address=None, all_channels=False, receive_timeout=None,
-                 dispatcher_url='https://dispatcher-api.psi.ch/sf', dispatcher_verify_request=True):
+                 dispatcher_url=DEFAULT_DISPATCHER_URL, dispatcher_verify_request=True,
+                 dispatcher_disable_compression=False):
         self.source = Source(host=host, port=port, config_port=config_port, conn_type=conn_type, mode=mode,
                              queue_size=queue_size, copy=copy, channels=channels, config_address=config_address,
                              all_channels=all_channels, receive_timeout=receive_timeout, dispatcher_url=dispatcher_url,
-                             dispatcher_verify_request=dispatcher_verify_request)
+                             dispatcher_verify_request=dispatcher_verify_request,
+                             dispatcher_disable_compression=dispatcher_disable_compression)
 
     def __enter__(self):
         self.source.connect()
@@ -36,7 +39,8 @@ class Source:
 
     def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None, queue_size=100,
                  copy=True, channels=None, config_address=None, all_channels=False, receive_timeout=None,
-                 dispatcher_url='https://dispatcher-api.psi.ch/sf', dispatcher_verify_request=True):
+                 dispatcher_url=DEFAULT_DISPATCHER_URL, dispatcher_verify_request=True,
+                 dispatcher_disable_compression=False):
         """
 
         Args:
@@ -127,7 +131,8 @@ class Source:
             stream_type = 'push_pull' if self.mode == PULL else 'pub_sub'
             self.address = dispatcher.request_stream(channels,
                                                      stream_type=stream_type,
-                                                     verify=dispatcher_verify_request)
+                                                     verify=dispatcher_verify_request,
+                                                     disable_compression = dispatcher_disable_compression)
 
             # # TODO REMOVE Workaround
             # import re

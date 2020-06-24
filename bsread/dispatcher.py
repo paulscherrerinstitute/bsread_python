@@ -4,8 +4,10 @@ import json
 import logging
 import datetime
 
+from bsread import DEFAULT_DISPATCHER_URL
+
 base_url = 'http://localhost:8080'
-base_url = 'https://dispatcher-api.psi.ch/sf'
+base_url = DEFAULT_DISPATCHER_URL
 
 
 def add_input_sources(addresses):
@@ -91,7 +93,11 @@ if __name__ == '__main__':
     print(sources)
 
 
-def request_stream(channels, stream_type='pub_sub', inconsistency_resolution="adjust-individual", verify=True):
+def request_stream(channels,
+                   stream_type='pub_sub',
+                   inconsistency_resolution="adjust-individual",
+                   verify=True,
+                   disable_compression = False):
     """
     Request stream for specific channels
     Args:
@@ -119,6 +125,9 @@ def request_stream(channels, stream_type='pub_sub', inconsistency_resolution="ad
               "streamType": stream_type,
               "verify": verify,
               "channelValidation": {"inconsistency": inconsistency_resolution}}
+
+    if disable_compression:
+        config["compression"] = "none"
 
     for channel in channels:
         if isinstance(channel, str):
