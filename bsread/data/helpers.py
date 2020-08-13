@@ -158,7 +158,7 @@ def get_value_reader(channel_type, compression, shape=None, endianness="", value
             _logger.warning("Unable to decode value_name '%s' - returning None. Exception: %s",
                             value_name, traceback.format_exc())
 
-            _logger.info("Decoding failed value name '%s' with dtype='%s', shape='%s' "
+            _logger.debug("Decoding failed value name '%s' with dtype='%s', shape='%s' "
                          "compression='%s', raw_data_length='%s' and raw_data='%s'. Exception: %s",
                          value_name, channel_type, shape, compression, len(raw_data), raw_data, e)
             return None
