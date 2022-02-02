@@ -115,7 +115,7 @@ def stats(channels, source, mode, clear, queue_size, base_url, backend, logfile,
     use_dispatching = False
     mode = mflow.SUB if mode == 'sub' else mflow.PULL
 
-    if channels is None and source is None:
+    if not channels and source is None:
         raise click.BadArgumentUsage("No source or channels are specified")
 
     if source:

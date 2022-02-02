@@ -90,7 +90,7 @@ def receive_(channels, source, mode, clear, queue_size, base_url, backend):
     use_dispatching = False
     channel_filter = None
 
-    if channels is None and source is None:
+    if not channels and source is None:
         raise click.BadArgumentUsage("No source or channels are specified")
 
     if source:
