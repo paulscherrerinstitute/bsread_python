@@ -1,11 +1,10 @@
 import mflow
 from bsread.handlers.compact import Handler
-import zmq
 import time
 import datetime
-import argparse
 import logging
-from bsread import dispatcher
+from bsread import dispatcher, utils
+import click
 
 logger = logging.getLogger(__name__)
 
@@ -92,60 +91,39 @@ def data_consistency_check(message_data, statistics):
         previous_pulse_id = current_pulse_id
 
 
-def main():
+@click.command()
+@click.argument("channels", default=None, type=str, nargs=-1)
+@click.option("-s", "--source", default=None, type=str, help="Source address - format 'tcp://<address>:<port>'")
+@click.option("-m", "--mode", default="sub",
+              type=click.Choice(["pull", "sub"], case_sensitive=False),
+              help="Communication mode - either pull or sub (default depends on the use of -s option)")
+@click.option("--clear", default=False, is_flag=True, help="Monitor mode / clear the screen on every message")
+@click.option("-q", "--queue", "queue_size", default=100, type=int, help="Queue size of incoming queue")
+@click.option("--base_url", default=None, help="URL of dispatcher")
+@click.option("--backend", default=None, help="Backend to query")
+@click.option("-l", "--log", "logfile", type=str,
+              help="Enable logging. All errors (pulse_id skip, etc..) will be logged in file specified")
+@click.option("-v", "--value", "show_values", default=False, is_flag=True, help="Display values")
+@click.option("-n", "show_nth_value", default=1, type=int,
+              help="Limit message printing to every n messages, this will reduce CPU load. Note that all "
+                   "messages are still received, but are not displayed. If -n 0 is passed message "
+                   "display is disabled")
+def stats(channels, source, mode, clear, queue_size, base_url, backend, logfile, show_values, show_nth_value):
 
-    # Argument parsing
-    parser = argparse.ArgumentParser(description='bsread statistics utility')
-
-    parser.add_argument('-s', '--source', type=str, default=None,
-                        help='source address, has to be in format "tcp://<address>:<port>"')
-    parser.add_argument('-c', '--clear', action='count', help='Monitor mode / clear the screen on every message')
-    parser.add_argument('-m', '--mode', default='pull', choices=['pull', 'sub'], type=str,
-                        help='Communication mode - either pull or sub (default depends on the use of -s option)')
-    parser.add_argument('-n', default=1, type=int,
-                        help='Limit message printing to every n messages, this will reduce CPU load. Note that all '
-                             'messages are still received, but are not displayed. If -n 0 is passed message '
-                             'display is disabled')
-    parser.add_argument('-l', '--log', type=str,
-                        help='Enable logging. All errors (pulse_id skip, etc..) will be logged in file specified')
-    parser.add_argument('-v', '--value', action='count', help='Display values')
-    parser.add_argument('-q', '--queue', default=100, type=int,
-                        help='Queue size of incoming queue (default = 100)')
-    parser.add_argument('channel', type=str, nargs='*', help='Channels to retrieve (from dispatching layer)')
-
-    # Parse arguments
-    arguments = parser.parse_args()
-    address = arguments.source
-    channels = arguments.channel
-    clear = arguments.clear
-    show_values = arguments.value
-    show_nth_value = arguments.n
-    logfile = arguments.log
-    queue_size = arguments.queue
+    base_url = utils.get_base_url(base_url, backend)
 
     use_dispatching = False
-    mode = mflow.SUB if arguments.mode == 'sub' else mflow.PULL
+    mode = mflow.SUB if mode == 'sub' else mflow.PULL
 
-    if not channels and not address:
-        print('\nNo source nor channels are specified - exiting!\n')
-        parser.print_help()
-        exit(-1)
+    if channels is None and source is None:
+        raise click.BadArgumentUsage("No source or channels are specified")
 
-    if address:
-        import re
-        if not re.match('^tcp://', address):
-            # print('Protocol not defined for address - Using tcp://')
-            address = 'tcp://' + address
-        if not re.match('.*:[0-9]+$', address):
-            # print('Port not defined for address - Using 9999')
-            address += ':9999'
-        if not re.match('^tcp://[a-zA-Z.\-0-9]+:[0-9]+$', address):
-            print('Invalid URI - ' + address)
-            exit(-1)
+    if source:
+        source = utils.check_and_update_uri(source, exception=click.BadArgumentUsage)
     else:
         # Connect via the dispatching layer
         use_dispatching = True
-        address = dispatcher.request_stream(channels)
+        source = dispatcher.request_stream(channels, base_url=base_url)
         mode = mflow.SUB
 
     if logfile:
@@ -153,8 +131,8 @@ def main():
         handler.setLevel(logging.DEBUG)
         logger.addHandler(handler)
 
-    logger.info("Connecting to {} type PULL".format(address))
-    receiver = mflow.connect(address, conn_type="connect", queue_size=queue_size, mode=mode)
+    logger.info(f"Connecting to {source}")
+    receiver = mflow.connect(source, conn_type="connect", queue_size=queue_size, mode=mode)
     handler = Handler()
     logger.info("Connection opened")
 
@@ -194,13 +172,13 @@ def main():
                 previous_time = now
 
                 print("_"*80)
-                print("Messages Received: {}".format(messages_received))
-                print("Message Rate: {} Hz".format(message_rate))
-                print("Data Received: {} Mb".format(total_bytes_received/1024.0/1024.0))
-                print("Receive Rate: {} Mbps".format(receive_rate/1024/1024*8))
-                print("Missed Pulse_IDs: {} ".format(statistics.missed_pulse_ids))
-                print("Duplicated Pulse_IDs: {} ".format(statistics.duplicated_pulse_ids))
-                print("Reverted Pulse_IDs: {} ".format(statistics.reverted_pulse_ids))
+                print(f"Messages Received: {messages_received}")
+                print(f"Message Rate: {message_rate} Hz")
+                print(f"Data Received: {total_bytes_received/1024.0/1024.0} Mb")
+                print(f"Receive Rate: {receive_rate/1024/1024*8} Mbps")
+                print(f"Missed Pulse_IDs: {statistics.missed_pulse_ids} ")
+                print(f"Duplicated Pulse_IDs: {statistics.duplicated_pulse_ids} ")
+                print(f"Reverted Pulse_IDs: {statistics.reverted_pulse_ids} ")
             messages_received += 1
 
     except KeyboardInterrupt:
@@ -210,7 +188,11 @@ def main():
     finally:
         if use_dispatching:
             print('Closing stream')
-            dispatcher.remove_stream(address)
+            dispatcher.remove_stream(source, base_url=base_url)
+
+
+def main():
+    stats()
 
 
 if __name__ == "__main__":

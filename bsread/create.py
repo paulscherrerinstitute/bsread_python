@@ -26,7 +26,7 @@ runScript $(bsread_DIR)/bsread_sim.cmd, "SYS={prefix},BSREAD_PORT={port}"
     print('# The ioc configuration port is accessible via tcp://' + socket.gethostname() + ':%d' % (int(port)+1))
     print()
     print('# To create and run a test IOC in one go use:')
-    print('eval "$(bs create '+ioc_prefix+' '+port+')"')
+    print(f'eval "$(bs create {ioc_prefix} {port})"')
     print()
 
 

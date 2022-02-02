@@ -94,27 +94,16 @@ def receive_(channels, source, mode, clear, queue_size, base_url, backend):
         raise click.BadArgumentUsage("No source or channels are specified")
 
     if source:
-        import re
-        if not re.match('^tcp://', source):
-            # print('Protocol not defined for address - Using tcp://')
-            address = 'tcp://' + source
-        if not re.match('.*:[0-9]+$', address):
-            # print('Port not defined for address - Using 9999')
-            address += ':9999'
-        if not re.match(r"^tcp://[a-zA-Z.\-0-9]+:[0-9]+$", address):
-            raise click.BadArgumentUsage("Invalid URI")
-
+        source = utils.check_and_update_uri(source, exception=click.BadArgumentUsage)
         if channels:
             channel_filter = channels
-
     else:
         # Connect via the dispatching layer
         use_dispatching = True
-        address = dispatcher.request_stream(channels, base_url=base_url)
-        # mode = zmq.SUB
+        source = dispatcher.request_stream(channels, base_url=base_url)
 
     try:
-        receive(source=address, clear=clear, queue_size=queue_size, mode=mode, channel_filter=channel_filter)
+        receive(source=source, clear=clear, queue_size=queue_size, mode=mode, channel_filter=channel_filter)
 
     except KeyboardInterrupt:
         # KeyboardInterrupt is thrown if the receiving is terminated via ctrl+c
@@ -123,7 +112,7 @@ def receive_(channels, source, mode, clear, queue_size, base_url, backend):
     finally:
         if use_dispatching:
             print('Closing stream')
-            dispatcher.remove_stream(address, base_url=base_url)
+            dispatcher.remove_stream(source, base_url=base_url)
 
 
 def main():
