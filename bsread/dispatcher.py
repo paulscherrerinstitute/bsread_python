@@ -6,15 +6,13 @@ import datetime
 
 from bsread import DEFAULT_DISPATCHER_URL
 
-base_url = 'http://localhost:8080'
-base_url = DEFAULT_DISPATCHER_URL
 
-
-def add_input_sources(addresses):
+def add_input_sources(addresses, base_url=DEFAULT_DISPATCHER_URL):
     """
     Add a input source to the dispatching layer
     Args:
         addresses:    Address of the source, e.g. tcp://localhost:9999
+        base_url:
 
     Returns:
 
@@ -33,7 +31,7 @@ def add_input_sources(addresses):
         raise Exception('Unable to add input sources - '+response.text)
 
 
-def get_input_sources():
+def get_input_sources(base_url=DEFAULT_DISPATCHER_URL):
     """ Returns: Configured input sources of the dispatching layer - e.g. [{"stream":"tcp://localhost:9999"}] """
     response = requests.get(base_url+'/sources')
 
@@ -43,7 +41,7 @@ def get_input_sources():
     return response.json()
 
 
-def get_output_sources():
+def get_output_sources(base_url=DEFAULT_DISPATCHER_URL):
     """ Returns: list of current streams"""
     response = requests.get(base_url+'/streams')
 
@@ -53,7 +51,7 @@ def get_output_sources():
     return response.json()
 
 
-def get_current_channels():
+def get_current_channels(base_url=DEFAULT_DISPATCHER_URL):
     """ Get current incoming channels """
     response = requests.get(base_url + '/channels/live')
 
@@ -66,15 +64,9 @@ def get_current_channels():
     return channel_list
 
 
-def remove_input_sources(addresses):
-    """
-    Remove input source from dispatching layer
-    Args:
-        addresses:
+def remove_input_sources(addresses, base_url=DEFAULT_DISPATCHER_URL):
+    # Remove input source from dispatching layer
 
-    Returns:
-
-    """
     # Delete source
     config = {"sources": []}
 
@@ -97,7 +89,8 @@ def request_stream(channels,
                    stream_type='pub_sub',
                    inconsistency_resolution="adjust-individual",
                    verify=True,
-                   disable_compression = False):
+                   disable_compression = False,
+                   base_url=DEFAULT_DISPATCHER_URL):
     """
     Request stream for specific channels
     Args:
@@ -111,6 +104,7 @@ def request_stream(channels,
                                     values: adjust-individual, keep-as-is
         verify:                     Check whether all channels are currently available and connected. Checks for 
                                     frequencies, etc. . If false inconsistency_resolution will be set to keep-as-is
+        base_url:
 
     Returns: ZMQ endpoint to connect to for the stream
 
@@ -157,7 +151,7 @@ def request_stream(channels,
     # TODO stream might contain more channels than the channels requested this library should filter these channels out.
 
 
-def request_streams():
+def request_streams(base_url=DEFAULT_DISPATCHER_URL):
     """
     Get all streams currently served by the dispatching layer
     Returns:    List of streams
@@ -174,12 +168,12 @@ def request_streams():
     return response.json()
 
 
-def remove_stream(stream):
+def remove_stream(stream, base_url=DEFAULT_DISPATCHER_URL):
     """
     Remove a stream currently served by the dispatching layer
     Args:
         stream:     url of stream to remove
-
+        base_url:
     Returns:
 
     """
@@ -193,7 +187,7 @@ def remove_stream(stream):
         raise Exception('Unable to remove stream ' + stream + ' - ' + response.text)
 
 
-def get_data_policies():
+def get_data_policies(base_url=DEFAULT_DISPATCHER_URL):
     logging.info('Request currently configured data policies')
     response = requests.get(base_url + '/data/policies')
 
@@ -207,7 +201,7 @@ def update_time_to_live(channels, start, end, ttl: datetime.timedelta, asynchron
     update_ttl(channels, start, end, ttl, asynchronous=asynchronous)
 
 
-def update_ttl(channels, start, end, ttl: datetime.timedelta, asynchronous=True):
+def update_ttl(channels, start, end, ttl: datetime.timedelta, asynchronous=True, base_url=DEFAULT_DISPATCHER_URL):
     """
     Update the ttl of specific data:
     https://git.psi.ch/sf_daq/ch.psi.daq.dispatcherrest#update-ttl

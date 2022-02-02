@@ -1,38 +1,40 @@
+import click
 from bsread import dispatcher
 import re
-import sys
 
 
-def main():
-    import argparse
-    parser = argparse.ArgumentParser(description='Get available beam synchronous channels')
+@click.command()
+@click.argument('pattern', default=".*")
+@click.option('--all', "metadata", default=False, is_flag=True, help='Display meta information')
+@click.option('--base_url', default=None, help='URL of dispatcher')
+@click.option('--backend', default=None, help='Backend to query')
+def avail(pattern=None, base_url=None, backend=None, metadata=False):
 
-    parser.add_argument('pattern', type=str, nargs='?', help='Regex channel pattern')
-    parser.add_argument('-a', '--all', action='store_true', default=False, help='Display all meta information')
-
-    arguments = parser.parse_args()
-
-    pattern = arguments.pattern
-    print_metadata = arguments.all
-
-    if not pattern:
-        pattern = '.*'
+    if base_url is not None:
+        base_url = base_url
+    elif backend is not None:
+        base_url = "https://dispatcher-api.psi.ch/"+backend
+    else:
+        base_url = "https://dispatcher-api.psi.ch/sf-databuffer"
 
     pattern = '.*' + pattern + '.*'
 
     try:
-        channels = dispatcher.get_current_channels()
+        channels = dispatcher.get_current_channels(base_url=base_url)
         for channel in channels:
             if re.match(pattern, channel['name']):
-                if print_metadata:
-                    print("{:50} {} {} {} {} {}".format(channel['name'], channel['type'], channel['shape'],
-                                                        channel['modulo'], channel['offset'], channel['source']))
-                    # print(channel)
+                if metadata:
+                    click.echo(f"{channel['name']:50} {channel['type']} {channel['shape']} "
+                               f"{channel['modulo']} {channel['offset']} {channel['source']}")
                 else:
-                    print(channel['name'])
+                    click.echo(channel["name"])
     except Exception as e:
-        print('Unable to retrieve channels\nReason:\n' + str(e), file=sys.stderr)
+        click.echo(f"Unable to retrieve channels\nReason:\n{e}", err=True)
+
+
+def main():
+    avail()
 
 
 if __name__ == "__main__":
-    main()
+    avail()

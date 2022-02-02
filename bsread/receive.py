@@ -1,5 +1,4 @@
 import mflow
-# from .handlers.bsr_m_1_0 import Handler
 from bsread.handlers.compact import Handler
 from bsread import dispatcher
 import zmq
