@@ -35,44 +35,55 @@ Run 'bs COMMAND --help' for more information on a command.
 Show currently available beam synchronous channels
 
 ```
-usage: avail [-h] [-a] [pattern]
+Usage: avail [OPTIONS] [PATTERN]
 
-Get available beam synchronous channels
-
-positional arguments:
-  pattern     Regex channel pattern
-
-optional arguments:
-  -h, --help  show this help message and exit
-  -a, --all   Display all meta information
+Options:
+  --all            Display meta information
+  --base_url TEXT  URL of dispatcher
+  --backend TEXT   Backend to query
+  --help           Show this message and exit.
 ```
+
+### Examples
+Show available channels from the DataBuffer dispatching layer:
+```
+bs avail
+```
+
+Show available channels from the ImageBuffer dispatching layer:
+```
+bs avail --backend sf-imagebuffer
+```
+
 
 ## bs receive
 
 __bs receive__ can be used to receive and display bsread data from an IOC. If the client environment was set the __-s__ option can be omitted.
 
 ```bash
-usage: receive [-h] [-s SOURCE] [-c] [-m {pull,sub}] [-q QUEUE]
-               [channel [channel ...]]
+Usage: receive [OPTIONS] [CHANNELS]...
 
-bsread receive utility
-
-positional arguments:
-  channel               Channels to retrieve (from dispatching layer)
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -s SOURCE, --source SOURCE
-                        Source address - format "tcp://<address>:<port>"
-  -c, --clear           Monitor mode / clear the screen on every message
-  -m {pull,sub}, --mode {pull,sub}
-                        Communication mode - either pull or sub (default
-                        depends on the use of -s option)
-  -q QUEUE, --queue QUEUE
-                        Queue size of incoming queue (default = 100)
+Options:
+  -s, --source TEXT      Source address - format 'tcp://<address>:<port>'
+  -m, --mode [pull|sub]  Communication mode - either pull or sub (default
+                         depends on the use of -s option)
+  --clear                Monitor mode / clear the screen on every message
+  -q, --queue INTEGER    Queue size of incoming queue
+  --base_url TEXT        URL of dispatcher
+  --backend TEXT         Backend to query
+  --help                 Show this message and exit.
 ```
 
-_Note:_ If `-s` is specified, the list of channels is ignored.
+Receive data from the DataBuffer dispatching layer:
+```
+bs receive SIN-CVME-TIFGUN-EVR0:BUNCH-2-OK
+```
+
+Receive data from the ImageBuffer dispatching layer:
+```
+bs receive --backend sf-imagebuffer SLG-LCAM-C103:FPICTURE
+```
+
 
 ## bs stats
 
