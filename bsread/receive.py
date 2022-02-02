@@ -1,6 +1,7 @@
+import click
 import mflow
 from bsread.handlers.compact import Handler
-from bsread import dispatcher
+from bsread import dispatcher, utils
 import zmq
 import numpy
 
@@ -71,49 +72,37 @@ def receive(source=None, clear=False, queue_size=100, mode=zmq.PULL, channel_fil
         print(values)
 
 
-def main():
-    import sys
-    import argparse
-    parser = argparse.ArgumentParser(description='bsread receive utility')
+@click.command()
+@click.argument("channels", default=None, type=str, nargs=-1)
+@click.option("-s", "--source", default=None, type=str, help="Source address - format 'tcp://<address>:<port>'")
+@click.option("-m", "--mode", default="sub",
+              type=click.Choice(["pull", "sub"], case_sensitive=False),
+              help="Communication mode - either pull or sub (default depends on the use of -s option)")
+@click.option("--clear", default=False, is_flag=True, help="Monitor mode / clear the screen on every message")
+@click.option("-q", "--queue", default=100, type=int, help="Queue size of incoming queue")
+@click.option("--base_url", default=None, help="URL of dispatcher")
+@click.option("--backend", default=None, help="Backend to query")
+def receive_(channels, source, mode, clear, queue_size, base_url, backend):
 
-    parser.add_argument('-s', '--source', default=None, type=str,
-                        help='Source address - format "tcp://<address>:<port>"')
-    parser.add_argument('-c', '--clear', action='count', help='Monitor mode / clear the screen on every message')
-    parser.add_argument('-m', '--mode', default='sub', choices=['pull', 'sub'], type=str,
-                        help='Communication mode - either pull or sub (default depends on the use of -s option)')
-    parser.add_argument('-q', '--queue', default=100, type=int,
-                        help='Queue size of incoming queue (default = 100)')
+    base_url = utils.get_base_url(base_url, backend)
 
-    parser.add_argument('channel', type=str, nargs='*',
-                        help='Channels to retrieve (from dispatching layer)')
-
-    arguments = parser.parse_args()
-    address = arguments.source  # Either use dispatcher or environment variables
-    channels = arguments.channel
-    clear = arguments.clear
-    queue_size = arguments.queue
-
-    mode = mflow.SUB if arguments.mode == 'sub' else mflow.PULL
+    mode = mflow.SUB if mode == 'sub' else mflow.PULL
     use_dispatching = False
     channel_filter = None
 
-    if not channels and not address:
-        print('\nNo source nor channels are specified - exiting!\n')
-        parser.print_help()
-        sys.exit(-1)
+    if channels is None and source is None:
+        raise click.BadArgumentUsage("No source or channels are specified")
 
-    if address:
+    if source:
         import re
-        if not re.match('^tcp://', address):
+        if not re.match('^tcp://', source):
             # print('Protocol not defined for address - Using tcp://')
-            address = 'tcp://' + address
+            address = 'tcp://' + source
         if not re.match('.*:[0-9]+$', address):
             # print('Port not defined for address - Using 9999')
             address += ':9999'
-        if not re.match('^tcp://[a-zA-Z.\-0-9]+:[0-9]+$', address):
-            print('\nInvalid URI - %s\n' % address)
-
-            sys.exit(-1)
+        if not re.match(r"^tcp://[a-zA-Z.\-0-9]+:[0-9]+$", address):
+            raise click.BadArgumentUsage("Invalid URI")
 
         if channels:
             channel_filter = channels
@@ -121,8 +110,8 @@ def main():
     else:
         # Connect via the dispatching layer
         use_dispatching = True
-        address = dispatcher.request_stream(channels)
-        mode = zmq.SUB
+        address = dispatcher.request_stream(channels, base_url=base_url)
+        # mode = zmq.SUB
 
     try:
         receive(source=address, clear=clear, queue_size=queue_size, mode=mode, channel_filter=channel_filter)
@@ -134,7 +123,11 @@ def main():
     finally:
         if use_dispatching:
             print('Closing stream')
-            dispatcher.remove_stream(address)
+            dispatcher.remove_stream(address, base_url=base_url)
+
+
+def main():
+    receive_()
 
 
 if __name__ == "__main__":
