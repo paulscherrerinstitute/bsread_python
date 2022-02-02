@@ -26,6 +26,7 @@ requirements:
         - numpy
         - pyzmq
         - requests
+        - click
 
 about:
     home: git@git.psi.ch:sf_daq/bsread_python.git
