@@ -79,7 +79,7 @@ def receive(source=None, clear=False, queue_size=100, mode=zmq.PULL, channel_fil
               type=click.Choice(["pull", "sub"], case_sensitive=False),
               help="Communication mode - either pull or sub (default depends on the use of -s option)")
 @click.option("--clear", default=False, is_flag=True, help="Monitor mode / clear the screen on every message")
-@click.option("-q", "--queue", default=100, type=int, help="Queue size of incoming queue")
+@click.option("-q", "--queue", "queue_size", default=100, type=int, help="Queue size of incoming queue")
 @click.option("--base_url", default=None, help="URL of dispatcher")
 @click.option("--backend", default=None, help="Backend to query")
 def receive_(channels, source, mode, clear, queue_size, base_url, backend):
