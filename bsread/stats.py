@@ -104,7 +104,7 @@ def data_consistency_check(message_data, statistics):
 @click.option("-l", "--log", "logfile", type=str,
               help="Enable logging. All errors (pulse_id skip, etc..) will be logged in file specified")
 @click.option("-v", "--value", "show_values", default=False, is_flag=True, help="Display values")
-@click.option("-n", "show_nth_value", default=1, type=int,
+@click.option("-n", "show_nth_value", default=100, type=int,
               help="Limit message printing to every n messages, this will reduce CPU load. Note that all "
                    "messages are still received, but are not displayed. If -n 0 is passed message "
                    "display is disabled")
