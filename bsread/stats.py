@@ -184,7 +184,7 @@ def stats(channels, source, mode, clear, queue_size, base_url, backend, logfile,
     except KeyboardInterrupt:
         # KeyboardInterrupt is thrown if the receiving is terminated via ctrl+c
         # As we don't want to see a stacktrace then catch this exception
-        pass
+        print() # print ^C on its own line
     finally:
         if use_dispatching:
             print('Closing stream')

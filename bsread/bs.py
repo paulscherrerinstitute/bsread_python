@@ -38,8 +38,10 @@ def main():
     # except:
     try:
         command_script = importlib.import_module('bsread.'+command)
-    except ImportError:
-        print(command + ' - Command not found')
+    except ImportError as e:
+        # this catches not only the ImportError from importing the command here
+        # but also ImportErrors inside the command
+        print(command + ' - Command not found (' + str(e) + ')')
         usage()
         exit(-1)
 
