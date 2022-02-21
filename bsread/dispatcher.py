@@ -51,6 +51,11 @@ def get_output_sources(base_url=DEFAULT_DISPATCHER_URL):
     return response.json()
 
 
+def get_current_channel_names(base_url=DEFAULT_DISPATCHER_URL):
+    channel_list = get_current_channels(base_url=base_url)
+    return [ch["name"] for ch in channel_list]
+
+
 def get_current_channels(base_url=DEFAULT_DISPATCHER_URL):
     """ Get current incoming channels """
     response = requests.get(base_url + '/channels/live')
