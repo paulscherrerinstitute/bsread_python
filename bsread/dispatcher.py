@@ -206,7 +206,8 @@ def update_time_to_live(channels, start, end, ttl: datetime.timedelta, asynchron
     update_ttl(channels, start, end, ttl, asynchronous=asynchronous)
 
 
-def update_ttl(channels, start, end, ttl: datetime.timedelta, asynchronous=True, base_url=DEFAULT_DISPATCHER_URL):
+def update_ttl(channels, start, end, ttl: datetime.timedelta, asynchronous=True,
+               base_url=DEFAULT_DISPATCHER_URL, default_backend=None):
     """
     Update the ttl of specific data:
     https://git.psi.ch/sf_daq/ch.psi.daq.dispatcherrest#update-ttl
@@ -215,11 +216,15 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta, asynchronous=True,
     :param end: End of range to update - either datetime or pulse_id
     :param channels: List of channels to update ttl
     :param ttl: Time to live as datatime.timedelta
-    :param async: Not used any more - legacy to be removed in next major version
+    :param default_backend: default backend
 
     
     :return: 
     """
+
+    if default_backend is None:
+        # try to defer default backend from base_url
+        default_backend = base_url.split("/")[-1]
 
     # TODO remove async parameter in next major version of this lib
     # New way of doing this can be found here: https://git.psi.ch/sf_daq/ch.psi.daq.dispatcherrest/blob/master/Readme_Unofficial.md#update-ttl
@@ -236,13 +241,11 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta, asynchronous=True,
 
     channel_list = []
     for channel in channels:
-        if channel.startswith("sf-databuffer/"):
-            channel_list.append({"name": channel.replace("sf-databuffer/", ""), "backend": "sf-databuffer"})
-        elif channel.startswith("sf-archiverappliance/"):
-            channel_list.append(
-                {"name": channel.replace("sf-archiverappliance/", ""), "backend": "sf-archiverappliance"})
+        components = channel.split("/")
+        if len(components) > 1:
+            channel_list.append({"name": components[1], "backend": components[0]})
         else:
-            channel_list.append({"name": channel, "backend": "sf-databuffer"})
+            channel_list.append({"name": channel, "backend": default_backend})
     update_request["channels"] = channel_list
 
     if isinstance(start, int) and isinstance(end, int):
