@@ -2,8 +2,10 @@
 name: conda_publish
 
 on:
-  release:
-    types: [published, edited]
+#  release:
+#    types: [published, edited]
+  tags:
+    - '*'
   workflow_dispatch:
     
 jobs:
