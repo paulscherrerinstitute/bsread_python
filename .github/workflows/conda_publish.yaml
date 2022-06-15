@@ -2,10 +2,11 @@
 name: conda_publish
 
 on:
-#  release:
-#    types: [published, edited]
-  tags:
-    - '*'
+  release:
+    types: [published, edited]
+  push:
+    tags:
+      - '*'
   workflow_dispatch:
     
 jobs:
