@@ -58,5 +58,5 @@ class TestGenerator(unittest.TestCase):
         self.assertEqual(requested_channels[5]["backend"], "sf-databuffer")
 
 
-if __name__ == '__main_ _':
+if __name__ == '__main__':
     unittest.main()
