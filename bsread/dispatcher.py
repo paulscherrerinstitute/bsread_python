@@ -224,7 +224,13 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta, asynchronous=True,
 
     if default_backend is None:
         # try to defer default backend from base_url
-        default_backend = base_url.split("/")[-1]
+        base_url = base_url.strip()
+        if base_url.endswith("/"):
+            # If url has a trailing / we have to use a diffrent index
+            _index = -2
+        else:
+            _index = -1
+        default_backend = base_url.split("/")[_index]
 
     # TODO remove async parameter in next major version of this lib
     # New way of doing this can be found here: https://git.psi.ch/sf_daq/ch.psi.daq.dispatcherrest/blob/master/Readme_Unofficial.md#update-ttl
@@ -300,7 +306,7 @@ def _log_ttl_update_info_to_central_server(channels, start, end, ttl):
             sock.send(json.dumps(msg).encode())
 
         except socket.error:
-            print('error')
+            # print('error')
             pass
 
         finally:

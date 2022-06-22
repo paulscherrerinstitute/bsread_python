@@ -25,7 +25,7 @@ def mocked_requests_post(*args, **kwargs):
     return response
 
 
-class TestGenerator(unittest.TestCase):
+class TestDispatcher(unittest.TestCase):
 
     @mock.patch('bsread.dispatcher.requests.post', side_effect=mocked_requests_post)
     def test_update_ttl(self, mock_post):
@@ -56,6 +56,16 @@ class TestGenerator(unittest.TestCase):
         self.assertEqual(requested_channels[4]["backend"], "bla")
         self.assertEqual(requested_channels[5]["name"], "six")
         self.assertEqual(requested_channels[5]["backend"], "sf-databuffer")
+
+        # second series of test, having a trailing "/" in the base_url
+
+        bsread.dispatcher.update_ttl(["one"],
+                                     start, end, ttl, base_url="https://dispatcher-api.psi.ch/sf-test/")
+
+        requested_channels = json.loads(mock_post.call_args[1]["data"])["channels"]
+        print(requested_channels)
+        self.assertEqual(requested_channels[0]["name"], "one")
+        self.assertEqual(requested_channels[0]["backend"], "sf-test")
 
 
 if __name__ == '__main__':
