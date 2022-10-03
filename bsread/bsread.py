@@ -12,7 +12,9 @@ SUB = mflow.SUB
 CONNECT = "connect"
 BIND = "bind"
 
-DEFAULT_DISPATCHER_URL = 'https://dispatcher-api.psi.ch/sf'
+BASE_DISPATCHER_URL = 'https://dispatcher-api.psi.ch'
+DEFAULT_DISPATCHER_URL = BASE_DISPATCHER_URL+'/sf-databuffer'
+
 
 # Support of "with" statement
 class source:

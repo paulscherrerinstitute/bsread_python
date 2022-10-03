@@ -5,7 +5,7 @@ from bsread.data.serialization import channel_type_deserializer_mapping
 from bsread.handlers import extended
 import zmq
 from bsread import writer as wr
-from bsread import dispatcher
+from bsread import dispatcher, BASE_DISPATCHER_URL
 import logging
 
 # Logger configuration
@@ -166,6 +166,8 @@ def main():
 
     parser.add_argument('-s', '--source', type=str, default=None,
                         help='Source address - format "tcp://<address>:<port>"')
+    parser.add_argument('--backend', type=str, default='sf-databuffer',
+                        help='dispatcher backend from which to receive the stream from')
     parser.add_argument('file', type=str, help='Destination file')
     parser.add_argument('channel', type=str, nargs='*',
                         help='Channels to retrieve (from dispatching layer)')
@@ -184,6 +186,7 @@ def main():
     address = arguments.source
     channels = arguments.channel
     queue_size = arguments.queue
+    backend = arguments.backend
 
     mode = mflow.SUB if arguments.mode == 'sub' else mflow.PULL
     use_dispatching = False
@@ -207,7 +210,7 @@ def main():
     else:
         # Connect via the dispatching layer
         use_dispatching = True
-        address = dispatcher.request_stream(channels)
+        address = dispatcher.request_stream(channels, base_url=f"{BASE_DISPATCHER_URL}/{backend}")
         mode = zmq.SUB
 
     # Use the compact H5 format if so specified.
