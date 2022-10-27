@@ -18,7 +18,9 @@ __Warning / Attention:__ Please ensure that you don't connect to a production IO
 
 # Usage
 
-__Note:__ The bsread module, by default, accesses the SwissFEL Dispatching Layer. As this infrastructure is only accessible within the SwissFEL network the code needs to run on a machine that has direct access to this network.
+__Note:__ The bsread module, by default, accesses the SwissFEL Dispatching Layer. As this infrastructure is only accessible within the SwissFEL network the code needs to run on a machine that has direct access to this network. Also be aware that there are actually 2 dispatchers, one for the DataBuffer sources, one for the ImageBuffer sources! By default this code connects to the DataBuffer dispatcher, if you need to connect to the imagebuffer dispatcher you have to use the option `dispatcher_url="https://dispatcher-api.psi.ch/sf-imagebuffer")` when creating the source.
+If you need a combined stream from both dispatchers, you have to request a stream from each and take care of the synchronization of the data in your own code !
+
 
 You can get a customized, synchronized stream from any combination of beam synchronous channels by using this piece of code:
 
@@ -29,6 +31,17 @@ with source(channels=['YOUR_CHANNEL', 'YOUR_SECOND_CHANNEL']) as stream:
         message = stream.receive()
         print(message.data.data['YOUR_CHANNEL'].value)
 ```
+
+To get the stream from the ImageBuffer dispatcher use:
+
+```python
+from bsread import source
+with source(channels=['YOUR_CHANNEL', 'YOUR_SECOND_CHANNEL'], dispatcher_url="https://dispatcher-api.psi.ch/sf-imagebuffer")) as stream:
+    while True:
+        message = stream.receive()
+        print(message.data.data['YOUR_CHANNEL'].value)
+```
+
 
 If you want to request non 100Hz data for particular channels you can simply configure this as follows:
 
