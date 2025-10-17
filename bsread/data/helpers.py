@@ -55,7 +55,7 @@ def get_channel_specs(value, extended=False):
         # Get to the bottom of the list.
         base_value = value
         while isinstance(base_value, list):
-            base_value = base_value[0]
+            base_value = base_value[0] if base_value else None
 
         # Lists have a special serializer.
         def serializer(list_value, suggested_type):
