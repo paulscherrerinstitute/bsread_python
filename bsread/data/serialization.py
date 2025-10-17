@@ -118,4 +118,5 @@ channel_type_scalar_serializer_mapping = {
     numpy.uint64: ('u8', 'uint64', serialize_numpy, [1]),
     numpy.float32: ('f4', 'float32', serialize_numpy, [1]),
     numpy.float64: ('f8', 'float64', serialize_numpy, [1]),
+    bool: ('u1', 'bool', serialize_python_number, [1])
 }
