@@ -96,7 +96,7 @@ channel_type_deserializer_mapping = {
     'float32': ('f4', deserialize_number),
     'float64': ('f8', deserialize_number),
     'string': ('u1', deserialize_string),
-    'bool': ('u1', deserialize_number)
+    'bool': ('?', deserialize_number)
 }
 
 
@@ -118,5 +118,5 @@ channel_type_scalar_serializer_mapping = {
     numpy.uint64: ('u8', 'uint64', serialize_numpy, [1]),
     numpy.float32: ('f4', 'float32', serialize_numpy, [1]),
     numpy.float64: ('f8', 'float64', serialize_numpy, [1]),
-    bool: ('u1', 'bool', serialize_python_number, [1])
+    bool: ('?', 'bool', serialize_python_number, [1])
 }
