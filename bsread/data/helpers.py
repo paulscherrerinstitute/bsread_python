@@ -38,7 +38,7 @@ def get_channel_specs(value, extended=False):
     if value is None:
         _logger.debug('Channel value is None - Unable to determine type of channel - default to type=float64 shape=[1]')
 
-    # Determine ndarray channel specs.
+    # Determine ndarray channel specs
     if isinstance(value, numpy.ndarray):
         # dtype and shape already in ndarray.
         dtype = value.dtype.type
