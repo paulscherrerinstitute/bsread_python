@@ -141,7 +141,7 @@ def get_value_reader(channel_type, compression, shape=None, endianness="", value
 
     decompressor = compression_provider_mapping[compression].unpack_data
     dtype, serializer = channel_type_deserializer_mapping[channel_type]
-    # Expand the dtype with the correct endianess.
+    # Expand the dtype with the correct endianness.
     dtype = endianness + dtype
 
     def value_reader(raw_data):
