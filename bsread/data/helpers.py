@@ -36,7 +36,7 @@ def get_channel_specs(value, extended=False):
     :return: Tuple of (channel_type, shape) or (dtype, channel_type, serializer, shape)
     """
     if value is None:
-        _logger.debug('Channel Value is None - Unable to determine type of channel - default to type=float64 shape=[1]')
+        _logger.debug('Channel value is None - Unable to determine type of channel - default to type=float64 shape=[1]')
 
     # Determine ndarray channel specs.
     if isinstance(value, numpy.ndarray):
@@ -59,8 +59,12 @@ def get_channel_specs(value, extended=False):
         # Thus, for supposed small data, numpy can be used to figure out dtype and shape automatically via a conversion.
         #TODO: avoid converting twice
         value_as_array = numpy.array(value)
+
         dtype, channel_type, _serializer, shape = get_channel_specs(value_as_array, extended=True)
         serializer = serialize_python_list
+
+        if value_as_array.size > 1e6:
+            _logger.warning(f"Channel value is a quite large list ({value_as_array.size} elements) - Consider using a numpy array instead")
 
     # Determine scalars channel specs
     else:
