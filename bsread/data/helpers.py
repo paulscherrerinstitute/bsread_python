@@ -52,20 +52,16 @@ def get_channel_specs(value, extended=False):
 
     # Determine list channel specs
     elif isinstance(value, list):
-        # Get to the bottom of the list.
-        base_value = value
-        while isinstance(base_value, list):
-            base_value = base_value[0] if base_value else None
+        # Lists are serialized as numpy ndarray.
+        # It can be assumed that users do not hold large data as lists but properly use numpy in such cases.
+        # Thus, for supposed small data, numpy can be used to figure out dtype and shape automatically via a conversion.
+        #TODO: avoid converting twice
+        value_as_array = numpy.array(value)
+        dtype, channel_type, _serializer, shape = get_channel_specs(value_as_array, extended=True)
 
         # Lists have a special serializer.
         def serializer(list_value, suggested_type):
             return numpy.array(list_value, dtype=suggested_type)
-
-        # Shape is the length of the list
-        shape = [len(value)]
-
-        # Get the basic list element type.
-        dtype, channel_type, _, _ = channel_type_scalar_serializer_mapping[type(base_value)]
 
     # Determine scalars channel specs
     else:
