@@ -61,15 +61,14 @@ def serialize_python_string(value, dtype):
     return numpy.frombuffer(value.encode(), dtype)
 
 
-#TODO: delete?
-#def serialize_python_list(value, dtype):
-#    """
-#    Convert python list into ndarray.
-#    :param value: List to convert.
-#    :param dtype: Ignored. Type if retrieved from the list items.
-#    :return: Numpy array.
-#    """
-#    return numpy.array(value, dtype=dtype)
+def serialize_python_list(value, dtype):
+    """
+    Serialize python list as ndarray.
+    :param value: List to serialize.
+    :param dtype: Numpy dtype of values in list.
+    :return: Numpy array.
+    """
+    return numpy.array(value, dtype=dtype)
 
 
 # Compression string to compression provider mapping.
