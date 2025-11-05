@@ -31,15 +31,14 @@ def deserialize_string(numpy_array):
     return numpy_array.tobytes().decode()
 
 
-def serialize_numpy(numpy_number, dtype=None):
+def serialize_numpy_scalar(value, dtype=None):
     """
-    Serialize the provided numpy array.
-    :param numpy_number: Number to serialize.
+    Serialize the provided numpy scalar.
+    :param value: Value to serialize.
     :param dtype: Ignored. Here just to have a consistent interface.
     :return: Numpy array.
     """
-    # Numpy array are already the format we are looking for.
-    return numpy.array([numpy_number], dtype=numpy_number.dtype)
+    return numpy.array([value], dtype=value.dtype)
 
 
 def serialize_python_number(value, dtype):
@@ -109,16 +108,16 @@ channel_type_scalar_serializer_mapping = {
     float: ('f8', "float64", serialize_python_number, [1]),
     int: ('i8', "int64", serialize_python_number, [1]),
     str: ('u1', "string", serialize_python_string, [1]),
-    numpy.int8: ('i1', 'int8', serialize_numpy, [1]),
-    numpy.uint8: ('u1', 'uint8', serialize_numpy, [1]),
-    numpy.int16: ('i2', 'int16', serialize_numpy, [1]),
-    numpy.uint16: ('u2', 'uint16', serialize_numpy, [1]),
-    numpy.int32: ('i4', 'int32', serialize_numpy, [1]),
-    numpy.uint32: ('u4', 'uint32', serialize_numpy, [1]),
-    numpy.int64: ('i8', 'int64', serialize_numpy, [1]),
-    numpy.uint64: ('u8', 'uint64', serialize_numpy, [1]),
-    numpy.float32: ('f4', 'float32', serialize_numpy, [1]),
-    numpy.float64: ('f8', 'float64', serialize_numpy, [1]),
+    numpy.int8: ('i1', 'int8', serialize_numpy_scalar, [1]),
+    numpy.uint8: ('u1', 'uint8', serialize_numpy_scalar, [1]),
+    numpy.int16: ('i2', 'int16', serialize_numpy_scalar, [1]),
+    numpy.uint16: ('u2', 'uint16', serialize_numpy_scalar, [1]),
+    numpy.int32: ('i4', 'int32', serialize_numpy_scalar, [1]),
+    numpy.uint32: ('u4', 'uint32', serialize_numpy_scalar, [1]),
+    numpy.int64: ('i8', 'int64', serialize_numpy_scalar, [1]),
+    numpy.uint64: ('u8', 'uint64', serialize_numpy_scalar, [1]),
+    numpy.float32: ('f4', 'float32', serialize_numpy_scalar, [1]),
+    numpy.float64: ('f8', 'float64', serialize_numpy_scalar, [1]),
     bool: ('?', 'bool', serialize_python_number, [1]),
-    numpy.bool_: ('?', 'bool', serialize_numpy, [1])
+    numpy.bool_: ('?', 'bool', serialize_numpy_scalar, [1])
 }
