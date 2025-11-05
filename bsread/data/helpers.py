@@ -5,7 +5,8 @@ import numpy
 import sys
 
 from bsread.data.serialization import channel_type_deserializer_mapping, \
-    compression_provider_mapping, channel_type_scalar_serializer_mapping
+    compression_provider_mapping, channel_type_scalar_serializer_mapping, \
+    serialize_python_list
 
 
 _logger = getLogger(__name__)
@@ -58,10 +59,7 @@ def get_channel_specs(value, extended=False):
         #TODO: avoid converting twice
         value_as_array = numpy.array(value)
         dtype, channel_type, _serializer, shape = get_channel_specs(value_as_array, extended=True)
-
-        # Lists have a special serializer.
-        def serializer(list_value, suggested_type):
-            return numpy.array(list_value, dtype=suggested_type)
+        serializer = serialize_python_list
 
     # Determine scalars channel specs
     else:
