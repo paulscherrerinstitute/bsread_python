@@ -198,7 +198,7 @@ class TestGenerator(unittest.TestCase):
                     else:
                         self.assertEqual(plain_received_value, compressed_received_value)
 
-                    # Empty arrays are transfered as None.
+                    # Empty arrays are transferred as None.
                     if plain_received_value is None and not (value.size if isinstance(value, numpy.ndarray) else value):
                         plain_received_value = value
                         compressed_received_value = value
