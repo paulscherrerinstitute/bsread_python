@@ -26,9 +26,10 @@ class BaseDataTable(ABC):
 
 class BaseTable(ABC):
 
-    def __init__(self, receive_func, channel_filter):
+    def __init__(self, receive_func, channel_filter, clear):
         self.receive_func = receive_func
         self.channel_filter = channel_filter
+        self.clear = clear
 
     def start(self):
         try:
@@ -42,6 +43,9 @@ class BaseTable(ABC):
     @abstractmethod
     def run(self):
         raise NotImplementedError
+
+    def clear_screen(self):
+        print(chr(27) + "[2J")
 
 
 

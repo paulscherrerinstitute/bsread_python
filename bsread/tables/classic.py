@@ -13,7 +13,9 @@ class ClassicTable(BaseTable):
             msg = self.receive_func()
             data = unpack(msg, self.channel_filter)
 
-            if msg.format_changed:
+            if msg.format_changed or self.clear:
+                if self.clear:
+                    self.clear_screen()
                 print()
                 cols = data.keys()
                 print(join(cols))

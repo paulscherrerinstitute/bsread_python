@@ -7,9 +7,9 @@ from .bases import BaseDataTable
 
 class TextualTable(BaseDataTable):
 
-    def __init__(self, receive_func, channel_filter):
+    def __init__(self, receive_func, channel_filter, _clear):
         self.console = Console()
-        max_rows = max(1, self.console.size.height - 1)
+        max_rows = max(1, self.console.size.height - 1) #if clear else None
         super().__init__(receive_func, channel_filter, max_rows)
         self.app = TableApp(self.data)
 

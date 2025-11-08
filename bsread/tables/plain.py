@@ -16,7 +16,7 @@ class PlainTable(BaseTable):
             msg = self.receive_func()
             data = unpack(msg, self.channel_filter)
 
-            if msg.format_changed or not cols:
+            if msg.format_changed or self.clear or not cols:
                 cols = data.keys()
                 widths_cols = lens(cols)
 
@@ -26,7 +26,9 @@ class PlainTable(BaseTable):
             widths_new = maxof(widths_cols, widths_row)
             widths_changed = widths_new != widths
 
-            if msg.format_changed or widths_changed:
+            if msg.format_changed or self.clear or widths_changed:
+                if self.clear:
+                    self.clear_screen()
                 widths = widths_new
                 print()
                 print(join(pad(cols, widths)))
