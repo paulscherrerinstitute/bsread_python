@@ -37,10 +37,15 @@ class TableApp(App):
         data = self.data
         table = self.table
 
-        if not table.columns:
-            table.add_columns(*data.cols)
-
         data_rows = data.rows
+        data_cols = data.cols
+
+        table_cols = get_cols(table)
+
+        # only rebuild columns if they changed
+        if table_cols != data_cols:
+            table.clear(columns=True)
+            table.add_columns(*data_cols)
 
         n_data_rows = len(data_rows)
         n_table_rows = len(table.rows)
@@ -58,6 +63,11 @@ class TableApp(App):
             remove_row_at(table, row_index)
 
 
+
+def get_cols(table):
+    # ck => textual.widgets._data_table.ColumnKey
+    # ck.label => rich.text.Text
+    return [ck.label.plain for ck in table.columns.values()]
 
 def update_row_at(table, row_index, values, update_width=False):
     for col_index, val in enumerate(values):
