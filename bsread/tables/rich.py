@@ -23,9 +23,9 @@ class RichTable(BaseDataTable):
     def make_table(self):
         tab = Table(show_lines=False)
         for col in self.data.cols:
-            tab.add_column(str(col))
+            tab.add_column(col)
         for row in self.data.rows:
-            tab.add_row(*map(str, row))
+            tab.add_row(*row)
         return tab
 
 

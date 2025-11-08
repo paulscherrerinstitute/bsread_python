@@ -18,11 +18,9 @@ class PlainTable(BaseTable):
 
             if msg.format_changed or not cols:
                 cols = data.keys()
-                cols = strs(cols)
                 widths_cols = lens(cols)
 
             row = data.values()
-            row = strs(row)
             widths_row = lens(row)
 
             widths_new = maxof(widths_cols, widths_row)
@@ -36,9 +34,6 @@ class PlainTable(BaseTable):
             print(join(pad(row, widths)))
 
 
-
-def strs(seq):
-    return [str(i) for i in seq]
 
 def lens(seq):
     return [len(i) for i in seq]

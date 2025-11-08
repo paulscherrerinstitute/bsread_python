@@ -70,10 +70,10 @@ def unpack(msg, channel_filter):
     return merge_dicts(meta, data)
 
 def unpack_meta(msg):
-    return {i: getattr(msg, i) for i in META}
+    return {i: str(getattr(msg, i)) for i in META}
 
 def unpack_data(msg, channel_filter):
-    return {k: v.value for k, v in msg.data.items() if channel_filter is None or k in channel_filter}
+    return {k: str(v.value) for k, v in msg.data.items() if channel_filter is None or k in channel_filter}
 
 def merge_dicts(*args):
     res = {}

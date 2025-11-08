@@ -19,7 +19,7 @@ class ClassicTable(BaseTable):
                 print(join(cols))
 
             row = data.values()
-            print(join(map(str, row)))
+            print(join(row))
 
 
 
