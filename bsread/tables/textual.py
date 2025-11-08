@@ -36,10 +36,39 @@ class TableApp(App):
     def make_table(self):
         data = self.data
         table = self.table
-        table.clear(columns=True)
-        table.add_columns(*data.cols)
-        for row in data.rows:
+
+        if not table.columns:
+            table.add_columns(*data.cols)
+
+        data_rows = data.rows
+
+        n_data_rows = len(data_rows)
+        n_table_rows = len(table.rows)
+
+        # update the existing rows
+        for i, row in enumerate(data_rows[:n_table_rows]):
+            update_row_at(table, i, row)
+
+        # add missing rows
+        for row in data_rows[n_table_rows:]:
             table.add_row(*row)
+
+        # remove extra rows
+        for row_index in reversed(range(n_data_rows, n_table_rows)):
+            remove_row_at(table, row_index)
+
+
+
+def update_row_at(table, row_index, values, update_width=False):
+    for col_index, val in enumerate(values):
+        coord = (row_index, col_index)
+        table.update_cell_at(coord, val, update_width=update_width)
+
+def remove_row_at(table, row_index):
+    col_index = 0
+    coord = (row_index, col_index)
+    row_key, _col_key = table.coordinate_to_cell_key(coord)
+    table.remove_row(row_key)
 
 
 
