@@ -19,7 +19,7 @@ def receive(source=None, clear=False, table="auto", queue_size=100, mode=zmq.PUL
 
     receive = lambda: receiver.receive(handler=handler.receive).data
     Table = tables.available[table]
-    table = Table(receive)
+    table = Table(receive, channel_filter)
     try:
         table.start()
     finally:

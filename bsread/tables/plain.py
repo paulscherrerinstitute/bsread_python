@@ -1,5 +1,5 @@
 from .bases import BaseTable
-from .data import make_cols, make_row
+from .data import unpack
 
 
 SEPARATOR = " "
@@ -14,12 +14,15 @@ class PlainTable(BaseTable):
 
         while True:
             msg = self.receive_func()
+            data = unpack(msg, self.channel_filter)
 
             if msg.format_changed or not cols:
-                cols = strs(make_cols(msg))
+                cols = data.keys()
+                cols = strs(cols)
                 widths_cols = lens(cols)
 
-            row = strs(make_row(msg))
+            row = data.values()
+            row = strs(row)
             widths_row = lens(row)
 
             widths_new = maxof(widths_cols, widths_row)

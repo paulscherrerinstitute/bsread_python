@@ -1,5 +1,5 @@
 from .bases import BaseTable
-from .data import make_cols, make_row
+from .data import unpack
 
 
 SEPARATOR = "\t"
@@ -11,13 +11,14 @@ class ClassicTable(BaseTable):
         join = SEPARATOR.join
         while True:
             msg = self.receive_func()
+            data = unpack(msg, self.channel_filter)
 
             if msg.format_changed:
                 print()
-                cols = make_cols(msg)
+                cols = data.keys()
                 print(join(cols))
 
-            row = make_row(msg)
+            row = data.values()
             print(join(map(str, row)))
 
 

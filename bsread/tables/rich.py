@@ -9,10 +9,10 @@ from .bases import BaseDataTable
 
 class RichTable(BaseDataTable):
 
-    def __init__(self, receive_func):
+    def __init__(self, receive_func, channel_filter):
         self.console = Console()
         max_rows = max(1, self.console.size.height - 4)
-        super().__init__(receive_func, max_rows)
+        super().__init__(receive_func, max_rows, channel_filter)
 
     def run(self):
         with Live(console=self.console, auto_refresh=False) as live:
