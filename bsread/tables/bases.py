@@ -5,8 +5,8 @@ from .data import TableData
 
 class BaseDataTable(ABC):
 
-    def __init__(self, receive_func, max_rows, channel_filter):
-        self.data = TableData(receive_func, max_rows, channel_filter)
+    def __init__(self, receive_func, channel_filter, max_rows):
+        self.data = TableData(receive_func, channel_filter, max_rows)
 
     def start(self):
         try:

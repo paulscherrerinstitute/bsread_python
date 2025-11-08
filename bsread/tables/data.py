@@ -12,7 +12,7 @@ META = [
 
 class TableData:
 
-    def __init__(self, receive_func, max_rows, channel_filter):
+    def __init__(self, receive_func, channel_filter, max_rows):
         self.receive_func = receive_func
         self.channel_filter = channel_filter
         self._cols = []

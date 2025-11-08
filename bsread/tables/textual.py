@@ -10,7 +10,7 @@ class TextualTable(BaseDataTable):
     def __init__(self, receive_func, channel_filter):
         self.console = Console()
         max_rows = max(1, self.console.size.height - 1)
-        super().__init__(receive_func, max_rows, channel_filter)
+        super().__init__(receive_func, channel_filter, max_rows)
         self.app = TableApp(self.data)
 
     def run(self):
