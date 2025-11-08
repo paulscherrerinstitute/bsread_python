@@ -17,6 +17,7 @@ class TextualTable(BaseDataTable):
         self.app.run()
 
 
+
 class TableApp(App):
 
     BINDINGS = [("ctrl+c", "quit")]
@@ -32,6 +33,7 @@ class TableApp(App):
 
     def on_mount(self):
         self.set_interval(0.1, self.make_table)
+
 
     def make_table(self):
         data = self.data
