@@ -233,12 +233,12 @@ class Sender:
                                                      channel_type=channel.metadata.get("type")),
                                      send_more=True, block=self.block)
 
-                    endianess = '>' if channel.metadata.get("encoding") == "big" else '<'
+                    endianness = '>' if channel.metadata.get("encoding") == "big" else '<'
 
                     # TODO: This timestamps should be individual per channel.
-                    self.stream.send(struct.pack(endianess + 'q',
+                    self.stream.send(struct.pack(endianness + 'q',
                                                  current_timestamp_epoch) +
-                                     struct.pack(endianess + 'q',
+                                     struct.pack(endianness + 'q',
                                                  current_timestamp_ns), send_more=(count > 0), block=self.block)
                 count -= 1
                 counter += 1

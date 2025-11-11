@@ -198,8 +198,8 @@ class TestGenerator(unittest.TestCase):
                     else:
                         self.assertEqual(plain_received_value, compressed_received_value)
 
-                    # Empty arrays are transfered as None.
-                    if plain_received_value is None and not value:
+                    # Empty arrays are transferred as None.
+                    if plain_received_value is None and not (value.size if isinstance(value, numpy.ndarray) else value):
                         plain_received_value = value
                         compressed_received_value = value
 
@@ -346,14 +346,25 @@ class TestGenerator(unittest.TestCase):
             numpy.testing.assert_array_equal(send_data[name], received_message.data.data[name].value)
 
     def test_send_boolean(self):
-        send_boolean_array = [[0, 1, 0, 1],
-                              [1, 0, 1, 0]]
+        send_int_array = [[0, 1, 0, 1],
+                          [1, 0, 1, 0]]
+        send_boolean_array = [[False, True, False, True,],
+                              [True, False, True, False]]
 
         with source(host="localhost") as receive_stream:
             with sender() as send_stream:
-                send_stream.add_channel("boolean_type",
+                send_stream.add_channel("int_type",
                                         lambda x: 1,
                                         {"type": "bool"})
+
+                send_stream.add_channel("boolean_type",
+                                        lambda x: True,
+                                        {"type": "bool"})
+
+                send_stream.add_channel("int_type_array",
+                                        lambda x: send_int_array,
+                                        {"type": "bool",
+                                         "shape": [4, 2]})
 
                 send_stream.add_channel("boolean_type_array",
                                         lambda x: send_boolean_array,
@@ -363,10 +374,14 @@ class TestGenerator(unittest.TestCase):
                 send_stream.send()
 
                 data = receive_stream.receive()
+                int_type = data.data.data["int_type"].value
+                int_type_array = data.data.data["int_type_array"].value
                 boolean_type = data.data.data["boolean_type"].value
                 boolean_type_array = data.data.data["boolean_type_array"].value
 
-        self.assertTrue(bool(boolean_type))
+        self.assertTrue(bool(int_type))
+        self.assertTrue(boolean_type)
+        numpy.testing.assert_array_equal(send_int_array, int_type_array)
         numpy.testing.assert_array_equal(send_boolean_array, boolean_type_array)
 
 

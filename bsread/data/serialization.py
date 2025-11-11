@@ -31,22 +31,21 @@ def deserialize_string(numpy_array):
     return numpy_array.tobytes().decode()
 
 
-def serialize_numpy(numpy_number, dtype=None):
+def serialize_numpy_scalar(value, dtype=None):
     """
-    Serialize the provided numpy array.
-    :param numpy_number: Number to serialize.
+    Serialize a numpy scalar as numpy array of shape (1,).
+    :param value: Value to serialize.
     :param dtype: Ignored. Here just to have a consistent interface.
     :return: Numpy array.
     """
-    # Numpy array are already the format we are looking for.
-    return numpy.array([numpy_number], dtype=numpy_number.dtype)
+    return numpy.array([value], dtype=value.dtype)
 
 
 def serialize_python_number(value, dtype):
     """
-    Serialize a python number by converting it into a numpy array and getting its bytes.
+    Serialize a python number as numpy array of shape (1,).
     :param value: Value to serialize.
-    :param dtype: Numpy value representation.
+    :param dtype: Numpy dtype of value.
     :return: Numpy array.
     """
     return numpy.array([value], dtype=dtype)
@@ -54,19 +53,19 @@ def serialize_python_number(value, dtype):
 
 def serialize_python_string(value, dtype):
     """
-    Serialize string into numpy array.
+    Serialize string as numpy array.
     :param value: Value to serialize.
-    :param dtype: Dtype to use (UTF-8 is assumed, use u1)
+    :param dtype: Numpy dtype of UTF-8 ("u1") is assumed.
     :return: Numpy array.
     """
-    return numpy.frombuffer(value.encode(), dtype=dtype)
+    return numpy.frombuffer(value.encode(), dtype)
 
 
 def serialize_python_list(value, dtype):
     """
-    Convert python list into ndarray.
-    :param value: List to convert.
-    :param dtype: Ignored. Type if retrieved from the list items.
+    Serialize python list as ndarray.
+    :param value: List to serialize.
+    :param dtype: Numpy dtype of values in list.
     :return: Numpy array.
     """
     return numpy.array(value, dtype=dtype)
@@ -108,16 +107,16 @@ channel_type_scalar_serializer_mapping = {
     float: ('f8', "float64", serialize_python_number, [1]),
     int: ('i8', "int64", serialize_python_number, [1]),
     str: ('u1', "string", serialize_python_string, [1]),
-    numpy.int8: ('i1', 'int8', serialize_numpy, [1]),
-    numpy.uint8: ('u1', 'uint8', serialize_numpy, [1]),
-    numpy.int16: ('i2', 'int16', serialize_numpy, [1]),
-    numpy.uint16: ('u2', 'uint16', serialize_numpy, [1]),
-    numpy.int32: ('i4', 'int32', serialize_numpy, [1]),
-    numpy.uint32: ('u4', 'uint32', serialize_numpy, [1]),
-    numpy.int64: ('i8', 'int64', serialize_numpy, [1]),
-    numpy.uint64: ('u8', 'uint64', serialize_numpy, [1]),
-    numpy.float32: ('f4', 'float32', serialize_numpy, [1]),
-    numpy.float64: ('f8', 'float64', serialize_numpy, [1]),
+    numpy.int8: ('i1', 'int8', serialize_numpy_scalar, [1]),
+    numpy.uint8: ('u1', 'uint8', serialize_numpy_scalar, [1]),
+    numpy.int16: ('i2', 'int16', serialize_numpy_scalar, [1]),
+    numpy.uint16: ('u2', 'uint16', serialize_numpy_scalar, [1]),
+    numpy.int32: ('i4', 'int32', serialize_numpy_scalar, [1]),
+    numpy.uint32: ('u4', 'uint32', serialize_numpy_scalar, [1]),
+    numpy.int64: ('i8', 'int64', serialize_numpy_scalar, [1]),
+    numpy.uint64: ('u8', 'uint64', serialize_numpy_scalar, [1]),
+    numpy.float32: ('f4', 'float32', serialize_numpy_scalar, [1]),
+    numpy.float64: ('f8', 'float64', serialize_numpy_scalar, [1]),
     bool: ('?', 'bool', serialize_python_number, [1]),
-    numpy.bool_: ('?', 'bool', serialize_numpy, [1])
+    numpy.bool_: ('?', 'bool', serialize_numpy_scalar, [1])
 }
