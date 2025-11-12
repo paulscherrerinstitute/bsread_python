@@ -20,7 +20,7 @@ class TestWriter(unittest.TestCase):
 
         n_messages = 5
         generate_thread = Thread(target=simulate.generate_stream, args=(9999, n_messages,))
-        generate_thread.setDaemon(True)
+        generate_thread.daemon = True
         generate_thread.start()
 
         source = "tcp://localhost:9999"
@@ -55,7 +55,7 @@ class TestWriter(unittest.TestCase):
 
         n_messages = 20
         generate_thread = Thread(target=generate_real_stream, args=(9999, n_messages,))
-        generate_thread.setDaemon(True)
+        generate_thread.daemon = True
         generate_thread.start()
 
         source = "tcp://localhost:9999"
@@ -86,7 +86,7 @@ class TestWriter(unittest.TestCase):
     def test_compact_processor(self):
         n_messages = 5
         generate_thread = Thread(target=simulate.generate_stream, args=(9999, n_messages,))
-        generate_thread.setDaemon(True)
+        generate_thread.daemon = True
         generate_thread.start()
 
         source = "tcp://localhost:9999"
