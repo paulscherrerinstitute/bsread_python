@@ -3,7 +3,6 @@ import h5py
 import mflow
 from bsread.data.serialization import channel_type_deserializer_mapping
 from bsread.handlers import extended
-import zmq
 from bsread import writer as wr
 from bsread import dispatcher, BASE_DISPATCHER_URL
 import logging
@@ -14,7 +13,7 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(name)s - %(message)s')
 
 
-def receive(source, file_name, queue_size=100, mode=zmq.PULL, n_messages=None, message_processor=None):
+def receive(source, file_name, queue_size=100, mode=mflow.PULL, n_messages=None, message_processor=None):
     handler = extended.Handler()
     receiver = mflow.connect(source, conn_type="connect", queue_size=queue_size, mode=mode)
 
@@ -211,7 +210,7 @@ def main():
         # Connect via the dispatching layer
         use_dispatching = True
         address = dispatcher.request_stream(channels, base_url=f"{BASE_DISPATCHER_URL}/{backend}")
-        mode = zmq.SUB
+        mode = mflow.SUB
 
     # Use the compact H5 format if so specified.
     if arguments.compact_format:
@@ -226,7 +225,7 @@ def main():
     except KeyboardInterrupt:
         # KeyboardInterrupt is thrown if the receiving is terminated via ctrl+c
         # As we don't want to see a stacktrace then catch this exception
-        print() # print ^C on its own line 
+        print() # print ^C on its own line
     finally:
         if use_dispatching:
             print('Closing stream')
