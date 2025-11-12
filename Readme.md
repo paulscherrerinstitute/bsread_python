@@ -25,8 +25,8 @@ If you need a combined stream from both dispatchers, you have to request a strea
 You can get a customized, synchronized stream from any combination of beam synchronous channels by using this piece of code:
 
 ```python
-from bsread import source
-with source(channels=['YOUR_CHANNEL', 'YOUR_SECOND_CHANNEL']) as stream:
+from bsread import Source
+with Source(channels=['YOUR_CHANNEL', 'YOUR_SECOND_CHANNEL']) as stream:
     while True:
         message = stream.receive()
         print(message.data.data['YOUR_CHANNEL'].value)
@@ -35,8 +35,8 @@ with source(channels=['YOUR_CHANNEL', 'YOUR_SECOND_CHANNEL']) as stream:
 To get the stream from the ImageBuffer dispatcher use:
 
 ```python
-from bsread import source
-with source(channels=['YOUR_CHANNEL', 'YOUR_SECOND_CHANNEL'], dispatcher_url="https://dispatcher-api.psi.ch/sf-imagebuffer")) as stream:
+from bsread import Source
+with Source(channels=['YOUR_CHANNEL', 'YOUR_SECOND_CHANNEL'], dispatcher_url="https://dispatcher-api.psi.ch/sf-imagebuffer")) as stream:
     while True:
         message = stream.receive()
         print(message.data.data['YOUR_CHANNEL'].value)
@@ -46,8 +46,8 @@ with source(channels=['YOUR_CHANNEL', 'YOUR_SECOND_CHANNEL'], dispatcher_url="ht
 If you want to request non 100Hz data for particular channels you can simply configure this as follows:
 
 ```python
-from bsread import source
-with source(channels=['YOUR_CHANNEL', {'name': 'YOUR_SECOND_CHANNEL', 'modulo': '10', 'offset': 0}]) as stream:
+from bsread import Source
+with Source(channels=['YOUR_CHANNEL', {'name': 'YOUR_SECOND_CHANNEL', 'modulo': '10', 'offset': 0}]) as stream:
     while True:
         message = stream.receive()
         print(message.data.data['YOUR_CHANNEL'].value)
@@ -59,10 +59,10 @@ As you can see you can mix simple channel names with specific channel configurat
 To receive beam synchronous data from a specific source without using the SwissFEL Dispatching Layer use:
 
 ```python
-from bsread import source
+from bsread import Source
 
-with source(host='ioc', port=9999) as stream:
-    # source.request(['TOCK-BSREAD:SIM-PULSE'])  # configure IOC
+with Source(host='ioc', port=9999) as stream:
+    #Source.request(['TOCK-BSREAD:SIM-PULSE'])  # configure IOC
     while True:
         message = stream.receive()
         # Terminate loop at some time
@@ -95,9 +95,9 @@ message.statistics
 By default the receive function of bsread is blocking. Due to the nature of the underlying protocol, a desired receive timeout needs to be specified while creating the source.
 
 ```python
-from bsread import source
+from bsread import Source
 
-with source(host='ioc', port=9999, receive_timeout=100) as stream:
+with Source(host='ioc', port=9999, receive_timeout=100) as stream:
     pass
 ```
 
@@ -105,7 +105,7 @@ with source(host='ioc', port=9999, receive_timeout=100) as stream:
 
 
 ## Filter Messages
-The receive function offers an easy way to define conditions data desired to receive has to match. 
+The receive function offers an easy way to define conditions data desired to receive has to match.
 
 
 A very simple filter can be defined like this:
@@ -115,12 +115,12 @@ message = stream.receive(filter=lambda m: m.data.data['CHANNEL_NAME'].value == 4
 ```
 
 For implementing more complex filters, define a filter method and pass the method as filter:
- 
+
 ```python
 def filter_method(m):
     print(m.data.data['CHANNEL_NAME'].value)
     return m.data.data['CHANNEL_NAME'].value <= 4
-    
+
 message = stream.receive(filter=filter_method)
 ```
 
@@ -144,7 +144,7 @@ channels = dispatcher.get_current_channels()
 # ]
 
 # To simply get the channel names use
-[x['name'] for x in channels] 
+[x['name'] for x in channels]
 ```
 
 
@@ -153,9 +153,9 @@ For various purposes (e.g. testing) beam synchronous streams can be easily creat
 
 ```python
 import numpy
-from bsread.sender import sender
+from bsread import Sender
 
-with sender(queue_size=10) as stream:
+with Sender(queue_size=10) as stream:
     test_array = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
     # Send Data
     stream.send(one=1, two=2,
@@ -168,7 +168,7 @@ An other way is to send data as follows:
 
 
 ```python
-from bsread.sender import Sender
+from bsread import Sender
 generator = Sender()
 
 # generator.set_pre_function(pre)
@@ -190,7 +190,7 @@ This can be used, for example, to update an object that the registered lambdas a
 To have the active loop in your code (instead of the Generator) you can
 
 ```python
-from bsread.sender import Sender
+from bsread import Sender
 import time
 
 generator = Sender()
@@ -212,7 +212,7 @@ A more complete example can be fount in [examples/generator.py](examples/generat
 Besides using lambdas for generating data you can also explicitly pass the data to send to the Generator. However, keep in mind that the then the active loop is in your domain. This can be done like this:
 
 ```python
-from bsread.sender import Sender
+from bsread import Sender
 
 generator = Sender()
 
