@@ -3,11 +3,10 @@ import numpy
 import logging
 
 import bsread.data.helpers
-import bsread.sender
 
 from bsread.data.helpers import get_channel_specs, get_serialization_type
-from bsread.sender import sender
-from bsread import source
+from bsread import Sender
+from bsread import Source
 
 logging.basicConfig(level=logging.DEBUG)  # Changeing of debug level needs to be done before the import for unit testing
 
@@ -84,8 +83,8 @@ class TestGenerator(unittest.TestCase):
         self.assertEqual(shape, [1])
 
     def test_stream(self):
-        with source(host="localhost", port=9999) as in_stream:
-            with sender(queue_size=10) as stream:
+        with Source(host="localhost", port=9999) as in_stream:
+            with Sender(queue_size=10) as stream:
                 test_array = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
                 # Send Data
                 stream.send(one=1, two=2,
@@ -111,8 +110,8 @@ class TestGenerator(unittest.TestCase):
                 self.assertTrue(hash_m1 != hash_m2, msg="{} {}".format(hash_m1, hash_m2))
 
     def test_send_stream(self):
-        with source(host="localhost", port=9999) as in_stream:
-            with sender(queue_size=1) as stream:
+        with Source(host="localhost", port=9999) as in_stream:
+            with Sender(queue_size=1) as stream:
                 # Send none data
                 stream.send(one=1, two=None, three="one", four=numpy.array([]))
 
@@ -133,8 +132,8 @@ class TestGenerator(unittest.TestCase):
 
     def test_timestamp(self):
 
-        with source(host="localhost", port=9999) as in_stream:
-            with sender(queue_size=10) as stream:
+        with Source(host="localhost", port=9999) as in_stream:
+            with Sender(queue_size=10) as stream:
                 stream.send(one=1, two=2)
                 # import time
                 # time.sleep(2)
@@ -165,8 +164,8 @@ class TestGenerator(unittest.TestCase):
                                 "shape": data_shape,
                                 "compression": "bitshuffle_lz4"})
 
-        with source(host="localhost") as receive_stream:
-            with sender() as send_stream:
+        with Source(host="localhost") as receive_stream:
+            with Sender() as send_stream:
                 values = {
                     "array": [1, 2, 3, 4, 5],
                     "int": -12,
@@ -213,8 +212,8 @@ class TestGenerator(unittest.TestCase):
                         self.assertEqual(compressed_received_value, value, "Compressed channel values not as expected")
 
     def test_non_native_types(self):
-        with source(host="localhost") as receive_stream:
-            with sender() as send_stream:
+        with Source(host="localhost") as receive_stream:
+            with Sender() as send_stream:
                 send_stream.add_channel("compact_type",
                                         lambda x: 99,
                                         {"type": "int32"})
@@ -239,8 +238,8 @@ class TestGenerator(unittest.TestCase):
                 self.assertEqual(extended_value.dtype, get_serialization_type("int64"))
 
     def test_values_timestamps(self):
-        with source(host="localhost") as receive_stream:
-            with sender() as send_stream:
+        with Source(host="localhost") as receive_stream:
+            with Sender() as send_stream:
                 send_stream.add_channel("x", lambda x: 1)
 
                 send_stream.send()
@@ -255,8 +254,8 @@ class TestGenerator(unittest.TestCase):
         timestamp = 123
         timestamp_offset = 456
 
-        with source(host="localhost") as receive_stream:
-            with sender() as send_stream:
+        with Source(host="localhost") as receive_stream:
+            with Sender() as send_stream:
                 send_stream.add_channel("x", lambda x: 1)
 
                 send_stream.send(timestamp=(timestamp, timestamp_offset))
@@ -278,8 +277,8 @@ class TestGenerator(unittest.TestCase):
         send_timestamp = 123456789
         send_timestamp_offset = 987654321
 
-        with source(host="localhost") as receive_stream:
-            with sender() as send_stream:
+        with Source(host="localhost") as receive_stream:
+            with Sender() as send_stream:
                 send_stream.send(data=send_data, timestamp=(123456789, 987654321))
 
                 received_message = receive_stream.receive()
@@ -311,8 +310,8 @@ class TestGenerator(unittest.TestCase):
         # Example without compression.
         compression = None
 
-        with source(host="localhost") as receive_stream:
-            with sender(data_compression=compression) as send_stream:
+        with Source(host="localhost") as receive_stream:
+            with Sender(data_compression=compression) as send_stream:
                 send_stream.send(data=send_data)
 
                 for name in send_data:
@@ -333,8 +332,8 @@ class TestGenerator(unittest.TestCase):
         # Example with default data compression.
         compression = "bitshuffle_lz4"
 
-        with source(host="localhost") as receive_stream:
-            with sender(data_compression=compression) as send_stream:
+        with Source(host="localhost") as receive_stream:
+            with Sender(data_compression=compression) as send_stream:
                 send_stream.send(data=send_data)
 
                 for name in send_data:
@@ -351,8 +350,8 @@ class TestGenerator(unittest.TestCase):
         send_boolean_array = [[False, True, False, True,],
                               [True, False, True, False]]
 
-        with source(host="localhost") as receive_stream:
-            with sender() as send_stream:
+        with Source(host="localhost") as receive_stream:
+            with Sender() as send_stream:
                 send_stream.add_channel("int_type",
                                         lambda x: 1,
                                         {"type": "bool"})

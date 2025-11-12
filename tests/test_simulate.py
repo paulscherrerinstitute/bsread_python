@@ -1,7 +1,7 @@
 import unittest
 from threading import Thread
 
-from bsread import source, simulate
+from bsread import Source, simulate
 from bsread.data.helpers import get_serialization_type
 from bsread.handlers import extended
 
@@ -15,7 +15,7 @@ class TestSimulate(unittest.TestCase):
 
         handler = extended.Handler().receive
 
-        with source(host="localhost") as receive_stream:
+        with Source(host="localhost") as receive_stream:
             for _ in range(n_of_messages):
                 data = receive_stream.receive(handler=handler)
                 received_channels = data.data["data_header"]["channels"]

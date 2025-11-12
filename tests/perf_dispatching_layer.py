@@ -3,7 +3,7 @@ import logging
 import socket
 from time import time
 
-from bsread import source, SUB
+from bsread import Source, SUB
 
 channels_to_save = [
     "SAROP21-CVME-PBPS2:Lnk9Ch7-BG-DATA",
@@ -104,7 +104,7 @@ def run_tests(n_tests, n_messages, log_level="ERROR"):
         print("Starting test %d/%d" % (index_test+1, n_tests))
 
         start_time = time()
-        with source(channels=channels_to_save, mode=SUB) as input_stream:
+        with Source(channels=channels_to_save, mode=SUB) as input_stream:
             end_time = time()
             dispatching_layer_request_times.append(end_time - start_time)
 

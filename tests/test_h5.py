@@ -110,7 +110,7 @@ class TestWriter(unittest.TestCase):
 
 
 def generate_real_stream(port, n_messages=None, interval=0.01):
-    from bsread.sender import Sender
+    from bsread import Sender
 
     generator = Sender(port=port)
 
