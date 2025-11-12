@@ -161,8 +161,15 @@ class Source:
 
 
 
-# backward compatibility with previous versions
-source = Source
+# backward compatibility with previous versions -- to be removed
+def source(*args, **kwargs):
+    import warnings
+    warnings.warn(
+        "source() is deprecated and will be removed in a future release. Use Source() instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+    return Source(*args, **kwargs)
 
 
 

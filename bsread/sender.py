@@ -269,8 +269,15 @@ class Channel:
 
 
 
-# backward compatibility with previous versions
-sender = Sender
+# backward compatibility with previous versions -- to be removed
+def sender(*args, **kwargs):
+    import warnings
+    warnings.warn(
+        "sender() is deprecated and will be removed in a future release. Use Sender() instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+    return Sender(*args, **kwargs)
 
 
 
