@@ -1,4 +1,4 @@
-from bsread.sender import Sender 
+from bsread.sender import Sender
 import math
 import struct
 

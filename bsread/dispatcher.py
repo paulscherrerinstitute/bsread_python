@@ -107,7 +107,7 @@ def request_stream(channels,
         inconsistency_resolution:   How to resolve inconsistencies in frequencies of the requested channels
                                     See: https://git.psi.ch/sf_daq/ch.psi.daq.dispatcherrest#channel-validation
                                     values: adjust-individual, keep-as-is
-        verify:                     Check whether all channels are currently available and connected. Checks for 
+        verify:                     Check whether all channels are currently available and connected. Checks for
                                     frequencies, etc. . If false inconsistency_resolution will be set to keep-as-is
         base_url:
 
@@ -211,15 +211,15 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta, asynchronous=True,
     """
     Update the ttl of specific data:
     https://git.psi.ch/sf_daq/ch.psi.daq.dispatcherrest#update-ttl
-    
+
     :param start:  Start of range to update = either datetime or pulse_id
     :param end: End of range to update - either datetime or pulse_id
     :param channels: List of channels to update ttl
     :param ttl: Time to live as datatime.timedelta
     :param default_backend: default backend
 
-    
-    :return: 
+
+    :return:
     """
 
     if default_backend is None:

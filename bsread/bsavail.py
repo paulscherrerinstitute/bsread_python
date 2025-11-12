@@ -30,7 +30,7 @@ def pollStream(pattern, timeout):
                 message = in_stream.receive()
                 messages += 1
 
-                try:                    
+                try:
                     for ch_name in message.data.data.keys():
                         ch_values[ch_name] = message.data.data[ch_name].value
                 except:
@@ -50,14 +50,14 @@ def pollStream(pattern, timeout):
                     print("\nTimeout, unable to retrieve beam-synchronous data!\nMissing channels:")
                     for ch_nm, ch_vl in ch_values.items():
                         if ch_vl is None:
-                            print("\n%s\n" % ch_nm)                    
+                            print("\n%s\n" % ch_nm)
                     break
 
                 #time.sleep(interval)
                 ##in_stream.stream.receiver.flush(True)
                 #in_stream.stream.receiver.socket.disconnect(in_stream.stream.address)
                 #in_stream.stream.receiver.socket.connect(in_stream.stream.address)
- 
+
         except KeyboardInterrupt:
             pass
 

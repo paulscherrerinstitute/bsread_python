@@ -33,7 +33,7 @@ def zmq_rpc(address, request):
         sock.send_string(request)
     else:
         sock.send_string(json.dumps(request))
-    
+
     response = sock.recv_json()
 
     sock.close()
