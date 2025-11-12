@@ -10,16 +10,9 @@ import json
 import logging
 from collections import OrderedDict
 
+from bsread import CONNECT, BIND, PULL, PUSH, PUB, SUB
 from bsread.data.serialization import compression_provider_mapping
 from bsread.data.helpers import get_channel_specs, get_value_bytes, get_channel_encoding
-
-PULL = mflow.PULL
-PUSH = mflow.PUSH
-PUB = mflow.PUB
-SUB = mflow.SUB
-
-CONNECT = "connect"
-BIND = "bind"
 
 
 # Support of "with" statement

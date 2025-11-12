@@ -1,19 +1,8 @@
 import mflow
 import json
 
+from bsread import CONNECT, BIND, PULL, PUSH, PUB, SUB, DEFAULT_DISPATCHER_URL
 from bsread.handlers.compact import Handler
-
-
-PULL = mflow.PULL
-PUSH = mflow.PUSH
-PUB = mflow.PUB
-SUB = mflow.SUB
-
-CONNECT = "connect"
-BIND = "bind"
-
-BASE_DISPATCHER_URL = 'https://dispatcher-api.psi.ch'
-DEFAULT_DISPATCHER_URL = BASE_DISPATCHER_URL+'/sf-databuffer'
 
 
 # Support of "with" statement
