@@ -1,5 +1,4 @@
-from bsread import source
-from bsread import SUB
+from bsread import Source, SUB
 
 import collections
 import signal
@@ -28,7 +27,7 @@ def main():
     plt.ion()
     plt.show()
 
-    with source(channels=[{'name': 'Float64Scalar', 'modulo': 10}], mode=SUB,
+    with Source(channels=[{'name': 'Float64Scalar', 'modulo': 10}], mode=SUB,
                 dispatcher_url='http://localhost:8080') as stream:
 
         while receive_more:
