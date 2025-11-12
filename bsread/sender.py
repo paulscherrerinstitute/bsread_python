@@ -15,23 +15,8 @@ from bsread.data.serialization import compression_provider_mapping
 from bsread.data.helpers import get_channel_specs, get_value_bytes, get_channel_encoding
 
 
-# Support of "with" statement
-class sender:
-    def __init__(self, queue_size=10, port=9999, conn_type=BIND, mode=PUSH, block=True, start_pulse_id=0,
-                 data_header_compression=None, data_compression=None, send_timeout=None, copy=True):
-        self.sender = Sender(queue_size=queue_size, port=port, conn_type=conn_type, mode=mode, block=block,
-                             start_pulse_id=start_pulse_id, data_header_compression=data_header_compression,
-                             data_compression=data_compression, send_timeout=send_timeout, copy=copy)
-
-    def __enter__(self):
-        self.sender.open()
-        return self.sender
-
-    def __exit__(self, type, value, traceback):
-        self.sender.close()
-
-
 class Sender:
+
     def __init__(self, queue_size=10, port=9999, address="tcp://*", conn_type=BIND, mode=PUSH, block=True,
                  start_pulse_id=0, data_header_compression=None, send_timeout=None, data_compression=None,
                  copy=True):
@@ -262,6 +247,17 @@ class Sender:
             n_messages -= 1
 
 
+    # Support the "with" statement
+
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.close()
+
+
+
 class Channel:
     def __init__(self, function, metadata):
         self.function = function
@@ -270,3 +266,11 @@ class Channel:
         # metadata needs to contain: name, type (default: float64), encoding (default: little), shape (default [1])
         if 'encoding' not in self.metadata:
             self.metadata['encoding'] = sys.byteorder
+
+
+
+# backward compatibility with previous versions
+sender = Sender
+
+
+

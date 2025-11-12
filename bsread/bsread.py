@@ -5,27 +5,6 @@ from bsread import CONNECT, BIND, PULL, PUSH, PUB, SUB, DEFAULT_DISPATCHER_URL
 from bsread.handlers.compact import Handler
 
 
-# Support of "with" statement
-class source:
-
-    def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None, queue_size=100,
-                 copy=True, channels=None, config_address=None, all_channels=False, receive_timeout=None,
-                 dispatcher_url=DEFAULT_DISPATCHER_URL, dispatcher_verify_request=True,
-                 dispatcher_disable_compression=False):
-        self.source = Source(host=host, port=port, config_port=config_port, conn_type=conn_type, mode=mode,
-                             queue_size=queue_size, copy=copy, channels=channels, config_address=config_address,
-                             all_channels=all_channels, receive_timeout=receive_timeout, dispatcher_url=dispatcher_url,
-                             dispatcher_verify_request=dispatcher_verify_request,
-                             dispatcher_disable_compression=dispatcher_disable_compression)
-
-    def __enter__(self):
-        self.source.connect()
-        return self.source
-
-    def __exit__(self, type, value, traceback):
-        self.source.disconnect()
-
-
 class Source:
 
     def __init__(self, host=None, port=9999, config_port=None, conn_type=CONNECT, mode=None, queue_size=100,
@@ -169,5 +148,21 @@ class Source:
                     message = self.stream.receive(handler=handler)
         else:
             return message
+
+
+    # Support the "with" statement
+
+    def __enter__(self):
+        self.connect()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.disconnect()
+
+
+
+# backward compatibility with previous versions
+source = Source
+
 
 
