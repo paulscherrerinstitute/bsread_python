@@ -17,7 +17,7 @@ def usage():
 def main():
     import sys
 
-    # Remove the first two arguments (i.e. script name and command)
+    # Remove the first arguments (i.e. the script name)
     sys.argv.pop(0)
 
     # If no sub-command is specified - print usage
@@ -31,11 +31,9 @@ def main():
         exit(0)
 
     import importlib
-    # try:
-    #     command_script = importlib.import_module(command)
-    # except:
+
     try:
-        command_script = importlib.import_module('bsread.'+command)
+        command_script = importlib.import_module('bsread.' + command)
     except ImportError as e:
         # this catches not only the ImportError from importing the command here
         # but also ImportErrors inside the command
