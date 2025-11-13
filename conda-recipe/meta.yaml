@@ -12,7 +12,7 @@ build:
     number: 0
     script: python -m pip install --no-deps --ignore-installed .
     entry_points:
-        - bs = bsread.bs:main
+        - bs = bsread.cli.bs:main
 
 requirements:
     build:
