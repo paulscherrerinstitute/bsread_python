@@ -14,8 +14,12 @@ Run \'bs COMMAND --help\' for more information on a command.
 """
 
 
-def usage():
+def quit(error=None):
+    if error:
+        print(error)
+        print()
     print(USAGE.strip())
+    raise SystemExit(True if error else False)
 
 
 def main():
@@ -26,13 +30,11 @@ def main():
 
     # If no sub-command is specified - print usage
     if len(sys.argv) < 1:
-        usage()
-        exit(0)
+        quit()
 
     command = sys.argv[0]
     if command.startswith("-"):
-        usage()
-        exit(0)
+        quit()
 
     import importlib
 
@@ -41,9 +43,7 @@ def main():
     except ImportError as e:
         # this catches not only the ImportError from importing the command here
         # but also ImportErrors inside the command
-        print(command + ' - Command not found (' + str(e) + ')')
-        usage()
-        exit(-1)
+        quit(command + ' - Command not found (' + str(e) + ')')
 
     command_script.main()
 
