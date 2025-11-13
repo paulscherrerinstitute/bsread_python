@@ -1,7 +1,8 @@
 import unittest
 from threading import Thread
 
-from bsread import Source, simulate
+from bsread import Source
+from bsread.cli import simulate
 from bsread.data.helpers import get_serialization_type
 from bsread.handlers import extended
 

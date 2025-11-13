@@ -19,7 +19,7 @@ class TestGenerator(unittest.TestCase):
         pass
 
     def test_data_consistency_check_increment_1(self):
-        import bsread.stats
+        import bsread.cli.stats
 
         class A:
             pass
@@ -33,38 +33,38 @@ class TestGenerator(unittest.TestCase):
         message.data = A()
 
         message.data.pulse_id = 0
-        bsread.stats.data_consistency_check(message.data, statistics)
+        bsread.cli.stats.data_consistency_check(message.data, statistics)
 
         message.data.pulse_id = 1
-        bsread.stats.data_consistency_check(message.data, statistics)
+        bsread.cli.stats.data_consistency_check(message.data, statistics)
 
         self.assertTrue(statistics.duplicated_pulse_ids == 0)
         self.assertTrue(statistics.missed_pulse_ids == 0)
         self.assertTrue(statistics.reverted_pulse_ids == 0)
 
         message.data.pulse_id = 3
-        bsread.stats.data_consistency_check(message.data, statistics)
+        bsread.cli.stats.data_consistency_check(message.data, statistics)
 
         self.assertTrue(statistics.duplicated_pulse_ids == 0)
         self.assertTrue(statistics.missed_pulse_ids == 1)
         self.assertTrue(statistics.reverted_pulse_ids == 0)
 
         message.data.pulse_id = 6
-        bsread.stats.data_consistency_check(message.data, statistics)
+        bsread.cli.stats.data_consistency_check(message.data, statistics)
 
         self.assertTrue(statistics.duplicated_pulse_ids == 0)
         self.assertTrue(statistics.missed_pulse_ids == 3)
         self.assertTrue(statistics.reverted_pulse_ids == 0)
 
         message.data.pulse_id = 6
-        bsread.stats.data_consistency_check(message.data, statistics)
+        bsread.cli.stats.data_consistency_check(message.data, statistics)
 
         self.assertTrue(statistics.duplicated_pulse_ids == 1)
         self.assertTrue(statistics.missed_pulse_ids == 3)
         self.assertTrue(statistics.reverted_pulse_ids == 0)
 
         message.data.pulse_id = 5
-        bsread.stats.data_consistency_check(message.data, statistics)
+        bsread.cli.stats.data_consistency_check(message.data, statistics)
 
         self.assertTrue(statistics.duplicated_pulse_ids == 1)
         self.assertTrue(statistics.missed_pulse_ids == 3)

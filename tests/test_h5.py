@@ -3,9 +3,9 @@ from threading import Thread
 
 import h5py
 import os
-from bsread import simulate, h5
-from bsread.h5 import process_message_compact
-from bsread.simulate import simulated_channels
+from bsread.cli import simulate, h5
+from bsread.cli.h5 import process_message_compact
+from bsread.cli.simulate import simulated_channels
 
 
 class TestWriter(unittest.TestCase):
