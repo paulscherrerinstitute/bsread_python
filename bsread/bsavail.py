@@ -3,7 +3,7 @@ from bsread.handlers.compact import Handler
 import re
 import sys
 import time
-from bsread.bsread import Source
+from bsread import Source
 import zmq
 
 def pollStream(pattern, timeout):
