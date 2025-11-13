@@ -1,11 +1,8 @@
 
 def usage():
-
-    print('')
     print('Usage: bs [OPTIONS] COMMAND [arg...]')
-    print('')
+    print()
     print('Commands:')
-    print('')
     print(' config          - Configure IOC')
     print(' stats           - Show receiving statistics')
     print(' receive         - Basic receiver')
@@ -13,13 +10,11 @@ def usage():
     print(' create          - Create a test softioc')
     print(' simulate        - Provide a test stream')
     print(' avail           - Show currently available beam synchronous channels')
-    print('')
+    print()
     print('Run \'bs COMMAND --help\' for more information on a command.')
-    print('')
 
 
 def main():
-
     import sys
 
     # Remove the first two arguments (i.e. script name and command)
@@ -31,6 +26,9 @@ def main():
         exit(0)
 
     command = sys.argv[0]
+    if command.startswith("-"):
+        usage()
+        exit(0)
 
     import importlib
     # try:
