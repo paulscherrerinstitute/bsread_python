@@ -1,17 +1,21 @@
+USAGE = """
+Usage: bs [OPTIONS] COMMAND [arg...]
+
+Commands:
+ config          - Configure IOC
+ stats           - Show receiving statistics
+ receive         - Basic receiver
+ h5              - Dump stream into HDF5 file
+ create          - Create a test softioc
+ simulate        - Provide a test stream
+ avail           - Show currently available beam synchronous channels
+
+Run \'bs COMMAND --help\' for more information on a command.
+"""
+
 
 def usage():
-    print('Usage: bs [OPTIONS] COMMAND [arg...]')
-    print()
-    print('Commands:')
-    print(' config          - Configure IOC')
-    print(' stats           - Show receiving statistics')
-    print(' receive         - Basic receiver')
-    print(' h5              - Dump stream into HDF5 file')
-    print(' create          - Create a test softioc')
-    print(' simulate        - Provide a test stream')
-    print(' avail           - Show currently available beam synchronous channels')
-    print()
-    print('Run \'bs COMMAND --help\' for more information on a command.')
+    print(USAGE.strip())
 
 
 def main():
