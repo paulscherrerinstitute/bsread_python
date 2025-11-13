@@ -26,7 +26,8 @@ def receive(source=None, clear=False, table="auto", queue_size=100, mode=mflow.P
         receiver.disconnect()
 
 
-@click.command()
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
+@click.command(context_settings=CONTEXT_SETTINGS)
 @click.argument("channels", default=None, type=str, nargs=-1)
 @click.option("-s", "--source", default=None, type=str, help="Source address - format 'tcp://<address>:<port>'")
 @click.option("-m", "--mode", default="sub",

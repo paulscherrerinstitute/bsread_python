@@ -3,7 +3,8 @@ from bsread import dispatcher, utils
 import re
 
 
-@click.command()
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
+@click.command(context_settings=CONTEXT_SETTINGS)
 @click.argument("pattern", default=".*")
 @click.option("--all", "metadata", default=False, is_flag=True, help="Display meta information")
 @click.option("--base_url", default=None, help="URL of dispatcher")
