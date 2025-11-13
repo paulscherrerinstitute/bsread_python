@@ -3,7 +3,8 @@ from bsread.handlers.compact import Handler
 import time
 import datetime
 import logging
-from bsread import dispatcher, utils
+from bsread import dispatcher
+from bsread.cli import utils
 import click
 
 logger = logging.getLogger(__name__)

@@ -1,5 +1,6 @@
 import click
-from bsread import dispatcher, utils
+from bsread import dispatcher
+from bsread.cli import utils
 import re
 
 

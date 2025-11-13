@@ -1,7 +1,8 @@
 import click
 import mflow
 from bsread.handlers.compact import Handler
-from bsread import dispatcher, utils
+from bsread import dispatcher
+from bsread.cli import utils
 import numpy
 
 from bsread.cli.utils import tables
