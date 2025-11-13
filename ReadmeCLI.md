@@ -18,7 +18,6 @@ Therefore the command provides several subcommands with options.
 Usage: bs [OPTIONS] COMMAND [arg...]
 
 Commands:
-
  config          - Configure IOC
  stats           - Show receiving statistics
  receive         - Basic receiver
