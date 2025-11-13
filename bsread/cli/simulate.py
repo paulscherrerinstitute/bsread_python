@@ -29,7 +29,7 @@ simulated_channels = [{"name": 'ABC', "function": lambda x: x, "metadata": {'typ
 
 
 def generate_stream(port, n_messages=None, interval=0.01):
-    from .sender import Sender
+    from bsread import Sender
 
     generator = Sender(port=port)
 

@@ -4,7 +4,7 @@ from bsread.handlers.compact import Handler
 from bsread import dispatcher, utils
 import numpy
 
-from . import tables
+from bsread import tables
 
 
 def receive(source=None, clear=False, table="auto", queue_size=100, mode=mflow.PULL, channel_filter=None):
