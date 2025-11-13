@@ -4,7 +4,7 @@ import os
 
 import h5py
 
-from bsread.writer import Writer
+from bsread.cli.utils.writer import Writer
 
 
 class TestWriter(unittest.TestCase):
