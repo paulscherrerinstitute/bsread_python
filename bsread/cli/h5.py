@@ -3,7 +3,7 @@ import h5py
 import mflow
 from bsread.data.serialization import channel_type_deserializer_mapping
 from bsread.handlers import extended
-from bsread import writer as wr
+from bsread.cli.utils import writer as wr
 from bsread import dispatcher, BASE_DISPATCHER_URL
 import logging
 
