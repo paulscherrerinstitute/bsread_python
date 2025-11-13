@@ -1,3 +1,7 @@
+import importlib
+import sys
+
+
 USAGE = """
 Usage: bs [OPTIONS] COMMAND [arg...]
 
@@ -10,7 +14,7 @@ Commands:
  simulate        - Provide a test stream
  avail           - Show currently available beam synchronous channels
 
-Run \'bs COMMAND --help\' for more information on a command.
+Run 'bs COMMAND --help' for more information on a command.
 """
 
 
@@ -23,12 +27,10 @@ def quit(error=None):
 
 
 def main():
-    import sys
-
     # Remove the first arguments (i.e. the script name)
     sys.argv.pop(0)
 
-    # If no sub-command is specified - print usage
+    # If no sub-command is specified quit
     if len(sys.argv) < 1:
         quit()
 
@@ -36,17 +38,18 @@ def main():
     if command.startswith("-"):
         quit()
 
-    import importlib
-
     try:
-        command_script = importlib.import_module('bsread.' + command)
+        command_script = importlib.import_module("bsread." + command)
     except ImportError as e:
         # this catches not only the ImportError from importing the command here
         # but also ImportErrors inside the command
-        quit(command + ' - Command not found (' + str(e) + ')')
+        en = type(e).__name__
+        quit(f"{command} - Command not found ({en}: {e})")
 
     command_script.main()
 
 
 if __name__ == "__main__":
     main()
+
+
