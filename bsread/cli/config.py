@@ -4,6 +4,8 @@ import re
 
 import zmq
 
+from bsread.cli import utils
+
 
 logger = logging.getLogger(__name__)
 
@@ -162,16 +164,10 @@ def main():
     arguments = parser.parse_args()
     address = arguments.ioc
 
-    import re
-    if not re.match('^tcp://', address):
-        # print('Protocol not defined for address - Using tcp://')
-        address = 'tcp://' + address
-    if not re.match('.*:[0-9]+$', address):
-        # print('Port not defined for address - Using 10000')
-        address += ':10000'
-    if not re.match('^tcp://[a-zA-Z.\-0-9]+:[0-9]+$', address):
-        print('Invalid URI - ' + address)
-        exit(-1)
+    try:
+        address = utils.check_and_update_uri(address, default_port=10000)
+    except:
+        raise SystemExit('Invalid URI - ' + address)
 
     if arguments.update:
         # Update current configuration

@@ -5,6 +5,7 @@ import h5py
 import mflow
 
 from bsread import BASE_DISPATCHER_URL, dispatcher
+from bsread.cli import utils
 from bsread.cli.utils import writer as wr
 from bsread.data.serialization import channel_type_deserializer_mapping
 from bsread.handlers import extended
@@ -199,16 +200,10 @@ def main():
         exit(-1)
 
     if address:
-        import re
-        if not re.match('^tcp://', address):
-            # print('Protocol not defined for address - Using tcp://')
-            address = 'tcp://' + address
-        if not re.match('.*:[0-9]+$', address):
-            # print('Port not defined for address - Using 9999')
-            address += ':9999'
-        if not re.match('^tcp://[a-zA-Z.\-0-9]+:[0-9]+$', address):
-            print('Invalid URI - ' + address)
-            exit(-1)
+        try:
+            address = utils.check_and_update_uri(address, default_port=9999)
+        except:
+            raise SystemExit('Invalid URI - ' + address)
     else:
         # Connect via the dispatching layer
         use_dispatching = True
