@@ -83,7 +83,7 @@ class Handler:
         counter = 0
         # msg_data_size = 0
         while receiver.has_more():
-            channel_name, channel_endianness, channel_reader = self.channels_definitions[counter]
+            _channel_name, channel_endianness, channel_reader = self.channels_definitions[counter]
 
             raw_data = receiver.next()
 
