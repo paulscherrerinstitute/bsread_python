@@ -22,7 +22,7 @@ def pollStream(pattern, timeout):
         in_stream = Source(channels=ch_names, queue_size=1, receive_timeout=100)
         in_stream.connect()
         in_stream.stream.receiver.socket.setsockopt(zmq.LINGER, 0)
-        #print("Created stream %s\n" % in_stream.stream.address)
+#        print(f"Created stream {in_stream.stream.address}\n")
 
         time_start = time.time()
         try:
@@ -45,21 +45,21 @@ def pollStream(pattern, timeout):
                         break
                 if got_all_data:
                     time_total = time.time() - time_start
-                    print("\nBeam-synchronous data available after %.1f seconds and %d messages" % (time_total, messages))
+                    print(f"\nBeam-synchronous data available after {time_total:.1f} seconds and {messages} messages")
                     break
                 if timeout>0 and (time.time()-time_start)>timeout:
                     print("\nTimeout, unable to retrieve beam-synchronous data!\nMissing channels:")
                     for ch_nm, ch_vl in ch_values.items():
                         if ch_vl is None:
-			    print()
-			    print(ch_nm)
-			    print()
+                            print()
+                            print(ch_nm)
+                            print()
                     break
 
-                #time.sleep(interval)
-                ##in_stream.stream.receiver.flush(True)
-                #in_stream.stream.receiver.socket.disconnect(in_stream.stream.address)
-                #in_stream.stream.receiver.socket.connect(in_stream.stream.address)
+#                time.sleep(interval)
+#                in_stream.stream.receiver.flush(True)
+#                in_stream.stream.receiver.socket.disconnect(in_stream.stream.address)
+#                in_stream.stream.receiver.socket.connect(in_stream.stream.address)
 
         except KeyboardInterrupt:
             pass

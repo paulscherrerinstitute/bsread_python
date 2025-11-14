@@ -102,7 +102,7 @@ def run_tests(n_tests, n_messages, log_level="ERROR"):
     logging.basicConfig(level=log_level)
 
     for index_test in range(n_tests):
-        print("Starting test %d/%d" % (index_test+1, n_tests))
+        print(f"Starting test {index_test+1}/{n_tests}")
 
         start_time = time()
         with Source(channels=channels_to_save, mode=SUB) as input_stream:
@@ -121,7 +121,7 @@ def run_tests(n_tests, n_messages, log_level="ERROR"):
             current_test_receive_times = []
 
             for index_message in range(n_messages):
-                print("Received message %d/%d." % (index_message+1, n_messages))
+                print(f"Received message {index_message+1}/{n_messages}.")
                 start_time = time()
                 input_stream.receive()
                 end_time = time()
@@ -137,7 +137,8 @@ def run_tests(n_tests, n_messages, log_level="ERROR"):
     other_messages_avg_per_test = [sum(x) / len(x) for x in other_messages_request_times]
     other_messages_avg_time = sum(other_messages_avg_per_test) / len(other_messages_avg_per_test)
 
-    print("Test parameters: hostname: %s; n_tests: %d; n_messages: %d;" % (socket.gethostname(), n_tests, n_messages))
+    hostname = socket.gethostname()
+    print(f"Test parameters: hostname: {hostname}; n_tests: {n_tests}; n_messages: {n_messages};")
     print(f"Dispatching layer average time to connect (seconds): {dispatching_layer_avg_time:.3f}")
     print(f"First message average time (seconds): {first_message_avg_time:.3f}")
     print(f"Non-first messages average time (seconds): {other_messages_avg_time:.3f}")

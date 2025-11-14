@@ -31,8 +31,8 @@ class Struct:
         return self.__dict__[val]
 
     def __repr__(self):
-        return "{%s}" % str(", ".join("%s : %s" % (k, repr(v)) for
-                                      (k, v) in self.__dict__.items()))
+        res = ", ".join(f"{k} : {v:r}" for k, v in self.__dict__.items())
+        return "{" + res + "}"
 
 
 class StructSOnly:

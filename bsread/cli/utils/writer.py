@@ -67,20 +67,19 @@ class Writer:
         """
 
         if dataset_group_name not in self.dataset_groups:
-            raise ValueError("Specified dataset_group_name='%s' does not exist.", dataset_group_name)
+            raise ValueError(f'Specified dataset_group_name="{dataset_group_name}" does not exist.')
 
         dataset = next((dataset for dataset in self.dataset_groups[dataset_group_name].datasets
                         if dataset.name == dataset_name), None)
 
         if dataset is None:
-            raise ValueError("Specified dataset_name='%s' does not exist within dataset_group_name='%s'.",
-                             dataset_name, dataset_group_name)
+            raise ValueError(f'Specified dataset_name="{dataset_name}" does not exist within dataset_group_name="{dataset_group_name}".')
 
         if dataset.reference is not None:
             self.compact_dataset(dataset)
 
             for index in range(1, 100):
-                moved_dataset_name = dataset.name + "(%d)" % index
+                moved_dataset_name = f"{dataset.name}({index})"
 
                 # Find first available dataset name.
                 if moved_dataset_name not in self.file:
@@ -88,7 +87,7 @@ class Writer:
                     break
 
             else:
-                raise ValueError("Dataset '%s' replaced more then 100 times. Something is wrong?", dataset_name)
+                raise ValueError(f'Dataset "{dataset_name}" replaced more then 100 times. Something is wrong?')
 
         dataset.reference = self.file.require_dataset(dataset_name, shape, dtype=dtype, maxshape=maxshape, **kwargs)
         dataset.reference.resize(dataset.count + 1000, axis=0)

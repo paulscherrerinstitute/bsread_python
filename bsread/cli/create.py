@@ -18,12 +18,15 @@ runScript $(bsread_DIR)/bsread_sim.cmd, "SYS={prefix},BSREAD_PORT={port}"
     # Print environment variables to be set to access this ioc
     import socket
 
+    hostname = socket.gethostname()
+    port = int(port)
+
     print()
     print("# To start the test ioc use ")
     print("iocsh startup.cmd")
     print()
-    print("# Afterwards the ioc date stream is accessible via tcp://"+socket.gethostname()+":%d" % int(port))
-    print("# The ioc configuration port is accessible via tcp://" + socket.gethostname() + ":%d" % (int(port)+1))
+    print(f"# Afterwards the ioc date stream is accessible via tcp://{hostname}:{port}")
+    print(f"# The ioc configuration port is accessible via tcp://{hostname}:{port+1}")
     print()
     print("# To create and run a test IOC in one go use:")
     print(f'eval "$(bs create {ioc_prefix} {port})"')

@@ -15,7 +15,7 @@ from bsread.data.helpers import get_channel_encoding, get_channel_specs, get_val
 from bsread.data.serialization import compression_provider_mapping
 
 
-printable_compression_provider_mapping = sorted(compression_provider_mapping.keys())
+printable_compression_provider_mapping = list(compression_provider_mapping.keys())
 
 
 class Sender:

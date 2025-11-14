@@ -56,7 +56,7 @@ def print_message_data(message_data):
     print("_"*80)
 
     # Print "global" metadata
-    print("pulse_id: %d" % pulse_id)
+    print(f"pulse_id: {pulse_id}")
     print(f"global_timestamp: {date_g}")
 
 
