@@ -202,11 +202,11 @@ def get_data_policies(base_url=DEFAULT_DISPATCHER_URL):
     return response.json
 
 
-def update_time_to_live(channels, start, end, ttl: datetime.timedelta, asynchronous=True):
-    update_ttl(channels, start, end, ttl, asynchronous=asynchronous)
+def update_time_to_live(channels, start, end, ttl: datetime.timedelta):
+    update_ttl(channels, start, end, ttl)
 
 
-def update_ttl(channels, start, end, ttl: datetime.timedelta, asynchronous=True,
+def update_ttl(channels, start, end, ttl: datetime.timedelta,
                base_url=DEFAULT_DISPATCHER_URL, default_backend=None):
     """
     Update the ttl of specific data:
