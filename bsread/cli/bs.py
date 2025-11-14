@@ -51,7 +51,7 @@ def main():
         quit(f"{command} - Command not found")
 
     try:
-        command_script = importlib.import_module("bsread.cli." + command)
+        command_script = importlib.import_module(f"bsread.cli.{command}")
     except ImportError as e:
         # this catches not only the ImportError from importing the command here
         # but also ImportErrors inside the command

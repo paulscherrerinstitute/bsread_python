@@ -148,7 +148,7 @@ def read_configuration():
 
             configuration.channels.append(Channel(name, modulo=modulo, offset=offset))
         except ValueError:
-            print(("modulo (float) or offset (int) specified in wrong type - ignoring channel: "+name))
+            print(f"modulo (float) or offset (int) specified in wrong type - ignoring channel: {name}")
 
     return configuration.json()
 

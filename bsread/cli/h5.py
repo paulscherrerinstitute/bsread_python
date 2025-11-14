@@ -65,6 +65,7 @@ def process_message_compact(handler, receiver, writer, first_iteration):
 
         # Interpret the data header and add required datasets
         for channel in data_header["channels"]:
+            channel_name = channel["name"]
             channel_type = channel.get("type")
 
             if channel_type and channel_type.lower() == "string":
@@ -72,8 +73,8 @@ def process_message_compact(handler, receiver, writer, first_iteration):
                 maxshape = [None]
                 dtype = h5py.special_dtype(vlen=str)
 
-                writer.add_dataset("/data/" + channel["name"], dataset_group_name="data", shape=shape,
-                                   maxshape=maxshape, dtype=dtype)
+                writer.add_dataset(f"/data/{channel_name}", dataset_group_name="data", dtype=dtype,
+                                   shape=shape, maxshape=maxshape)
 
             else:
 
@@ -81,14 +82,15 @@ def process_message_compact(handler, receiver, writer, first_iteration):
 
                 if "shape" in channel:
                     # H5 is slowest dimension first, but bsread is fastest dimension first.
-                    shape = [1] + channel["shape"][::-1]
-                    maxshape = [None] + channel["shape"][::-1]
+                    channel_shape = channel["shape"][::-1]
+                    shape = [1] + channel_shape
+                    maxshape = [None] + channel_shape
 
-                    print(shape, "  ", maxshape, channel["name"])
-                    writer.add_dataset("/data/" + channel["name"], dataset_group_name="data", shape=shape,
-                                       maxshape=maxshape, dtype=dtype)
+                    print(shape, "  ", maxshape, channel_name)
+                    writer.add_dataset(f"/data/{channel_name}", dataset_group_name="data", dtype=dtype,
+                                       shape=shape, maxshape=maxshape)
                 else:
-                    writer.add_dataset("/data/" + channel["name"], dataset_group_name="data", dtype=dtype)
+                    writer.add_dataset(f"/data/{channel_name}", dataset_group_name="data", dtype=dtype)
 
     data = message_data["data"]
     logger.debug(data)
@@ -121,6 +123,7 @@ def process_message(handler, receiver, writer, first_iteration):
 
         # Interpret the data header and add required datasets
         for channel in data_header["channels"]:
+            channel_name = channel["name"]
             channel_type = channel.get("type")
 
             if channel_type and channel_type.lower() == "string":
@@ -128,8 +131,8 @@ def process_message(handler, receiver, writer, first_iteration):
                 maxshape = [None]
                 dtype = h5py.special_dtype(vlen=str)
 
-                writer.add_dataset("/" + channel["name"] + "/data", dataset_group_name="data", shape=shape,
-                                   maxshape=maxshape, dtype=dtype)
+                writer.add_dataset(f"/{channel_name}/data", dataset_group_name="data", dtype=dtype,
+                                   shape=shape, maxshape=maxshape)
             else:
                 dtype = channel_type_deserializer_mapping[channel_type][0]
 
@@ -138,17 +141,17 @@ def process_message(handler, receiver, writer, first_iteration):
                     shape = [1] + channel["shape"][::-1]
                     maxshape = [None] + channel["shape"][::-1]
 
-                    print(shape, "  ", maxshape, channel["name"])
-                    writer.add_dataset("/" + channel["name"] + "/data", dataset_group_name="data", shape=shape,
-                                       maxshape=maxshape, dtype=dtype)
+                    print(shape, "  ", maxshape, channel_name)
+                    writer.add_dataset(f"/{channel_name}/data", dataset_group_name="data", dtype=dtype,
+                                       shape=shape, maxshape=maxshape)
                 else:
-                    writer.add_dataset("/" + channel["name"] + "/data", dataset_group_name="data", dtype=dtype)
+                    writer.add_dataset(f"/{channel_name}/data", dataset_group_name="data", dtype=dtype)
 
             # Add new datasets (in different dataset groups) for timestamp, timestamp_offset and pulse_ids
-            writer.add_dataset("/" + channel["name"] + "/timestamp", dataset_group_name="timestamp", dtype="i8")
-            writer.add_dataset("/" + channel["name"] + "/timestamp_offset", dataset_group_name="timestamp_offset",
+            writer.add_dataset(f"/{channel_name}/timestamp", dataset_group_name="timestamp", dtype="i8")
+            writer.add_dataset(f"/{channel_name}/timestamp_offset", dataset_group_name="timestamp_offset",
                                dtype="i8")
-            writer.add_dataset("/" + channel["name"] + "/pulse_id", dataset_group_name="pulse_ids", dtype="i8")
+            writer.add_dataset(f"/{channel_name}/pulse_id", dataset_group_name="pulse_ids", dtype="i8")
 
     data = message_data["data"]
     logger.debug(data)
@@ -203,7 +206,7 @@ def main():
         try:
             address = utils.check_and_update_uri(address, default_port=9999)
         except:
-            raise SystemExit("Invalid URI - " + address)
+            raise SystemExit(f"Invalid URI - {address}")
     else:
         # Connect via the dispatching layer
         use_dispatching = True

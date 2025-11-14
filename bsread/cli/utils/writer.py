@@ -18,16 +18,16 @@ class Writer:
     def open_file(self, file_name):
 
         if self.file:
-            logger.info("File "+self.file.name+" is currently open - will close it")
+            logger.info(f"File {self.file.name} is currently open - will close it")
             self.close_file()
 
-        logger.info("Open file "+file_name)
+        logger.info(f"Open file {file_name}")
         self.file = h5py.File(file_name, "w")
 
     def close_file(self):
         self.compact_data()
 
-        logger.info("Close file "+self.file.name)
+        logger.info(f"Close file {self.file.name}")
         self.file.close()
 
     def add_dataset(self, dataset_name, dataset_group_name="data", shape=(1,), dtype="i8", maxshape=(None,), **kwargs):
@@ -107,7 +107,7 @@ class Writer:
         """
 
         if dataset_group_name not in self.dataset_groups:
-            raise RuntimeError("Cannot write data, dataset group "+dataset_group_name+" does not exist")
+            raise RuntimeError(f"Cannot write data, dataset group {dataset_group_name} does not exist")
 
         dataset_group = self.dataset_groups[dataset_group_name]
 
@@ -138,10 +138,11 @@ class Writer:
     def compact_dataset(dataset):
         if dataset:  # Check for dataset stub, i.e. None
             # Compact if count is smaller than actual size
-            if dataset.count < dataset.reference.shape[0]:
-                logger.info("Compact data for dataset " + dataset.name + " from " + str(
-                    dataset.reference.shape[0]) + " to " + str(dataset.count))
-                dataset.reference.resize(dataset.count, axis=0)
+            ds_count = dataset.count
+            ds_shape = dataset.reference.shape[0]
+            if ds_count < ds_shape:
+                logger.info(f"Compact data for dataset {dataset.name} from {ds_shape} to {ds_count}")
+                dataset.reference.resize(ds_count, axis=0)
 
 
 class Dataset:

@@ -28,7 +28,7 @@ def add_input_sources(addresses, base_url=DEFAULT_DISPATCHER_URL):
     headers = {"content-type": "application/json"}
     response = requests.post(base_url+"/sources", data=json.dumps(config), headers=headers)
     if not response.ok:
-        raise Exception("Unable to add input sources - "+response.text)
+        raise Exception(f"Unable to add input sources - {response.text}")
 
 
 def get_input_sources(base_url=DEFAULT_DISPATCHER_URL):
@@ -36,7 +36,7 @@ def get_input_sources(base_url=DEFAULT_DISPATCHER_URL):
     response = requests.get(base_url+"/sources")
 
     if not response.ok:
-        raise Exception("Unable to retrieve current input sources - " + response.text)
+        raise Exception(f"Unable to retrieve current input sources - {response.text}")
 
     return response.json()
 
@@ -46,7 +46,7 @@ def get_output_sources(base_url=DEFAULT_DISPATCHER_URL):
     response = requests.get(base_url+"/streams")
 
     if not response.ok:
-        raise Exception("Unable to retrieve current streams - " + response.text)
+        raise Exception(f"Unable to retrieve current streams - {response.text}")
 
     return response.json()
 
@@ -61,7 +61,7 @@ def get_current_channels(base_url=DEFAULT_DISPATCHER_URL):
     response = requests.get(base_url + "/channels/live")
 
     if not response.ok:
-        raise Exception("Unable to retrieve current incoming channels - " + response.text)
+        raise Exception(f"Unable to retrieve current incoming channels - {response.text}")
 
     channel_list = []
     for backend in response.json():
@@ -82,7 +82,7 @@ def remove_input_sources(addresses, base_url=DEFAULT_DISPATCHER_URL):
     response = requests.delete(base_url+"/sources", data=json.dumps(config), headers=headers)
 
     if not response.ok:
-        raise Exception("Unable to delete input sources - " + response.text)
+        raise Exception(f"Unable to delete input sources - {response.text}")
 
 
 if __name__ == "__main__":
@@ -148,7 +148,7 @@ def request_stream(channels,
     response = requests.post(base_url+"/stream", data=json.dumps(config), headers=headers)
 
     if not response.ok:
-        raise Exception("Unable to request stream for specified channels - " + response.text)
+        raise Exception(f"Unable to request stream for specified channels - {response.text}")
 
     logging.info(f"Stream returned: {response.text}")
 
@@ -189,7 +189,7 @@ def remove_stream(stream, base_url=DEFAULT_DISPATCHER_URL):
     response = requests.delete(base_url+"/stream", data=stream, headers=headers)
 
     if not response.ok:
-        raise Exception("Unable to remove stream " + stream + " - " + response.text)
+        raise Exception(f"Unable to remove stream {stream} - {response.text}")
 
 
 def get_data_policies(base_url=DEFAULT_DISPATCHER_URL):
@@ -197,7 +197,7 @@ def get_data_policies(base_url=DEFAULT_DISPATCHER_URL):
     response = requests.get(base_url + "/data/policies")
 
     if not response.ok:
-        raise Exception("Unable to retrieve current data policies - " + response.text)
+        raise Exception(f"Unable to retrieve current data policies - {response.text}")
 
     return response.json
 
@@ -270,7 +270,7 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta,
     response = requests.post(base_url + "/data/update/ttl", data=json.dumps(update_request), headers=headers)
 
     if not response.ok:
-        raise Exception("Unable to update ttl for specified channels - " + response.text)
+        raise Exception(f"Unable to update ttl for specified channels - {response.text}")
 
     _log_ttl_update_info_to_central_server(channels, start, end, ttl)
 

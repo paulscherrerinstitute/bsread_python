@@ -152,13 +152,13 @@ class TestGenerator(unittest.TestCase):
             channel_type, data_shape = get_channel_specs(value)
 
             # Add normal channel.
-            stream.add_channel("normal_" + name,
+            stream.add_channel(f"normal_{name}",
                                lambda pulse_id: value,
                                {"type": channel_type,
                                 "shape": data_shape})
 
             # # Add compressed channel.
-            stream.add_channel("compressed_" + name,
+            stream.add_channel(f"compressed_{name}",
                                lambda pulse_id: value,
                                {"type": channel_type,
                                 "shape": data_shape,
@@ -189,8 +189,8 @@ class TestGenerator(unittest.TestCase):
 
                 for name, value in values.items():
 
-                    plain_received_value = response.data.data["normal_" + name].value
-                    compressed_received_value = response.data.data["compressed_" + name].value
+                    plain_received_value = response.data.data[f"normal_{name}"].value
+                    compressed_received_value = response.data.data[f"compressed_{name}"].value
 
                     if isinstance(plain_received_value, numpy.ndarray):
                         numpy.testing.assert_array_equal(plain_received_value, compressed_received_value)

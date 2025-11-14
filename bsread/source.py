@@ -55,8 +55,8 @@ class Source:
 
         if host:  # If a host is specified we assume a direct connection to the source
             self.mode = mode if mode else PULL  # Set default mode for point to point to push/pull
-            self.address = "tcp://"+self.host+":"+str(self.port)
-            self.config_address = "tcp://"+self.host+":"+str(self.config_port)
+            self.address = f"tcp://{self.host}:{self.port}"
+            self.config_address = f"tcp://{self.host}:{self.config_port}"
 
             if channels is not None or all_channels:
                 # Reconfigure source for given channels

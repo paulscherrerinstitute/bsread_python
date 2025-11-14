@@ -71,7 +71,7 @@ def pollStream(pattern, timeout):
             pass
 
     except Exception as e:
-        print("Unable to retrieve channels\nReason:\n" + str(e), file=sys.stderr)
+        print(f"Unable to retrieve channels\nReason:\n{e}", file=sys.stderr)
 
 
 def main():
