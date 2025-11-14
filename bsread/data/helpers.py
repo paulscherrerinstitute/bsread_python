@@ -26,14 +26,23 @@ def get_channel_encoding(value):
     return sys.byteorder
 
 
-def get_channel_specs(value, extended=False):
+def get_channel_specs(value):
     """
     Get the bsread channel specification from the value to be sent.
     :param value: Value of which to determine the channel type.
     :raise ValueError if the channel type is unsupported.
-    :param extended: If False (default) return (channel_type, shape);
-                     If True return (dtype, channel_type, serializer, shape)
-    :return: Tuple of (channel_type, shape) or (dtype, channel_type, serializer, shape)
+    :return: Tuple of (channel_type, shape)
+    """
+    _dtype, channel_type, _serializer, shape = get_extended_channel_specs(value)
+    return channel_type, shape
+
+
+def get_extended_channel_specs(value):
+    """
+    Get the bsread channel specification from the value to be sent.
+    :param value: Value of which to determine the channel type.
+    :raise ValueError if the channel type is unsupported.
+    :return: Tuple of (dtype, channel_type, serializer, shape)
     """
     if value is None:
         _logger.debug("Channel value is None - Unable to determine type of channel - default to type=float64 shape=[1]")
@@ -60,7 +69,7 @@ def get_channel_specs(value, extended=False):
         #TODO: avoid converting twice
         value_as_array = numpy.array(value)
 
-        dtype, channel_type, _serializer, shape = get_channel_specs(value_as_array, extended=True)
+        dtype, channel_type, _serializer, shape = get_extended_channel_specs(value_as_array)
         serializer = serialize_python_list
 
         if value_as_array.size > 1e6:
@@ -74,12 +83,7 @@ def get_channel_specs(value, extended=False):
     if callable(shape):
         shape = shape(value)
 
-    # We can return an extended...
-    if extended:
-        return dtype, channel_type, serializer, shape
-    # ...or a simple spec.
-    else:
-        return channel_type, shape
+    return dtype, channel_type, serializer, shape
 
 
 def get_channel_reader(channel):
@@ -174,7 +178,7 @@ def get_value_bytes(value, compression=None, channel_type=None):
         _logger.error(error_message)
         raise ValueError(error_message)
 
-    dtype, _, serializer, _ = get_channel_specs(value, extended=True)
+    dtype, _, serializer, _ = get_extended_channel_specs(value)
     compressor = compression_provider_mapping[compression].pack_data
 
     if channel_type:
