@@ -294,13 +294,13 @@ def _log_ttl_update_info_to_central_server(channels, start, end, ttl):
     log_message = f"{channels} - {start} - {end} - {ttl}"
 
     def send_info(message):
-        HOST = "logstash.psi.ch"
-        PORT = 5678
+        host = "logstash.psi.ch"
+        port = 5678
 
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(0.5)
-            sock.connect((HOST, PORT))
+            sock.connect((host, port))
 
             msg = {"message": message, "tags": ["python", "library"], "operation": "update ttl",
                    "username": getpass.getuser(), "hostname": socket.gethostname()}
