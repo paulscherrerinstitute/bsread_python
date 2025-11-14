@@ -30,12 +30,13 @@ def main():
     # Remove the first arguments (i.e. the script name)
     sys.argv.pop(0)
 
-    # If no sub-command is specified quit
+    # If no sub-command is specified, quit
     if len(sys.argv) < 1:
         quit()
 
+    # If any switch is given or this command itself, quit
     command = sys.argv[0]
-    if command.startswith("-"):
+    if command.startswith("-") or command == "bs":
         quit()
 
     try:
