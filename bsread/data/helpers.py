@@ -108,8 +108,7 @@ def get_serialization_type(channel_type):
 
     # If the type is unknown, NoneProvider should be used.
     if channel_type not in channel_type_deserializer_mapping:
-        _logger.warning("Channel type '%s' not found in mapping. Using %s." %
-                        (channel_type, default_serialization_type))
+        _logger.warning(f'Channel type "{channel_type}" not found in mapping. Using {default_serialization_type}.')
         # If the channel is not supported, always return None.
         return channel_type_deserializer_mapping[default_serialization_type][0]
 

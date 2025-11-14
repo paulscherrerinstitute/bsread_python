@@ -119,7 +119,7 @@ class Message:
         self.format_changed = False
 
     def __str__(self):
-        message = "pulse_id: %d \ndata: " % self.pulse_id + str(self.data)
+        message = f"pulse_id: {self.pulse_id} \ndata: {self.data}"
         return message
 
 

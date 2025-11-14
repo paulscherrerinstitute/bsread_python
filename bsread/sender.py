@@ -15,6 +15,9 @@ from bsread.data.helpers import get_channel_encoding, get_channel_specs, get_val
 from bsread.data.serialization import compression_provider_mapping
 
 
+printable_compression_provider_mapping = sorted(compression_provider_mapping.keys())
+
+
 class Sender:
 
     def __init__(self, queue_size=10, port=9999, address="tcp://*", conn_type=BIND, mode=PUSH, block=True,
@@ -50,12 +53,10 @@ class Sender:
 
         # Raise exception if invalid compression is used.
         if data_header_compression not in compression_provider_mapping:
-            raise ValueError("Data header compression '%s' not supported. Available: %s" %
-                             compression_provider_mapping.keys())
+            raise ValueError(f'Data header compression "{data_header_compression}" not supported. Available: {printable_compression_provider_mapping}')
 
         if data_compression not in compression_provider_mapping:
-            raise ValueError("Data compression '%s' not supported. Available: %s" %
-                             compression_provider_mapping.keys())
+            raise ValueError(f'Data compression "{data_compression}" not supported. Available: {printable_compression_provider_mapping}')
 
         self.data_header_compression = data_header_compression
         self.data_compression = data_compression
@@ -84,7 +85,7 @@ class Sender:
                 self._create_data_header()
 
     def open(self, no_client_action=None, no_client_timeout=None):
-        self.stream = mflow.connect("%s:%d" % (self.address, self.port), queue_size=self.queue_size,
+        self.stream = mflow.connect(f"{self.address}:{self.port}", queue_size=self.queue_size,
                                     conn_type=self.conn_type, mode=self.mode, no_client_action=no_client_action,
                                     no_client_timeout=no_client_timeout, copy=self.copy, send_timeout=self.send_timeout)
 
@@ -170,9 +171,10 @@ class Sender:
                     self._create_data_header()
 
                 elif list_data:
-                    if len(list_data) != len(self.channels):
-                        raise ValueError("Length of passed data (%d) does not correspond to configured channels (%d)"
-                                         % (len(list_data), len(self.channels)))
+                    n_list_data = len(list_data)
+                    n_channels = len(self.channels)
+                    if n_list_data != n_channels:
+                        raise ValueError(f"Length of passed data ({n_list_data}) does not correspond to configured channels ({n_channels})")
 
                     # channels is Ordered dict, assumption is that channels are in the same order
                     for index, name in enumerate(self.channels):
