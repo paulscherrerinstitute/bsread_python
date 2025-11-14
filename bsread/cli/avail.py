@@ -1,7 +1,9 @@
+import re
+
 import click
+
 from bsread import dispatcher
 from bsread.cli import utils
-import re
 
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])

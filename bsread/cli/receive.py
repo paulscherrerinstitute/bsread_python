@@ -1,11 +1,11 @@
 import click
 import mflow
-from bsread.handlers.compact import Handler
-from bsread import dispatcher
-from bsread.cli import utils
 import numpy
 
+from bsread import dispatcher
+from bsread.cli import utils
 from bsread.cli.utils import tables
+from bsread.handlers.compact import Handler
 
 
 def receive(source=None, clear=False, table="auto", queue_size=100, mode=mflow.PULL, channel_filter=None):

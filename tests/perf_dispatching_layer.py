@@ -3,7 +3,8 @@ import logging
 import socket
 from time import time
 
-from bsread import Source, SUB
+from bsread import SUB, Source
+
 
 channels_to_save = [
     "SAROP21-CVME-PBPS2:Lnk9Ch7-BG-DATA",

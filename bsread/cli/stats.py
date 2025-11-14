@@ -1,11 +1,14 @@
-import mflow
-from bsread.handlers.compact import Handler
-import time
 import datetime
 import logging
+import time
+
+import click
+import mflow
+
 from bsread import dispatcher
 from bsread.cli import utils
-import click
+from bsread.handlers.compact import Handler
+
 
 logger = logging.getLogger(__name__)
 

@@ -1,18 +1,18 @@
+import hashlib
+import json
+import logging
+import math
+import struct
+import sys
+import time
+from collections import OrderedDict
 from threading import Lock
 
 import mflow
-import time
-import sys
-import hashlib
-import math
-import struct
-import json
-import logging
-from collections import OrderedDict
 
-from bsread import CONNECT, BIND, PULL, PUSH, PUB, SUB
+from bsread import BIND, CONNECT, PUSH, PULL, PUB, SUB
+from bsread.data.helpers import get_channel_encoding, get_channel_specs, get_value_bytes
 from bsread.data.serialization import compression_provider_mapping
-from bsread.data.helpers import get_channel_specs, get_value_bytes, get_channel_encoding
 
 
 class Sender:

@@ -1,8 +1,8 @@
-import requests
-import json
-
-import logging
 import datetime
+import json
+import logging
+
+import requests
 
 from bsread import DEFAULT_DISPATCHER_URL
 
@@ -285,9 +285,9 @@ def _log_ttl_update_info_to_central_server(channels, start, end, ttl):
     :return:
 
     """
-    import socket
     import getpass
     import json
+    import socket
     from threading import Thread
 
     log_message = "%s - %s - %s - %s" % (channels, start, end, ttl)

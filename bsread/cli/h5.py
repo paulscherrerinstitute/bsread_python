@@ -1,11 +1,14 @@
 #!/usr/bin/env python
+import logging
+
 import h5py
 import mflow
+
+from bsread import BASE_DISPATCHER_URL, dispatcher
+from bsread.cli.utils import writer as wr
 from bsread.data.serialization import channel_type_deserializer_mapping
 from bsread.handlers import extended
-from bsread.cli.utils import writer as wr
-from bsread import dispatcher, BASE_DISPATCHER_URL
-import logging
+
 
 # Logger configuration
 logger = logging.getLogger(__name__)

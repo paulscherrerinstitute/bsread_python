@@ -1,7 +1,8 @@
-import unittest
 import logging
+import unittest
 
 from bsread.data.helpers import get_value_reader
+
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -34,8 +35,7 @@ class TestGenerator(unittest.TestCase):
     #     print('done')
 
     def test_receive_timeout(self):
-        from bsread import Source
-        from bsread import Sender
+        from bsread import Sender, Source
 
         with Source(host="localhost", port=9999, receive_timeout=10) as in_stream:
 
@@ -54,8 +54,7 @@ class TestGenerator(unittest.TestCase):
                 self.assertIsNone(message)
 
     def test_receive_filter(self):
-        from bsread import Source
-        from bsread import Sender
+        from bsread import Sender, Source
 
         def filter_method(m):
             print(m.data.data['two'].value)

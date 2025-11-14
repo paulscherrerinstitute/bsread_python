@@ -1,10 +1,11 @@
+import datetime
+import json
+import logging
 import unittest
 from unittest import mock
-import logging
-import json
 
 import bsread.dispatcher
-import datetime
+
 
 logging.basicConfig(level=logging.DEBUG)  # Changing of debug level needs to be done before the import for unit testing
 

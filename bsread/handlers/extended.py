@@ -1,6 +1,6 @@
 import json
-
 import logging
+
 import numpy
 
 from bsread.data.helpers import get_channel_reader, get_value_reader

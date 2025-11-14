@@ -1,6 +1,7 @@
-import unittest
-import logging
 import datetime
+import logging
+import unittest
+
 
 logging.basicConfig(level=logging.DEBUG)
 

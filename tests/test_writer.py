@@ -1,6 +1,5 @@
-import unittest
-
 import os
+import unittest
 
 import h5py
 

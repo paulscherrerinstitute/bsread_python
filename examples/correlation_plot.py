@@ -1,7 +1,7 @@
-from bsread import Source, SUB
-
 import collections
 import signal
+
+from bsread import SUB, Source
 
 
 receive_more = True

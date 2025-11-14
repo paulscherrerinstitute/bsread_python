@@ -1,12 +1,12 @@
-import unittest
-import numpy
 import logging
+import unittest
+
+import numpy
 
 import bsread.data.helpers
-
+from bsread import Sender, Source
 from bsread.data.helpers import get_channel_specs, get_serialization_type
-from bsread import Sender
-from bsread import Source
+
 
 logging.basicConfig(level=logging.DEBUG)  # Changeing of debug level needs to be done before the import for unit testing
 

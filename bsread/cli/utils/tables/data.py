@@ -1,6 +1,6 @@
-from time import sleep
 from collections import deque
 from threading import Event, Lock, Thread
+from time import sleep
 
 
 META = [

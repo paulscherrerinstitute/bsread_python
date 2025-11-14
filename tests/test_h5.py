@@ -1,9 +1,10 @@
+import os
 import unittest
 from threading import Thread
 
 import h5py
-import os
-from bsread.cli import simulate, h5
+
+from bsread.cli import h5, simulate
 from bsread.cli.h5 import process_message_compact
 from bsread.cli.simulate import simulated_channels
 

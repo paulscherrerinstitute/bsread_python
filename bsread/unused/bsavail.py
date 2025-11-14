@@ -1,10 +1,11 @@
-from bsread import dispatcher
-from bsread.handlers.compact import Handler
 import re
 import sys
 import time
-from bsread import Source
+
 import zmq
+
+from bsread import Source, dispatcher
+
 
 def pollStream(pattern, timeout):
     ch_names  = []

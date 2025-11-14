@@ -2,7 +2,8 @@ from logging import getLogger
 
 import numpy
 
-from bsread.data.compression import NoCompression, BitshuffleLZ4
+from bsread.data.compression import BitshuffleLZ4, NoCompression
+
 
 _logger = getLogger(__name__)
 

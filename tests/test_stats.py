@@ -1,5 +1,6 @@
-import unittest
 import logging
+import unittest
+
 
 logging.basicConfig(level=logging.DEBUG)
 

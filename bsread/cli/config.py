@@ -1,7 +1,9 @@
 import json
-import re
-import zmq
 import logging
+import re
+
+import zmq
+
 
 logger = logging.getLogger(__name__)
 

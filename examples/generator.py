@@ -1,6 +1,7 @@
-from bsread import Sender
 import math
 import struct
+
+from bsread import Sender
 
 
 def waveform(pulse_id):
