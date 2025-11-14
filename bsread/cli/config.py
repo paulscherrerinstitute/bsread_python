@@ -55,16 +55,19 @@ def get_introspect(address):
     print("-------------------")
 
     for channel in response["channels"]:
-        print(("{}".format(channel)))
+        print(channel)
 
     print()
     print("Current Configuration:")
-    print("{:50.50} {} {}".format("Name", "Modulo", "Offset"))
+    print(f"{'Name':50.50} Modulo Offset")
     print("-" * 64)
 
     if response["config"]["channels"]:
         for channel in response["config"]["channels"]:
-            print(("{:50.50} {:6} {:6}".format(channel["name"], channel["modulo"], channel["offset"])))
+	    ch_name = channel["name"]
+	    ch_modulo = channel["modulo"]
+	    ch_offset = channel["offset"]
+            print(f"{ch_name:50.50} {ch_modulo:6} {ch_offset:6}")
     else:
         print("-")
 

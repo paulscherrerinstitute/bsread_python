@@ -138,10 +138,10 @@ def run_tests(n_tests, n_messages, log_level="ERROR"):
     other_messages_avg_time = sum(other_messages_avg_per_test) / len(other_messages_avg_per_test)
 
     print("Test parameters: hostname: %s; n_tests: %d; n_messages: %d;" % (socket.gethostname(), n_tests, n_messages))
-    print("Dispatching layer average time to connect (seconds): %.3f" % dispatching_layer_avg_time)
-    print("First message average time (seconds): %.3f" % first_message_avg_time)
-    print("Non-first messages average time (seconds): %.3f" % other_messages_avg_time)
-    print("Non-first message frequency (Hz): %.3f" % (1 / other_messages_avg_time))
+    print(f"Dispatching layer average time to connect (seconds): {dispatching_layer_avg_time:.3f}")
+    print(f"First message average time (seconds): {first_message_avg_time:.3f}")
+    print(f"Non-first messages average time (seconds): {other_messages_avg_time:.3f}")
+    print(f"Non-first message frequency (Hz): {1 / other_messages_avg_time:.3f}")
 
 
 if __name__ == "__main__":

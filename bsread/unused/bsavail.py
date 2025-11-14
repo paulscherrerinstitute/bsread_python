@@ -51,7 +51,9 @@ def pollStream(pattern, timeout):
                     print("\nTimeout, unable to retrieve beam-synchronous data!\nMissing channels:")
                     for ch_nm, ch_vl in ch_values.items():
                         if ch_vl is None:
-                            print("\n%s\n" % ch_nm)
+			    print()
+			    print(ch_nm)
+			    print()
                     break
 
                 #time.sleep(interval)

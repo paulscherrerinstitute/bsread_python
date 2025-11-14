@@ -107,7 +107,7 @@ class TestGenerator(unittest.TestCase):
                 self.assertTrue(numpy.array_equal(message.data.data["three"].value, test_array))
 
                 # Check is data header hash is different as the second message contains more channels
-                self.assertTrue(hash_m1 != hash_m2, msg="{} {}".format(hash_m1, hash_m2))
+                self.assertTrue(hash_m1 != hash_m2, msg=f"{hash_m1} {hash_m2}")
 
     def test_send_stream(self):
         with Source(host="localhost", port=9999) as in_stream:

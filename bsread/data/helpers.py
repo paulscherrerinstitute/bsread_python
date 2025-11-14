@@ -128,13 +128,13 @@ def get_value_reader(channel_type, compression, shape=None, endianness="", value
     """
     # If the type is unknown, NoneProvider should be used.
     if channel_type not in channel_type_deserializer_mapping:
-        _logger.warning("Channel type '%s' not found in mapping." % channel_type)
+        _logger.warning(f"Channel type '{channel_type}' not found in mapping.")
         # If the channel is not supported, always return None.
         return lambda x: None
 
     # If the compression is unknown, NoneProvider should be used.
     if compression not in compression_provider_mapping:
-        _logger.warning("Channel compression '%s' not supported." % compression)
+        _logger.warning(f"Channel compression '{compression}' not supported.")
         # If the channel compression is not supported, always return None.
         return lambda x: None
 
@@ -175,7 +175,7 @@ def get_value_bytes(value, compression=None, channel_type=None):
     """
 
     if compression not in compression_provider_mapping:
-        error_message = "Channel compression '%s' not supported." % compression
+        error_message = f"Channel compression '{compression}' not supported."
         _logger.error(error_message)
         raise ValueError(error_message)
 

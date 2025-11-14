@@ -32,7 +32,7 @@ class Handler:
             elif "epoch" in header["global_timestamp"]:
                 message.global_timestamp = header["global_timestamp"]["epoch"]
             else:
-                raise RuntimeError("Invalid timestamp format in BSDATA header message {}".format(message))
+                raise RuntimeError(f"Invalid timestamp format in BSDATA header message {message}")
 
             message.global_timestamp_offset = header["global_timestamp"]["ns"]
 

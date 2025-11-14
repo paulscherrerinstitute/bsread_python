@@ -57,7 +57,7 @@ def print_message_data(message_data):
 
     # Print "global" metadata
     print("pulse_id: %d" % pulse_id)
-    print("global_timestamp: %s" % str(date_g))
+    print(f"global_timestamp: {date_g}")
 
 
 def data_consistency_check(message_data, statistics):

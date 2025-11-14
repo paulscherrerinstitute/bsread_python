@@ -32,7 +32,7 @@ def generate_scalars(numof=100):
         output_records.append(template.substitute(num=i))
 
     print(
-        "Generated  {} scalar records. Name format: $(P):TEST_[0-{}]".format(numof, numof))
+        f"Generated  {numof} scalar records. Name format: $(P):TEST_[0-{numof}]")
     return output_records
 
 
@@ -75,7 +75,7 @@ def create_db(input, filename=None):
             len(g_output_records), g_total_payload_size / 1024))
 
     if filename:
-        print("Writing generated records to file {}".format(filename))
+        print(f"Writing generated records to file {filename}")
         f = open(filename, "w+")
         f.write("".join(g_output_records))
         f.close()

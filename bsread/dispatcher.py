@@ -290,7 +290,7 @@ def _log_ttl_update_info_to_central_server(channels, start, end, ttl):
     import socket
     from threading import Thread
 
-    log_message = "%s - %s - %s - %s" % (channels, start, end, ttl)
+    log_message = f"{channels} - {start} - {end} - {ttl}"
 
     def send_info(message):
         HOST = "logstash.psi.ch"

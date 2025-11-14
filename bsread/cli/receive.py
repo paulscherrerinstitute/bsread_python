@@ -12,7 +12,7 @@ def receive(source=None, clear=False, table="auto", queue_size=100, mode=mflow.P
     numpy.set_printoptions(threshold=5)
     numpy.set_printoptions(linewidth=100)
 
-    print("Trying to connect to %s" % source)
+    print(f"Trying to connect to {source}")
 
     receiver = mflow.connect(source, conn_type="connect", queue_size=queue_size, mode=mode)
     handler = Handler()
