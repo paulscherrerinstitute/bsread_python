@@ -23,32 +23,32 @@ class Handler:
             return None
 
         message = Message()
-        message.pulse_id = header['pulse_id']
-        message.hash = header['hash']
+        message.pulse_id = header["pulse_id"]
+        message.hash = header["hash"]
 
-        if 'global_timestamp' in header:
-            if 'sec' in header['global_timestamp']:
-                message.global_timestamp = header['global_timestamp']['sec']
-            elif 'epoch' in header['global_timestamp']:
-                message.global_timestamp = header['global_timestamp']['epoch']
+        if "global_timestamp" in header:
+            if "sec" in header["global_timestamp"]:
+                message.global_timestamp = header["global_timestamp"]["sec"]
+            elif "epoch" in header["global_timestamp"]:
+                message.global_timestamp = header["global_timestamp"]["epoch"]
             else:
                 raise RuntimeError("Invalid timestamp format in BSDATA header message {}".format(message))
 
-            message.global_timestamp_offset = header['global_timestamp']['ns']
+            message.global_timestamp_offset = header["global_timestamp"]["ns"]
 
         # Receiver data header, check if header has changed - and in this case recreate the channel definitions.
-        if receiver.has_more() and (self.data_header_hash != header['hash']):
+        if receiver.has_more() and (self.data_header_hash != header["hash"]):
             # Set the current header hash as the new hash.
-            self.data_header_hash = header['hash']
+            self.data_header_hash = header["hash"]
 
             # Read the data header.
             data_header_bytes = receiver.next()
-            data_header = json.loads(get_value_reader("string", header.get('dh_compression'),
+            data_header = json.loads(get_value_reader("string", header.get("dh_compression"),
                                                       value_name="data_header")(data_header_bytes))
 
             # If a message with ho channel information is received,
             # ignore it and return from function with no data.
-            if not data_header['channels']:
+            if not data_header["channels"]:
                 logging.warning("Received message without channels.")
                 while receiver.has_more():
                     # Drain rest of the messages - if entering this code there is actually something wrong
@@ -57,15 +57,15 @@ class Handler:
                 return message
 
             # TODO: Why do we need to pre-process the message? Source change?
-            for channel in data_header['channels']:
+            for channel in data_header["channels"]:
                 # Define endianness of data
                 # > - big endian
                 # < - little endian (default)
-                channel["encoding"] = '>' if channel.get("encoding") == "big" else '<'
+                channel["encoding"] = ">" if channel.get("encoding") == "big" else "<"
 
             # Construct the channel definitions.
             self.channels_definitions = [(channel["name"], channel["encoding"], get_channel_reader(channel))
-                                         for channel in data_header['channels']]
+                                         for channel in data_header["channels"]]
 
             # Signal that the format has changed.
             message.format_changed = True
@@ -91,7 +91,7 @@ class Handler:
                     raw_timestamp = receiver.next()
 
                     if raw_timestamp:
-                        timestamp_array = numpy.frombuffer(raw_timestamp, dtype=channel_endianness + 'u8')
+                        timestamp_array = numpy.frombuffer(raw_timestamp, dtype=channel_endianness + "u8")
                         channel_value.timestamp = timestamp_array[0]  # Second past epoch
                         channel_value.timestamp_offset = timestamp_array[1]  # Nanoseconds offset
             else:

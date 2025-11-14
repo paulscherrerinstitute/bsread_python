@@ -14,9 +14,9 @@ def pollStream(pattern, timeout):
     try:
         channels = dispatcher.get_current_channels()
         for channel in channels:
-            if re.match(pattern, channel['name']):
-                ch_names.append(channel['name'])
-                ch_values[channel['name']] = None
+            if re.match(pattern, channel["name"]):
+                ch_names.append(channel["name"])
+                ch_values[channel["name"]] = None
 
 
         in_stream = Source(channels=ch_names, queue_size=1, receive_timeout=100)
@@ -69,22 +69,22 @@ def pollStream(pattern, timeout):
             pass
 
     except Exception as e:
-        print('Unable to retrieve channels\nReason:\n' + str(e), file=sys.stderr)
+        print("Unable to retrieve channels\nReason:\n" + str(e), file=sys.stderr)
 
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description='Confirm availability of beam-synchronous channels')
+    parser = argparse.ArgumentParser(description="Confirm availability of beam-synchronous channels")
 
-    parser.add_argument('pattern', type=str, nargs='?', help='Regex channel pattern')
-    parser.add_argument('-t', '--timeout', default=0, type=int, help='Timeout in seconds')
+    parser.add_argument("pattern", type=str, nargs="?", help="Regex channel pattern")
+    parser.add_argument("-t", "--timeout", default=0, type=int, help="Timeout in seconds")
 
     arguments = parser.parse_args()
 
     pattern = arguments.pattern
     if not pattern:
-        pattern = '.*'
-    pattern = '.*' + pattern + '.*'
+        pattern = ".*"
+    pattern = ".*" + pattern + ".*"
 
     pollStream(pattern, arguments.timeout)
 

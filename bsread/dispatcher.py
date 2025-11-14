@@ -21,32 +21,32 @@ def add_input_sources(addresses, base_url=DEFAULT_DISPATCHER_URL):
 
     if isinstance(addresses, list):
         for address in addresses:
-            config['sources'].append({"stream": address})
+            config["sources"].append({"stream": address})
     else:
-        config['sources'].append({"stream": addresses})
+        config["sources"].append({"stream": addresses})
 
-    headers = {'content-type': 'application/json'}
-    response = requests.post(base_url+'/sources', data=json.dumps(config), headers=headers)
+    headers = {"content-type": "application/json"}
+    response = requests.post(base_url+"/sources", data=json.dumps(config), headers=headers)
     if not response.ok:
-        raise Exception('Unable to add input sources - '+response.text)
+        raise Exception("Unable to add input sources - "+response.text)
 
 
 def get_input_sources(base_url=DEFAULT_DISPATCHER_URL):
     """ Returns: Configured input sources of the dispatching layer - e.g. [{"stream":"tcp://localhost:9999"}] """
-    response = requests.get(base_url+'/sources')
+    response = requests.get(base_url+"/sources")
 
     if not response.ok:
-        raise Exception('Unable to retrieve current input sources - ' + response.text)
+        raise Exception("Unable to retrieve current input sources - " + response.text)
 
     return response.json()
 
 
 def get_output_sources(base_url=DEFAULT_DISPATCHER_URL):
     """ Returns: list of current streams"""
-    response = requests.get(base_url+'/streams')
+    response = requests.get(base_url+"/streams")
 
     if not response.ok:
-        raise Exception('Unable to retrieve current streams - ' + response.text)
+        raise Exception("Unable to retrieve current streams - " + response.text)
 
     return response.json()
 
@@ -58,14 +58,14 @@ def get_current_channel_names(base_url=DEFAULT_DISPATCHER_URL):
 
 def get_current_channels(base_url=DEFAULT_DISPATCHER_URL):
     """ Get current incoming channels """
-    response = requests.get(base_url + '/channels/live')
+    response = requests.get(base_url + "/channels/live")
 
     if not response.ok:
-        raise Exception('Unable to retrieve current incoming channels - ' + response.text)
+        raise Exception("Unable to retrieve current incoming channels - " + response.text)
 
     channel_list = []
     for backend in response.json():
-        channel_list.extend(backend['channels'])
+        channel_list.extend(backend["channels"])
     return channel_list
 
 
@@ -76,22 +76,22 @@ def remove_input_sources(addresses, base_url=DEFAULT_DISPATCHER_URL):
     config = {"sources": []}
 
     for address in addresses:
-        config['sources'].append({"stream": address})
+        config["sources"].append({"stream": address})
 
-    headers = {'content-type': 'application/json'}
-    response = requests.delete(base_url+'/sources', data=json.dumps(config), headers=headers)
+    headers = {"content-type": "application/json"}
+    response = requests.delete(base_url+"/sources", data=json.dumps(config), headers=headers)
 
     if not response.ok:
-        raise Exception('Unable to delete input sources - ' + response.text)
+        raise Exception("Unable to delete input sources - " + response.text)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sources = get_input_sources()
     print(sources)
 
 
 def request_stream(channels,
-                   stream_type='pub_sub',
+                   stream_type="pub_sub",
                    inconsistency_resolution="adjust-individual",
                    verify=True,
                    disable_compression = False,
@@ -130,29 +130,29 @@ def request_stream(channels,
 
     for channel in channels:
         if isinstance(channel, str):
-            config['channels'].append({"name": channel})
+            config["channels"].append({"name": channel})
         elif isinstance(channel, dict):
             # Ensure that we send an sane dictionary to the REST API
             channel_config = dict()
-            channel_config['name'] = channel['name']
-            if 'modulo' in channel:
-                channel_config['modulo'] = channel['modulo']
-            if 'offset' in channel:
-                channel_config['offset'] = channel['offset']
+            channel_config["name"] = channel["name"]
+            if "modulo" in channel:
+                channel_config["modulo"] = channel["modulo"]
+            if "offset" in channel:
+                channel_config["offset"] = channel["offset"]
 
-            config['channels'].append(channel_config)
+            config["channels"].append(channel_config)
 
-    logging.info('Request stream: ' + config.__str__())
+    logging.info("Request stream: " + config.__str__())
 
-    headers = {'content-type': 'application/json'}
-    response = requests.post(base_url+'/stream', data=json.dumps(config), headers=headers)
+    headers = {"content-type": "application/json"}
+    response = requests.post(base_url+"/stream", data=json.dumps(config), headers=headers)
 
     if not response.ok:
-        raise Exception('Unable to request stream for specified channels - ' + response.text)
+        raise Exception("Unable to request stream for specified channels - " + response.text)
 
-    logging.info('Stream returned: ' + response.text)
+    logging.info("Stream returned: " + response.text)
 
-    return response.json()['stream']
+    return response.json()["stream"]
     # TODO stream might contain more channels than the channels requested this library should filter these channels out.
 
 
@@ -163,12 +163,12 @@ def request_streams(base_url=DEFAULT_DISPATCHER_URL):
 
     """
 
-    logging.info('Request currently available streams')
+    logging.info("Request currently available streams")
     # Get streams currently requested
-    response = requests.get(base_url+'/streams')
+    response = requests.get(base_url+"/streams")
 
     if not response.ok:
-        raise Exception('Unable to retrieve current streams - ' + response.text)
+        raise Exception("Unable to retrieve current streams - " + response.text)
 
     return response.json()
 
@@ -183,21 +183,21 @@ def remove_stream(stream, base_url=DEFAULT_DISPATCHER_URL):
 
     """
 
-    logging.info('Remove stream: ' + stream)
+    logging.info("Remove stream: " + stream)
 
-    headers = {'content-type': 'text/plain'}
-    response = requests.delete(base_url+'/stream', data=stream, headers=headers)
+    headers = {"content-type": "text/plain"}
+    response = requests.delete(base_url+"/stream", data=stream, headers=headers)
 
     if not response.ok:
-        raise Exception('Unable to remove stream ' + stream + ' - ' + response.text)
+        raise Exception("Unable to remove stream " + stream + " - " + response.text)
 
 
 def get_data_policies(base_url=DEFAULT_DISPATCHER_URL):
-    logging.info('Request currently configured data policies')
-    response = requests.get(base_url + '/data/policies')
+    logging.info("Request currently configured data policies")
+    response = requests.get(base_url + "/data/policies")
 
     if not response.ok:
-        raise Exception('Unable to retrieve current data policies - ' + response.text)
+        raise Exception("Unable to retrieve current data policies - " + response.text)
 
     return response.json
 
@@ -236,7 +236,7 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta, asynchronous=True,
     # New way of doing this can be found here: https://git.psi.ch/sf_daq/ch.psi.daq.dispatcherrest/blob/master/Readme_Unofficial.md#update-ttl
 
     if not isinstance(ttl, datetime.timedelta):
-        raise RuntimeError('Invalid ttl - need to be of type timedelta')
+        raise RuntimeError("Invalid ttl - need to be of type timedelta")
 
     update_request = {
         "ttl": int(ttl.total_seconds()),  # Value need to be a long
@@ -265,11 +265,11 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta, asynchronous=True,
 
     logging.debug("Update TTL Request:\n" + json.dumps(update_request))
 
-    headers = {'content-type': 'application/json'}
-    response = requests.post(base_url + '/data/update/ttl', data=json.dumps(update_request), headers=headers)
+    headers = {"content-type": "application/json"}
+    response = requests.post(base_url + "/data/update/ttl", data=json.dumps(update_request), headers=headers)
 
     if not response.ok:
-        raise Exception('Unable to update ttl for specified channels - ' + response.text)
+        raise Exception("Unable to update ttl for specified channels - " + response.text)
 
     _log_ttl_update_info_to_central_server(channels, start, end, ttl)
 
@@ -293,7 +293,7 @@ def _log_ttl_update_info_to_central_server(channels, start, end, ttl):
     log_message = "%s - %s - %s - %s" % (channels, start, end, ttl)
 
     def send_info(message):
-        HOST = 'logstash.psi.ch'
+        HOST = "logstash.psi.ch"
         PORT = 5678
 
         try:
@@ -301,8 +301,8 @@ def _log_ttl_update_info_to_central_server(channels, start, end, ttl):
             sock.settimeout(0.5)
             sock.connect((HOST, PORT))
 
-            msg = {'message': message, 'tags': ['python', 'library'], 'operation': 'update ttl',
-                   'username': getpass.getuser(), 'hostname': socket.gethostname()}
+            msg = {"message": message, "tags": ["python", "library"], "operation": "update ttl",
+                   "username": getpass.getuser(), "hostname": socket.gethostname()}
             sock.send(json.dumps(msg).encode())
 
         except socket.error:

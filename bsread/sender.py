@@ -68,9 +68,9 @@ class Sender:
             metadata = dict()
 
         if not isinstance(metadata, dict):
-            raise ValueError('metadata needs to be a dictionary')
+            raise ValueError("metadata needs to be a dictionary")
 
-        metadata['name'] = name
+        metadata["name"] = name
 
         if "compression" not in metadata and self.data_compression is not None:
             metadata["compression"] = self.data_compression
@@ -84,15 +84,15 @@ class Sender:
                 self._create_data_header()
 
     def open(self, no_client_action=None, no_client_timeout=None):
-        self.stream = mflow.connect('%s:%d' % (self.address, self.port), queue_size=self.queue_size,
+        self.stream = mflow.connect("%s:%d" % (self.address, self.port), queue_size=self.queue_size,
                                     conn_type=self.conn_type, mode=self.mode, no_client_action=no_client_action,
                                     no_client_timeout=no_client_timeout, copy=self.copy, send_timeout=self.send_timeout)
 
         # Main header
         self.main_header = dict()
-        self.main_header['htype'] = "bsr_m-1.1"
+        self.main_header["htype"] = "bsr_m-1.1"
         if self.data_header_compression:
-            self.main_header['dh_compression'] = self.data_header_compression
+            self.main_header["dh_compression"] = self.data_header_compression
 
         # Data header
         with self.channels_lock:
@@ -106,11 +106,11 @@ class Sender:
 
     def _create_data_header(self):
         self.data_header = dict()
-        self.data_header['htype'] = "bsr_d-1.1"
-        self.data_header['channels'] = [channel.metadata for channel in self.channels.values()]
+        self.data_header["htype"] = "bsr_d-1.1"
+        self.data_header["channels"] = [channel.metadata for channel in self.channels.values()]
 
         self.data_header_bytes = get_value_bytes(json.dumps(self.data_header), self.data_header_compression)
-        self.main_header['hash'] = hashlib.md5(self.data_header_bytes).hexdigest()
+        self.main_header["hash"] = hashlib.md5(self.data_header_bytes).hexdigest()
 
     def close(self):
         self.stream.disconnect()
@@ -119,12 +119,12 @@ class Sender:
     def add_channel_from_value(self, name, value):
         metadata = dict()
 
-        metadata['name'] = name
-        metadata['type'], metadata['shape'] = get_channel_specs(value)
-        metadata['encoding'] = get_channel_encoding(value)
+        metadata["name"] = name
+        metadata["type"], metadata["shape"] = get_channel_specs(value)
+        metadata["encoding"] = get_channel_encoding(value)
 
         if self.data_compression is not None:
-            metadata['compression'] = self.data_compression
+            metadata["compression"] = self.data_compression
 
         self.channels[name] = Channel(None, metadata)
 
@@ -184,12 +184,12 @@ class Sender:
             if self.pre_function:
                 self.pre_function()
 
-            self.main_header['pulse_id'] = self.pulse_id
-            self.main_header['global_timestamp'] = {"sec": current_timestamp_epoch, "ns": current_timestamp_ns}
+            self.main_header["pulse_id"] = self.pulse_id
+            self.main_header["global_timestamp"] = {"sec": current_timestamp_epoch, "ns": current_timestamp_ns}
 
             # Send headers
             # Main header
-            self.stream.send(json.dumps(self.main_header).encode('utf-8'), send_more=True, block=self.block)
+            self.stream.send(json.dumps(self.main_header).encode("utf-8"), send_more=True, block=self.block)
             # Data header
             self.stream.send(self.data_header_bytes, send_more=True, block=self.block)
 
@@ -204,19 +204,19 @@ class Sender:
                     value = channel.function(self.pulse_id)
 
                 if value is None:
-                    self.stream.send(b'', send_more=True, block=self.block)
-                    self.stream.send(b'', send_more=(count > 0), block=self.block)
+                    self.stream.send(b"", send_more=True, block=self.block)
+                    self.stream.send(b"", send_more=(count > 0), block=self.block)
                 else:
                     self.stream.send(get_value_bytes(value, channel.metadata.get("compression"),
                                                      channel_type=channel.metadata.get("type")),
                                      send_more=True, block=self.block)
 
-                    endianness = '>' if channel.metadata.get("encoding") == "big" else '<'
+                    endianness = ">" if channel.metadata.get("encoding") == "big" else "<"
 
                     # TODO: This timestamps should be individual per channel.
-                    self.stream.send(struct.pack(endianness + 'q',
+                    self.stream.send(struct.pack(endianness + "q",
                                                  current_timestamp_epoch) +
-                                     struct.pack(endianness + 'q',
+                                     struct.pack(endianness + "q",
                                                  current_timestamp_ns), send_more=(count > 0), block=self.block)
                 count -= 1
                 counter += 1
@@ -264,8 +264,8 @@ class Channel:
         self.metadata = metadata
 
         # metadata needs to contain: name, type (default: float64), encoding (default: little), shape (default [1])
-        if 'encoding' not in self.metadata:
-            self.metadata['encoding'] = sys.byteorder
+        if "encoding" not in self.metadata:
+            self.metadata["encoding"] = sys.byteorder
 
 
 

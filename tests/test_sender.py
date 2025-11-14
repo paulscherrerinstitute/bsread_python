@@ -12,11 +12,11 @@ logging.basicConfig(level=logging.DEBUG)  # Changeing of debug level needs to be
 
 
 def pre():
-    logging.info('pre')
+    logging.info("pre")
 
 
 def post():
-    logging.info('post')
+    logging.info("post")
 
 
 class TestGenerator(unittest.TestCase):
@@ -385,5 +385,5 @@ class TestGenerator(unittest.TestCase):
 
 
 
-if __name__ == '__main_ _':
+if __name__ == "__main_ _":
     unittest.main()

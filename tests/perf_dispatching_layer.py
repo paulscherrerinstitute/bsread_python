@@ -145,7 +145,7 @@ def run_tests(n_tests, n_messages, log_level="ERROR"):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Test dispatching layer performance.')
+    parser = argparse.ArgumentParser(description="Test dispatching layer performance.")
 
     parser.add_argument("n_tests", type=int, help="Number of test iterations.")
     parser.add_argument("n_messages", type=int, help="How many messages to receive in each iteration.")

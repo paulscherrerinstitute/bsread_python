@@ -85,18 +85,18 @@ compression_provider_mapping = {
 channel_type_deserializer_mapping = {
     # Default value if no channel_type specified.
     None: ("f8", deserialize_number),
-    'int8': ('i1', deserialize_number),
-    'uint8': ('u1', deserialize_number),
-    'int16': ('i2', deserialize_number),
-    'uint16': ('u2', deserialize_number),
-    'int32': ('i4', deserialize_number),
-    'uint32': ('u4', deserialize_number),
-    'int64': ('i8', deserialize_number),
-    'uint64': ('u8', deserialize_number),
-    'float32': ('f4', deserialize_number),
-    'float64': ('f8', deserialize_number),
-    'string': ('u1', deserialize_string),
-    'bool': ('?', deserialize_number)
+    "int8": ("i1", deserialize_number),
+    "uint8": ("u1", deserialize_number),
+    "int16": ("i2", deserialize_number),
+    "uint16": ("u2", deserialize_number),
+    "int32": ("i4", deserialize_number),
+    "uint32": ("u4", deserialize_number),
+    "int64": ("i8", deserialize_number),
+    "uint64": ("u8", deserialize_number),
+    "float32": ("f4", deserialize_number),
+    "float64": ("f8", deserialize_number),
+    "string": ("u1", deserialize_string),
+    "bool": ("?", deserialize_number)
 }
 
 
@@ -105,19 +105,19 @@ channel_type_deserializer_mapping = {
 channel_type_scalar_serializer_mapping = {
     # Default value if no channel_type specified.
     type(None): ("f8", "float64", serialize_python_number, [1]),
-    float: ('f8', "float64", serialize_python_number, [1]),
-    int: ('i8', "int64", serialize_python_number, [1]),
-    str: ('u1', "string", serialize_python_string, [1]),
-    numpy.int8: ('i1', 'int8', serialize_numpy_scalar, [1]),
-    numpy.uint8: ('u1', 'uint8', serialize_numpy_scalar, [1]),
-    numpy.int16: ('i2', 'int16', serialize_numpy_scalar, [1]),
-    numpy.uint16: ('u2', 'uint16', serialize_numpy_scalar, [1]),
-    numpy.int32: ('i4', 'int32', serialize_numpy_scalar, [1]),
-    numpy.uint32: ('u4', 'uint32', serialize_numpy_scalar, [1]),
-    numpy.int64: ('i8', 'int64', serialize_numpy_scalar, [1]),
-    numpy.uint64: ('u8', 'uint64', serialize_numpy_scalar, [1]),
-    numpy.float32: ('f4', 'float32', serialize_numpy_scalar, [1]),
-    numpy.float64: ('f8', 'float64', serialize_numpy_scalar, [1]),
-    bool: ('?', 'bool', serialize_python_number, [1]),
-    numpy.bool_: ('?', 'bool', serialize_numpy_scalar, [1])
+    float: ("f8", "float64", serialize_python_number, [1]),
+    int: ("i8", "int64", serialize_python_number, [1]),
+    str: ("u1", "string", serialize_python_string, [1]),
+    numpy.int8: ("i1", "int8", serialize_numpy_scalar, [1]),
+    numpy.uint8: ("u1", "uint8", serialize_numpy_scalar, [1]),
+    numpy.int16: ("i2", "int16", serialize_numpy_scalar, [1]),
+    numpy.uint16: ("u2", "uint16", serialize_numpy_scalar, [1]),
+    numpy.int32: ("i4", "int32", serialize_numpy_scalar, [1]),
+    numpy.uint32: ("u4", "uint32", serialize_numpy_scalar, [1]),
+    numpy.int64: ("i8", "int64", serialize_numpy_scalar, [1]),
+    numpy.uint64: ("u8", "uint64", serialize_numpy_scalar, [1]),
+    numpy.float32: ("f4", "float32", serialize_numpy_scalar, [1]),
+    numpy.float64: ("f8", "float64", serialize_numpy_scalar, [1]),
+    bool: ("?", "bool", serialize_python_number, [1]),
+    numpy.bool_: ("?", "bool", serialize_numpy_scalar, [1])
 }

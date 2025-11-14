@@ -37,7 +37,7 @@ def print_message_data(message_data):
     try:
         date_g = datetime.datetime.fromtimestamp(global_timestamp + float(global_timestamp_ns)/1e9)
     except:
-        date_g = 'None'
+        date_g = "None"
 
     # Print values
     for i, c in message_data.data.items():
@@ -49,7 +49,7 @@ def print_message_data(message_data):
         try:
             date = datetime.datetime.fromtimestamp(timestamp + float(timestamp_ns)/1e9)
         except:
-            date = 'None'
+            date = "None"
 
         print(message_print_format.format(channel_name, str(channel_value), str(date)))
 
@@ -118,7 +118,7 @@ def stats(channels, source, mode, clear, queue_size, base_url, backend, logfile,
     base_url = utils.get_base_url(base_url, backend)
 
     use_dispatching = False
-    mode = mflow.SUB if mode == 'sub' else mflow.PULL
+    mode = mflow.SUB if mode == "sub" else mflow.PULL
 
     if not channels and source is None:
         raise click.BadArgumentUsage("No source or channels are specified")
@@ -192,7 +192,7 @@ def stats(channels, source, mode, clear, queue_size, base_url, backend, logfile,
         print() # print ^C on its own line
     finally:
         if use_dispatching:
-            print('Closing stream')
+            print("Closing stream")
             dispatcher.remove_stream(source, base_url=base_url)
 
 

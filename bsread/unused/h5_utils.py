@@ -31,7 +31,7 @@ class Struct:
         return self.__dict__[val]
 
     def __repr__(self):
-        return '{%s}' % str(', '.join('%s : %s' % (k, repr(v)) for
+        return "{%s}" % str(", ".join("%s : %s" % (k, repr(v)) for
                                       (k, v) in self.__dict__.items()))
 
 
@@ -45,7 +45,7 @@ class StructSOnly:
 
         for k, v in obj.items():
             if not isinstance(v, h5py._hl.dataset.Dataset):
-                if not re.match('^tag_.*', k):  # Exclude tagged detector images
+                if not re.match("^tag_.*", k):  # Exclude tagged detector images
                     setattr(self, k, StructSOnly(v))
             else:
                 setattr(self, k, str(v.dtype))
@@ -57,7 +57,7 @@ class StructSOnly:
 def print_structure(x, level):
     for a, b in x.__dict__.items():
         if isinstance(b, StructSOnly):
-            print(' ' * level, a)
+            print(" " * level, a)
             print_structure(b, level + 4)
         else:
-            print(' ' * level, a, '[' + b + ']')
+            print(" " * level, a, "[" + b + "]")

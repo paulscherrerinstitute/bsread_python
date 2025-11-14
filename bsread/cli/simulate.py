@@ -16,16 +16,16 @@ def image(pulse_id):
     return image
 
 
-simulated_channels = [{"name": 'ABC', "function": lambda x: x, "metadata": {'type': 'int32'}},
-                      {"name": 'ABCD', "function": lambda x: x * 10.0},
-                      {"name": 'ABCDF', "function": lambda x: x * 100.0},
-                      {"name": 'XYZ', "function": lambda x: x * 200.0},
-                      {"name": 'XYZW', "function": lambda x: 'hello' * (x + 1), "metadata": {'type': 'string'}},
-                      {"name": 'WWW', "function": lambda x: [1.0, 2.0, 3.0, 4.0], "metadata":
-                          {'type': 'float64', 'shape': [4]}
+simulated_channels = [{"name": "ABC", "function": lambda x: x, "metadata": {"type": "int32"}},
+                      {"name": "ABCD", "function": lambda x: x * 10.0},
+                      {"name": "ABCDF", "function": lambda x: x * 100.0},
+                      {"name": "XYZ", "function": lambda x: x * 200.0},
+                      {"name": "XYZW", "function": lambda x: "hello" * (x + 1), "metadata": {"type": "string"}},
+                      {"name": "WWW", "function": lambda x: [1.0, 2.0, 3.0, 4.0], "metadata":
+                          {"type": "float64", "shape": [4]}
                        },
-                      {"name": 'WAVE', "function": waveform, "metadata": {'shape': [30]}},
-                      {"name": 'IMAGE', "function": image, "metadata": {'shape': [4, 2]}}]
+                      {"name": "WAVE", "function": waveform, "metadata": {"shape": [30]}},
+                      {"name": "IMAGE", "function": image, "metadata": {"shape": [4, 2]}}]
 
 
 def generate_stream(port, n_messages=None, interval=0.01):
@@ -42,11 +42,11 @@ def generate_stream(port, n_messages=None, interval=0.01):
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description='bsread simulation utility')
-    parser.add_argument('-p', '--port', type=int, default='9999', help='Port number of stream')
-    parser.add_argument('-n', '--n_messages', type=int, default=None, help="Number of messages to generate."
+    parser = argparse.ArgumentParser(description="bsread simulation utility")
+    parser.add_argument("-p", "--port", type=int, default="9999", help="Port number of stream")
+    parser.add_argument("-n", "--n_messages", type=int, default=None, help="Number of messages to generate."
                                                                            "None means infinity.")
-    parser.add_argument('-i', '--interval', type=float, default=0.01, help="Interval in seconds between messages."
+    parser.add_argument("-i", "--interval", type=float, default=0.01, help="Interval in seconds between messages."
                                                                            "Default: 0.01 second.")
 
     arguments = parser.parse_args()

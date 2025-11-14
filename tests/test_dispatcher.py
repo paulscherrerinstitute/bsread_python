@@ -11,11 +11,11 @@ logging.basicConfig(level=logging.DEBUG)  # Changing of debug level needs to be 
 
 
 def pre():
-    logging.info('pre')
+    logging.info("pre")
 
 
 def post():
-    logging.info('post')
+    logging.info("post")
 
 
 def mocked_requests_post(*args, **kwargs):
@@ -28,7 +28,7 @@ def mocked_requests_post(*args, **kwargs):
 
 class TestDispatcher(unittest.TestCase):
 
-    @mock.patch('bsread.dispatcher.requests.post', side_effect=mocked_requests_post)
+    @mock.patch("bsread.dispatcher.requests.post", side_effect=mocked_requests_post)
     def test_update_ttl(self, mock_post):
 
         ttl = datetime.timedelta(weeks=520)  # keep data for ~10 years
@@ -69,5 +69,5 @@ class TestDispatcher(unittest.TestCase):
         self.assertEqual(requested_channels[0]["backend"], "sf-test")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

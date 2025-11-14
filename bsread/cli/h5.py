@@ -13,8 +13,8 @@ from bsread.handlers import extended
 
 # Logger configuration
 logger = logging.getLogger(__name__)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(name)s - %(message)s')
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(name)s - %(message)s")
 
 
 def receive(source, file_name, queue_size=100, mode=mflow.PULL, n_messages=None, message_processor=None):
@@ -53,48 +53,48 @@ def process_message_compact(handler, receiver, writer, first_iteration):
 
     message_data = message_data.data
 
-    if message_data['header']['hash'] == '':
-        print('SKIPPING FIRST MESSAGE !!!!')
+    if message_data["header"]["hash"] == "":
+        print("SKIPPING FIRST MESSAGE !!!!")
         return False
 
     if first_iteration and "data_header" in message_data:
-        data_header = message_data['data_header']
+        data_header = message_data["data_header"]
         print("Data Header: ", data_header)
 
-        writer.add_dataset('/pulse_id', dataset_group_name='pulse_id_array', dtype='i8')
+        writer.add_dataset("/pulse_id", dataset_group_name="pulse_id_array", dtype="i8")
 
         # Interpret the data header and add required datasets
-        for channel in data_header['channels']:
-            channel_type = channel.get('type')
+        for channel in data_header["channels"]:
+            channel_type = channel.get("type")
 
             if channel_type and channel_type.lower() == "string":
                 shape = [1]
                 maxshape = [None]
                 dtype = h5py.special_dtype(vlen=str)
 
-                writer.add_dataset('/data/' + channel['name'], dataset_group_name='data', shape=shape,
+                writer.add_dataset("/data/" + channel["name"], dataset_group_name="data", shape=shape,
                                    maxshape=maxshape, dtype=dtype)
 
             else:
 
                 dtype = channel_type_deserializer_mapping[channel_type][0]
 
-                if 'shape' in channel:
+                if "shape" in channel:
                     # H5 is slowest dimension first, but bsread is fastest dimension first.
-                    shape = [1] + channel['shape'][::-1]
-                    maxshape = [None] + channel['shape'][::-1]
+                    shape = [1] + channel["shape"][::-1]
+                    maxshape = [None] + channel["shape"][::-1]
 
-                    print(shape, "  ", maxshape, channel['name'])
-                    writer.add_dataset('/data/' + channel['name'], dataset_group_name='data', shape=shape,
+                    print(shape, "  ", maxshape, channel["name"])
+                    writer.add_dataset("/data/" + channel["name"], dataset_group_name="data", shape=shape,
                                        maxshape=maxshape, dtype=dtype)
                 else:
-                    writer.add_dataset('/data/' + channel['name'], dataset_group_name='data', dtype=dtype)
+                    writer.add_dataset("/data/" + channel["name"], dataset_group_name="data", dtype=dtype)
 
-    data = message_data['data']
+    data = message_data["data"]
     logger.debug(data)
 
-    writer.write(data, dataset_group_name='data')
-    writer.write(message_data['pulse_id_array'], dataset_group_name='pulse_id_array')
+    writer.write(data, dataset_group_name="data")
+    writer.write(message_data["pulse_id_array"], dataset_group_name="pulse_id_array")
 
     return True
 
@@ -109,76 +109,76 @@ def process_message(handler, receiver, writer, first_iteration):
 
     message_data = message_data.data
 
-    if message_data['header']['hash'] == '':
-        print('SKIPPING FIRST MESSAGE !!!!')
+    if message_data["header"]["hash"] == "":
+        print("SKIPPING FIRST MESSAGE !!!!")
         return False
 
     if first_iteration and "data_header" in message_data:
-        data_header = message_data['data_header']
+        data_header = message_data["data_header"]
         print("Data Header: ", data_header)
 
-        writer.add_dataset('/pulse_id', dataset_group_name='pulse_id_array', dtype='i8')
+        writer.add_dataset("/pulse_id", dataset_group_name="pulse_id_array", dtype="i8")
 
         # Interpret the data header and add required datasets
-        for channel in data_header['channels']:
-            channel_type = channel.get('type')
+        for channel in data_header["channels"]:
+            channel_type = channel.get("type")
 
             if channel_type and channel_type.lower() == "string":
                 shape = [1]
                 maxshape = [None]
                 dtype = h5py.special_dtype(vlen=str)
 
-                writer.add_dataset('/' + channel['name'] + '/data', dataset_group_name='data', shape=shape,
+                writer.add_dataset("/" + channel["name"] + "/data", dataset_group_name="data", shape=shape,
                                    maxshape=maxshape, dtype=dtype)
             else:
                 dtype = channel_type_deserializer_mapping[channel_type][0]
 
-                if 'shape' in channel:
+                if "shape" in channel:
                     # H5 is slowest dimension first, but bsread is fastest dimension first.
-                    shape = [1] + channel['shape'][::-1]
-                    maxshape = [None] + channel['shape'][::-1]
+                    shape = [1] + channel["shape"][::-1]
+                    maxshape = [None] + channel["shape"][::-1]
 
-                    print(shape, "  ", maxshape, channel['name'])
-                    writer.add_dataset('/' + channel['name'] + '/data', dataset_group_name='data', shape=shape,
+                    print(shape, "  ", maxshape, channel["name"])
+                    writer.add_dataset("/" + channel["name"] + "/data", dataset_group_name="data", shape=shape,
                                        maxshape=maxshape, dtype=dtype)
                 else:
-                    writer.add_dataset('/' + channel['name'] + '/data', dataset_group_name='data', dtype=dtype)
+                    writer.add_dataset("/" + channel["name"] + "/data", dataset_group_name="data", dtype=dtype)
 
             # Add new datasets (in different dataset groups) for timestamp, timestamp_offset and pulse_ids
-            writer.add_dataset('/' + channel['name'] + '/timestamp', dataset_group_name='timestamp', dtype='i8')
-            writer.add_dataset('/' + channel['name'] + '/timestamp_offset', dataset_group_name='timestamp_offset',
-                               dtype='i8')
-            writer.add_dataset('/' + channel['name'] + '/pulse_id', dataset_group_name='pulse_ids', dtype='i8')
+            writer.add_dataset("/" + channel["name"] + "/timestamp", dataset_group_name="timestamp", dtype="i8")
+            writer.add_dataset("/" + channel["name"] + "/timestamp_offset", dataset_group_name="timestamp_offset",
+                               dtype="i8")
+            writer.add_dataset("/" + channel["name"] + "/pulse_id", dataset_group_name="pulse_ids", dtype="i8")
 
-    data = message_data['data']
+    data = message_data["data"]
     logger.debug(data)
 
-    writer.write(message_data['pulse_id_array'], dataset_group_name='pulse_id_array')
+    writer.write(message_data["pulse_id_array"], dataset_group_name="pulse_id_array")
 
-    writer.write(data, dataset_group_name='data')
-    writer.write(message_data['timestamp'], dataset_group_name='timestamp')
-    writer.write(message_data['timestamp_offset'], dataset_group_name='timestamp_offset')
-    writer.write(message_data['pulse_ids'], dataset_group_name='pulse_ids')
+    writer.write(data, dataset_group_name="data")
+    writer.write(message_data["timestamp"], dataset_group_name="timestamp")
+    writer.write(message_data["timestamp_offset"], dataset_group_name="timestamp_offset")
+    writer.write(message_data["pulse_ids"], dataset_group_name="pulse_ids")
 
     return True
 
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description='BSREAD hdf5 utility')
+    parser = argparse.ArgumentParser(description="BSREAD hdf5 utility")
 
-    parser.add_argument('-s', '--source', type=str, default=None,
+    parser.add_argument("-s", "--source", type=str, default=None,
                         help='Source address - format "tcp://<address>:<port>"')
-    parser.add_argument('--backend', type=str, default='sf-databuffer',
-                        help='dispatcher backend from which to receive the stream from')
-    parser.add_argument('file', type=str, help='Destination file')
-    parser.add_argument('channel', type=str, nargs='*',
-                        help='Channels to retrieve (from dispatching layer)')
-    parser.add_argument('-m', '--mode', default='pull', choices=['pull', 'sub'], type=str,
-                        help='Communication mode - either pull or sub (default depends on the use of -s option)')
-    parser.add_argument('-q', '--queue', default=100, type=int,
-                        help='Queue size of incoming queue (default = 100)')
-    parser.add_argument('-n', '--n_messages', type=int, default=None, help="Number of messages to receive."
+    parser.add_argument("--backend", type=str, default="sf-databuffer",
+                        help="dispatcher backend from which to receive the stream from")
+    parser.add_argument("file", type=str, help="Destination file")
+    parser.add_argument("channel", type=str, nargs="*",
+                        help="Channels to retrieve (from dispatching layer)")
+    parser.add_argument("-m", "--mode", default="pull", choices=["pull", "sub"], type=str,
+                        help="Communication mode - either pull or sub (default depends on the use of -s option)")
+    parser.add_argument("-q", "--queue", default=100, type=int,
+                        help="Queue size of incoming queue (default = 100)")
+    parser.add_argument("-n", "--n_messages", type=int, default=None, help="Number of messages to receive."
                                                                            "None means infinity.")
     parser.add_argument("--compact", dest="compact_format", action="store_true", help="Use the compact version of the "
                                                                                       "file format.")
@@ -191,11 +191,11 @@ def main():
     queue_size = arguments.queue
     backend = arguments.backend
 
-    mode = mflow.SUB if arguments.mode == 'sub' else mflow.PULL
+    mode = mflow.SUB if arguments.mode == "sub" else mflow.PULL
     use_dispatching = False
 
     if not channels and not address:
-        print('\nNo source nor channels are specified - exiting!\n')
+        print("\nNo source nor channels are specified - exiting!\n")
         parser.print_help()
         exit(-1)
 
@@ -203,7 +203,7 @@ def main():
         try:
             address = utils.check_and_update_uri(address, default_port=9999)
         except:
-            raise SystemExit('Invalid URI - ' + address)
+            raise SystemExit("Invalid URI - " + address)
     else:
         # Connect via the dispatching layer
         use_dispatching = True
@@ -226,7 +226,7 @@ def main():
         print() # print ^C on its own line
     finally:
         if use_dispatching:
-            print('Closing stream')
+            print("Closing stream")
             dispatcher.remove_stream(address)
 
 

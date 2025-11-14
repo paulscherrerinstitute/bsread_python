@@ -6,11 +6,11 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def pre():
-    logging.info('pre')
+    logging.info("pre")
 
 
 def post():
-    logging.info('post')
+    logging.info("post")
 
 
 class TestGenerator(unittest.TestCase):
@@ -72,5 +72,5 @@ class TestGenerator(unittest.TestCase):
         self.assertTrue(statistics.reverted_pulse_ids == 1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -84,11 +84,11 @@ def create_db(input, filename=None):
 g_output_records = []
 g_total_payload_size = 0
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='Generate a variable number of scalar records')
+        description="Generate a variable number of scalar records")
     parser.add_argument(
-        'input', type=str, help='generator strings (e.g. "scalar(10);waveform(10,1024)"')
-    parser.add_argument('-filename', '-f', type=str, help='output filename')
+        "input", type=str, help='generator strings (e.g. "scalar(10);waveform(10,1024)"')
+    parser.add_argument("-filename", "-f", type=str, help="output filename")
     args = parser.parse_args()
     create_db(args.input, args.filename)

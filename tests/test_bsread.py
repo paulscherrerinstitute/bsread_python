@@ -8,11 +8,11 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def pre():
-    logging.info('pre')
+    logging.info("pre")
 
 
 def post():
-    logging.info('post')
+    logging.info("post")
 
 
 class TestGenerator(unittest.TestCase):
@@ -49,7 +49,7 @@ class TestGenerator(unittest.TestCase):
                 # If timeout is not working - this will hang forever - and therefore the test will fail
                 message = in_stream.receive()
                 if message:
-                    print(message.data.data['one'].value)
+                    print(message.data.data["one"].value)
 
                 self.assertIsNone(message)
 
@@ -57,8 +57,8 @@ class TestGenerator(unittest.TestCase):
         from bsread import Sender, Source
 
         def filter_method(m):
-            print(m.data.data['two'].value)
-            return m.data.data['two'].value <= 4
+            print(m.data.data["two"].value)
+            return m.data.data["two"].value <= 4
 
         with Source(host="localhost", port=9999) as in_stream:
 
@@ -72,9 +72,9 @@ class TestGenerator(unittest.TestCase):
 
                 # Receive and check data
                 # If timeout is not working - this will hang forever - and therefore the test will fail
-                message = in_stream.receive(filter=lambda m: m.data.data['two'].value <= 4)
+                message = in_stream.receive(filter=lambda m: m.data.data["two"].value <= 4)
                 # message = in_stream.receive(filter=filter_method)
-                print(message.data.data['one'].value)
+                print(message.data.data["one"].value)
                 # message = in_stream.receive(filter=filter_method)
 
     def test_failed_conversion(self):
@@ -85,12 +85,12 @@ class TestGenerator(unittest.TestCase):
 
         value_reader = get_value_reader(channel_type, compression, shape=None, endianness=endianness)
 
-        result = value_reader(value.to_bytes(4, byteorder='little'))
+        result = value_reader(value.to_bytes(4, byteorder="little"))
         self.assertEqual(value, result)
 
-        result = value_reader(value.to_bytes(3, byteorder='little'))
+        result = value_reader(value.to_bytes(3, byteorder="little"))
         self.assertEqual(None, result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

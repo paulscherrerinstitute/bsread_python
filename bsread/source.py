@@ -55,8 +55,8 @@ class Source:
 
         if host:  # If a host is specified we assume a direct connection to the source
             self.mode = mode if mode else PULL  # Set default mode for point to point to push/pull
-            self.address = 'tcp://'+self.host+':'+str(self.port)
-            self.config_address = 'tcp://'+self.host+':'+str(self.config_port)
+            self.address = "tcp://"+self.host+":"+str(self.port)
+            self.config_address = "tcp://"+self.host+":"+str(self.config_port)
 
             if channels is not None or all_channels:
                 # Reconfigure source for given channels
@@ -74,11 +74,11 @@ class Source:
                             elif isinstance(item, dict):
                                 # Ensure that we send an sane dictionary to the REST API
                                 channel_config = dict()
-                                channel_config['name'] = item['name']
-                                if 'modulo' in item:
-                                    channel_config['modulo'] = item['modulo']
-                                if 'offset' in item:
-                                    channel_config['offset'] = item['offset']
+                                channel_config["name"] = item["name"]
+                                if "modulo" in item:
+                                    channel_config["modulo"] = item["modulo"]
+                                if "offset" in item:
+                                    channel_config["offset"] = item["offset"]
 
                                 channel_list.append(channel_config)
                         request = {"channels": channel_list}
@@ -93,13 +93,13 @@ class Source:
             self.use_dispatching_layer = True
 
             if channels is None:
-                raise Exception('Channels need to be specified while connecting to the dispatching layer')
+                raise Exception("Channels need to be specified while connecting to the dispatching layer")
 
             # Request stream from dispatching layer
             from . import dispatcher
             dispatcher.base_url = self.dispatcher_url
 
-            stream_type = 'push_pull' if self.mode == PULL else 'pub_sub'
+            stream_type = "push_pull" if self.mode == PULL else "pub_sub"
             self.address = dispatcher.request_stream(channels,
                                                      stream_type=stream_type,
                                                      verify=dispatcher_verify_request,

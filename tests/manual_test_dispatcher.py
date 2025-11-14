@@ -7,11 +7,11 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def pre():
-    logging.info('pre')
+    logging.info("pre")
 
 
 def post():
-    logging.info('post')
+    logging.info("post")
 
 
 class TestDispatcher(unittest.TestCase):
@@ -32,5 +32,5 @@ class TestDispatcher(unittest.TestCase):
         dispatcher.update_ttl(channels, start, end, ttl)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

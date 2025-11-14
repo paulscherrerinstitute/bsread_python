@@ -66,7 +66,7 @@ def get_introspect(address):
         for channel in response["config"]["channels"]:
             print(("{:50.50} {:6} {:6}".format(channel["name"], channel["modulo"], channel["offset"])))
     else:
-        print('-')
+        print("-")
 
     print()
     print("Status:")
@@ -114,7 +114,7 @@ def read_configuration():
     import sys
 
     def signal_handler(signal, frame):
-        print('Aborting configuration')
+        print("Aborting configuration")
         sys.exit(0)
 
     signal.signal(signal.SIGINT, signal_handler)
@@ -156,13 +156,13 @@ def main():
     def URI(uri):
         return utils.check_and_update_uri(uri, default_port=10000)
 
-    parser = argparse.ArgumentParser(description='BSREAD configuration utility')
-    parser.add_argument('ioc', type=URI, help='URL of config channel of ioc to retrieve config from')
-    parser.add_argument('-a', '--all', action='count', help='Stream all channels of the IOC')
-    parser.add_argument('-u', '--update', action='count', help='Update IOC configuration')
-    parser.add_argument('-I', '--inhibit', type=int, default=None, help='Set inhibit bit')
+    parser = argparse.ArgumentParser(description="BSREAD configuration utility")
+    parser.add_argument("ioc", type=URI, help="URL of config channel of ioc to retrieve config from")
+    parser.add_argument("-a", "--all", action="count", help="Stream all channels of the IOC")
+    parser.add_argument("-u", "--update", action="count", help="Update IOC configuration")
+    parser.add_argument("-I", "--inhibit", type=int, default=None, help="Set inhibit bit")
 
-    parser.add_argument('-v', '--verbose', action='count', help='Verbose output to show configuration json string')
+    parser.add_argument("-v", "--verbose", action="count", help="Verbose output to show configuration json string")
 
     arguments = parser.parse_args()
     address = arguments.ioc
@@ -186,7 +186,7 @@ def main():
         print(json.dumps(response))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     """
     This utility script parses standard input and creates a BSREAD configuration
     and uploads it to the specified IOC.

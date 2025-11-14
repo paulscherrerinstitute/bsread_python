@@ -20,7 +20,7 @@ def get_channel_encoding(value):
     :return: "little" or "big" endian.
     """
     if isinstance(value, numpy.ndarray):
-        if value.dtype.byteorder == '>':
+        if value.dtype.byteorder == ">":
             return "big"
 
     return sys.byteorder
@@ -36,7 +36,7 @@ def get_channel_specs(value, extended=False):
     :return: Tuple of (channel_type, shape) or (dtype, channel_type, serializer, shape)
     """
     if value is None:
-        _logger.debug('Channel value is None - Unable to determine type of channel - default to type=float64 shape=[1]')
+        _logger.debug("Channel value is None - Unable to determine type of channel - default to type=float64 shape=[1]")
 
     # Determine ndarray channel specs
     if isinstance(value, numpy.ndarray):
@@ -89,15 +89,15 @@ def get_channel_reader(channel):
     :return: Value reader.
     """
     # If no channel type is specified, float64 is assumed.
-    channel_type = channel['type'].lower() if 'type' in channel else None
+    channel_type = channel["type"].lower() if "type" in channel else None
     if channel_type is None:
         _logger.warning("'type' channel field not found. Parse as 64-bit floating-point number float64 (default).")
         channel_type = "float64"
 
-    name = channel['name']
-    compression = channel['compression'] if "compression" in channel else None
-    shape = channel['shape'] if "shape" in channel else None
-    endianness = channel['encoding']
+    name = channel["name"]
+    compression = channel["compression"] if "compression" in channel else None
+    shape = channel["shape"] if "shape" in channel else None
+    endianness = channel["encoding"]
 
     value_reader = get_value_reader(channel_type, compression, shape, endianness, name)
     return value_reader

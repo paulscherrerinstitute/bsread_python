@@ -6,15 +6,15 @@ VERSION = (1, 6, 2)
 VERSION_STR = ".".join([str(x) for x in VERSION])
 
 setup(
-    name='bsread',
+    name="bsread",
     version=VERSION_STR,
     description="BSREAD for Python",
     long_description="BSREAD for Python",
-    author='Paul Scherrer Institute',
-    author_email='daq@psi.ch',
-    url='https://git.psi.ch/sf_daq/bsread_python',
-    packages=['bsread', 'bsread.cli', 'bsread.data', 'bsread.handlers'],
-    requires=['bitshuffle', 'click', 'mflow', 'numpy', 'pyzmq'],
+    author="Paul Scherrer Institute",
+    author_email="daq@psi.ch",
+    url="https://git.psi.ch/sf_daq/bsread_python",
+    packages=["bsread", "bsread.cli", "bsread.data", "bsread.handlers"],
+    requires=["bitshuffle", "click", "mflow", "numpy", "pyzmq"],
     zip_safe=False
 )
 

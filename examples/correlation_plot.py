@@ -27,22 +27,22 @@ def main():
     plt.ion()
     plt.show()
 
-    with Source(channels=[{'name': 'Float64Scalar', 'modulo': 10}], mode=SUB,
-                dispatcher_url='http://localhost:8080') as stream:
+    with Source(channels=[{"name": "Float64Scalar", "modulo": 10}], mode=SUB,
+                dispatcher_url="http://localhost:8080") as stream:
 
         while receive_more:
             message = stream.receive()
-            print(message.data.data['Float64Scalar'].value)
-            queue_x.append(message.data.data['Float64Scalar'].value)
-            queue_y.append(message.data.data['Float64Scalar'].value)
+            print(message.data.data["Float64Scalar"].value)
+            queue_x.append(message.data.data["Float64Scalar"].value)
+            queue_y.append(message.data.data["Float64Scalar"].value)
             ax.clear()
             ax.scatter(queue_x, queue_y)
 
             plt.pause(0.0001)
 
     print(queue_x)
-    print('done')
+    print("done")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
