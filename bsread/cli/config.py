@@ -153,8 +153,11 @@ def read_configuration():
 def main():
     import argparse
 
+    def URI(uri):
+        return utils.check_and_update_uri(uri, default_port=10000)
+
     parser = argparse.ArgumentParser(description='BSREAD configuration utility')
-    parser.add_argument('ioc', type=str, help='URL of config channel of ioc to retrieve config from')
+    parser.add_argument('ioc', type=URI, help='URL of config channel of ioc to retrieve config from')
     parser.add_argument('-a', '--all', action='count', help='Stream all channels of the IOC')
     parser.add_argument('-u', '--update', action='count', help='Update IOC configuration')
     parser.add_argument('-I', '--inhibit', type=int, default=None, help='Set inhibit bit')
@@ -163,11 +166,6 @@ def main():
 
     arguments = parser.parse_args()
     address = arguments.ioc
-
-    try:
-        address = utils.check_and_update_uri(address, default_port=10000)
-    except:
-        raise SystemExit('Invalid URI - ' + address)
 
     if arguments.update:
         # Update current configuration
