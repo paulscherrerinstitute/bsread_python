@@ -66,7 +66,7 @@ class Sender:
     def add_channel(self, name, function=None, metadata=None):
 
         if not metadata:
-            metadata = dict()
+            metadata = {}
 
         if not isinstance(metadata, dict):
             raise ValueError("metadata needs to be a dictionary")
@@ -90,7 +90,7 @@ class Sender:
                                     no_client_timeout=no_client_timeout, copy=self.copy, send_timeout=self.send_timeout)
 
         # Main header
-        self.main_header = dict()
+        self.main_header = {}
         self.main_header["htype"] = "bsr_m-1.1"
         if self.data_header_compression:
             self.main_header["dh_compression"] = self.data_header_compression
@@ -106,7 +106,7 @@ class Sender:
         self.status_stream_open = True
 
     def _create_data_header(self):
-        self.data_header = dict()
+        self.data_header = {}
         self.data_header["htype"] = "bsr_d-1.1"
         self.data_header["channels"] = [channel.metadata for channel in self.channels.values()]
 
@@ -118,7 +118,7 @@ class Sender:
         self.status_stream_open = False
 
     def add_channel_from_value(self, name, value):
-        metadata = dict()
+        metadata = {}
 
         metadata["name"] = name
         metadata["type"], metadata["shape"] = get_channel_specs(value)

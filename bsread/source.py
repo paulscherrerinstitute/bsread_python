@@ -73,7 +73,7 @@ class Source:
                                 channel_list.append({"name": item})
                             elif isinstance(item, dict):
                                 # Ensure that we send an sane dictionary to the REST API
-                                channel_config = dict()
+                                channel_config = {}
                                 channel_config["name"] = item["name"]
                                 if "modulo" in item:
                                     channel_config["modulo"] = item["modulo"]

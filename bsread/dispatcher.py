@@ -133,7 +133,7 @@ def request_stream(channels,
             config["channels"].append({"name": channel})
         elif isinstance(channel, dict):
             # Ensure that we send an sane dictionary to the REST API
-            channel_config = dict()
+            channel_config = {}
             channel_config["name"] = channel["name"]
             if "modulo" in channel:
                 channel_config["modulo"] = channel["modulo"]
