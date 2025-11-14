@@ -32,7 +32,7 @@ class NoCompression:
         """
         Convert numpy array to byte array.
         :param numpy_array: Numpy array to convert.
-        :param dtype: Data type (Numpy).
+        :param dtype: Ignored. Here just to have a consistent interface.
         :return: Bytes array of provided numpy array.
         """
         return numpy_array.tobytes()
