@@ -142,7 +142,7 @@ def request_stream(channels,
 
             config["channels"].append(channel_config)
 
-    logging.info("Request stream: " + config.__str__())
+    logging.info(f"Request stream: {config}")
 
     headers = {"content-type": "application/json"}
     response = requests.post(base_url+"/stream", data=json.dumps(config), headers=headers)
@@ -150,7 +150,7 @@ def request_stream(channels,
     if not response.ok:
         raise Exception("Unable to request stream for specified channels - " + response.text)
 
-    logging.info("Stream returned: " + response.text)
+    logging.info(f"Stream returned: {response.text}")
 
     return response.json()["stream"]
     # TODO stream might contain more channels than the channels requested this library should filter these channels out.
@@ -168,7 +168,7 @@ def request_streams(base_url=DEFAULT_DISPATCHER_URL):
     response = requests.get(base_url+"/streams")
 
     if not response.ok:
-        raise Exception("Unable to retrieve current streams - " + response.text)
+        raise Exception(f"Unable to retrieve current streams - {response.text}")
 
     return response.json()
 
@@ -183,7 +183,7 @@ def remove_stream(stream, base_url=DEFAULT_DISPATCHER_URL):
 
     """
 
-    logging.info("Remove stream: " + stream)
+    logging.info(f"Remove stream: {stream}")
 
     headers = {"content-type": "text/plain"}
     response = requests.delete(base_url+"/stream", data=stream, headers=headers)
@@ -263,7 +263,8 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta,
     else:
         raise RuntimeError("Invalid start and/or end time/pulse_id")
 
-    logging.debug("Update TTL Request:\n" + json.dumps(update_request))
+    printable_update_request = json.dumps(update_request)
+    logging.debug(f"Update TTL Request:\n{printable_update_request}")
 
     headers = {"content-type": "application/json"}
     response = requests.post(base_url + "/data/update/ttl", data=json.dumps(update_request), headers=headers)
