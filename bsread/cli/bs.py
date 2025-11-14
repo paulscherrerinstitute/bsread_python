@@ -2,28 +2,39 @@ import importlib
 import sys
 
 
-USAGE = """
-Usage: bs [OPTIONS] COMMAND [arg...]
+COMMANDS = {
+    "config":   "Configure IOC",
+    "stats":    "Show receiving statistics",
+    "receive":  "Basic receiver",
+    "h5":       "Dump stream into HDF5 file",
+    "create":   "Create a test softioc",
+    "simulate": "Provide a test stream",
+    "avail":    "Show currently available beam synchronous channels"
+}
 
-Commands:
- config          - Configure IOC
- stats           - Show receiving statistics
- receive         - Basic receiver
- h5              - Dump stream into HDF5 file
- create          - Create a test softioc
- simulate        - Provide a test stream
- avail           - Show currently available beam synchronous channels
-
-Run 'bs COMMAND --help' for more information on a command.
-"""
+HEADER = "Usage: bs [OPTIONS] COMMAND [arg...]"
+FOOTER = "Run 'bs COMMAND --help' for more information on a command."
 
 
 def quit(error=None):
     if error:
         print(error)
         print()
-    print(USAGE.strip())
+    usage = make_usage(COMMANDS, HEADER, FOOTER)
+    print(usage)
     raise SystemExit(True if error else False)
+
+
+def make_usage(commands, header, footer):
+    lines = []
+    lines.append(header)
+    lines.append("")
+    lines.append("Commands:")
+    for name, desc in commands.items():
+        lines.append(f" {name:<15}- {desc}")
+    lines.append("")
+    lines.append(footer)
+    return "\n".join(lines)
 
 
 def main():
@@ -34,10 +45,10 @@ def main():
     if len(sys.argv) < 1:
         quit()
 
-    # If any switch is given or this command itself, quit
+    # If command is not from allowed commands, quit
     command = sys.argv[0]
-    if command.startswith("-") or command == "bs":
-        quit()
+    if command not in COMMANDS:
+        quit(f"{command} - Command not found")
 
     try:
         command_script = importlib.import_module("bsread.cli." + command)
