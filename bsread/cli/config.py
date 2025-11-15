@@ -2,9 +2,8 @@ import json
 import logging
 import re
 
-import zmq
-
 from bsread.cli import utils
+from bsread.utils import zmq_rpc
 
 
 logger = logging.getLogger(__name__)
@@ -26,24 +25,6 @@ class Channel:
         if offset is not None:
             self.offset = offset
 
-
-def zmq_rpc(address, request):
-    ctx = zmq.Context()
-    sock = zmq.Socket(ctx, zmq.REQ)
-    sock.connect(address)
-
-    # Normal strings indicate that the request is already JSON encoded
-    if type(request) == str:
-        sock.send_string(request)
-    else:
-        sock.send_string(json.dumps(request))
-
-    response = sock.recv_json()
-
-    sock.close()
-    ctx.destroy()
-
-    return response
 
 
 def get_introspect(address):

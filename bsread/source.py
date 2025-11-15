@@ -85,8 +85,8 @@ class Source:
                     else:
                         request = {"channels": []}
 
-                from . import config
-                config.zmq_rpc(self.config_address, json.dumps(request))
+                from . import utils
+                utils.zmq_rpc(self.config_address, json.dumps(request))
 
         else:  # Otherwise we expect to connect to the dispatching layer
             self.mode = mode if mode else SUB  # Set default mode for point to point to pub/sub
