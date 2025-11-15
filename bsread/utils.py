@@ -8,11 +8,11 @@ def zmq_rpc(address, request):
     sock = zmq.Socket(ctx, zmq.REQ)
     sock.connect(address)
 
-    # Normal strings indicate that the request is already JSON encoded
-    if isinstance(request, str):
-        sock.send_string(request)
-    else:
-        sock.send_string(json.dumps(request))
+    # assume strings are already JSON encoded
+    if not isinstance(request, str):
+        request = json.dumps(request)
+
+    sock.send_string(request)
 
     response = sock.recv_json()
 
