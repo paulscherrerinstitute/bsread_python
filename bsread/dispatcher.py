@@ -85,11 +85,6 @@ def remove_input_sources(addresses, base_url=DEFAULT_DISPATCHER_URL):
         raise Exception(f"Unable to delete input sources - {response.text}")
 
 
-if __name__ == "__main__":
-    sources = get_input_sources()
-    print(sources)
-
-
 def request_stream(channels,
                    stream_type="pub_sub",
                    inconsistency_resolution="adjust-individual",
@@ -318,3 +313,14 @@ def _log_ttl_update_info_to_central_server(channels, start, end, ttl):
 
     thread = Thread(target=send_info, args=(log_message,))
     thread.start()
+
+
+
+
+
+if __name__ == "__main__":
+    sources = get_input_sources()
+    print(sources)
+
+
+
