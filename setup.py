@@ -2,8 +2,10 @@
 
 from setuptools import setup
 
+
 VERSION = (1, 6, 2)
 VERSION_STR = ".".join([str(x) for x in VERSION])
+
 
 setup(
     name="bsread",
