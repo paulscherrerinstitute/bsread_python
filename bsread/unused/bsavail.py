@@ -8,9 +8,9 @@ from bsread import Source, dispatcher
 
 
 def pollStream(pattern, timeout):
-    ch_names  = []
+    ch_names = []
     ch_values = {}
-    messages  = 0
+    messages = 0
     try:
         channels = dispatcher.get_current_channels()
         for channel in channels:
@@ -47,7 +47,7 @@ def pollStream(pattern, timeout):
                     time_total = time.time() - time_start
                     print(f"\nBeam-synchronous data available after {time_total:.1f} seconds and {messages} messages")
                     break
-                if timeout>0 and (time.time()-time_start)>timeout:
+                if timeout > 0 and (time.time()-time_start) > timeout:
                     print("\nTimeout, unable to retrieve beam-synchronous data!\nMissing channels:")
                     for ch_nm, ch_vl in ch_values.items():
                         if ch_vl is None:

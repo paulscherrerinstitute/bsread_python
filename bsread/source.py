@@ -102,7 +102,7 @@ class Source:
             self.address = dispatcher.request_stream(channels,
                                                      stream_type=stream_type,
                                                      verify=dispatcher_verify_request,
-                                                     disable_compression = dispatcher_disable_compression)
+                                                     disable_compression=dispatcher_disable_compression)
 
             #TODO: remove workaround
             # import re

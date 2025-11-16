@@ -90,7 +90,7 @@ def request_stream(channels,
                    stream_type="pub_sub",
                    inconsistency_resolution="adjust-individual",
                    verify=True,
-                   disable_compression = False,
+                   disable_compression=False,
                    base_url=DEFAULT_DISPATCHER_URL):
     """
     Request stream for specific channels
