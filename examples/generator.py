@@ -24,6 +24,9 @@ def image(pulse_id):
     return image
 
 
+
+
+
 if __name__ == "__main__":
     generator = Sender()
 
@@ -38,4 +41,6 @@ if __name__ == "__main__":
     generator.add_channel("IMAGE", image, metadata={"shape": [4, 2]})
 
     generator.generate_stream()
+
+
 

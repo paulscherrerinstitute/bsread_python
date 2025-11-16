@@ -28,3 +28,6 @@ def check_and_update_uri(uri, default_port=9999, exception=ValueError):
         raise exception(f"{uri} - Invalid URI")
 
     return uri
+
+
+

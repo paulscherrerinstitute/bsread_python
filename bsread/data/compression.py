@@ -140,3 +140,5 @@ class BitshuffleLZ4:
 
         return max(block_size, BitshuffleLZ4.minimum_block_size)
 
+
+

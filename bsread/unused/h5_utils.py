@@ -61,3 +61,6 @@ def print_structure(x, level):
             print_structure(b, level + 4)
         else:
             print(" " * level, a, "[" + b + "]")
+
+
+

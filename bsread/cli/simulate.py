@@ -54,5 +54,11 @@ def main():
     generate_stream(port=arguments.port, n_messages=arguments.n_messages, interval=arguments.interval)
 
 
+
+
+
 if __name__ == "__main__":
     main()
+
+
+

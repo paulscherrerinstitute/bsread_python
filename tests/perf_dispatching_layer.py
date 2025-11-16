@@ -145,6 +145,9 @@ def run_tests(n_tests, n_messages, log_level="ERROR"):
     print(f"Non-first message frequency (Hz): {1 / other_messages_avg_time:.3f}")
 
 
+
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Test dispatching layer performance.")
 
@@ -153,3 +156,6 @@ if __name__ == "__main__":
     inputs = parser.parse_args()
 
     run_tests(inputs.n_tests, inputs.n_messages)
+
+
+

@@ -121,3 +121,6 @@ channel_type_scalar_serializer_mapping = {
     bool: ("?", "bool", serialize_python_number, [1]),
     np.bool_: ("?", "bool", serialize_numpy_scalar, [1])
 }
+
+
+
