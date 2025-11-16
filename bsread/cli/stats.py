@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 MESSAGE_PRINT_FORMAT = "{:40.40}| {:25.25} {:30.30}"
 
-#TODO:
+#TODO: why globals?
 previous_pulse_id = 0
 
 

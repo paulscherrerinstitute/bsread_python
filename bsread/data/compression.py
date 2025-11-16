@@ -77,8 +77,7 @@ class BitshuffleLZ4:
         # How many bytes per element we use.
         n_elements = int(unpacked_length / n_bytes_per_element)
 
-        #TODO: This is so ugly.. discuss if strings really need a shape [1].
-
+        #TODO: do strings really need the following special case?
         # shape == [1] and n_elements > 1 is used for strings.
         if shape is None or (shape == [1] and n_elements > 1):
             shape = (n_elements,)

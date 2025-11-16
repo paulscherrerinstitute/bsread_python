@@ -217,7 +217,7 @@ class Sender:
 
                     endianness = ">" if channel.metadata.get("encoding") == "big" else "<"
 
-                    #TODO: This timestamps should be individual per channel.
+                    #TODO: timestamps should be individual per channel
                     self.stream.send(struct.pack(endianness + "q",
                                                  current_timestamp_epoch) +
                                      struct.pack(endianness + "q",

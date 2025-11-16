@@ -83,7 +83,7 @@ def create_db(input, filename=None):
         f.close()
 
 
-#TODO:
+#TODO: why globals?
 g_output_records = []
 g_total_payload_size = 0
 

@@ -111,7 +111,7 @@ class Handler:
 
             counter += 1
 
-        #TODO: need to add some more error checking
+        #TODO: add some more error checking
 
         return_value["header"] = header
         return_value["pulse_id_array"] = pulse_id_array
