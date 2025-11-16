@@ -12,7 +12,7 @@ COMMANDS = {
     "avail":    "Show currently available beam synchronous channels"
 }
 
-HEADER = "Usage: bs [OPTIONS] COMMAND [arg...]"
+HEADER = "Usage: bs COMMAND [OPTIONS]"
 FOOTER = "Run 'bs COMMAND --help' for more information on a command."
 
 
