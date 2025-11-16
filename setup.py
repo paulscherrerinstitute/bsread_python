@@ -1,23 +1,16 @@
 #!/usr/bin/env python
 
-from setuptools import setup
-
-
-VERSION = (1, 6, 2)
-VERSION_STR = ".".join([str(x) for x in VERSION])
+from setuptools import find_packages, setup
 
 
 setup(
     name="bsread",
-    version=VERSION_STR,
-    description="BSREAD for Python",
-    long_description="BSREAD for Python",
+    version="1.6.2",
+    url="https://github.com/paulscherrerinstitute/bsread_python",
+    description="bsread for Python",
     author="Paul Scherrer Institute",
-    author_email="daq@psi.ch",
-    url="https://git.psi.ch/sf_daq/bsread_python",
-    packages=["bsread", "bsread.cli", "bsread.data", "bsread.handlers"],
     requires=["bitshuffle", "click", "mflow", "numpy", "pyzmq"],
-    zip_safe=False
+    packages=find_packages()
 )
 
 
