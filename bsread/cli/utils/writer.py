@@ -160,8 +160,8 @@ class DatasetGroup:
         self.datasets = []
 
 
-# Example writer
 if __name__ == "__main__":
+    # Example writer
     writer = Writer()
 
     writer.open_file("test.h5")
