@@ -12,8 +12,9 @@ from .utils import check_and_update_uri, get_base_url
 
 logger = logging.getLogger(__name__)
 
-message_print_format = "{:40.40}| {:25.25} {:30.30}"
+MESSAGE_PRINT_FORMAT = "{:40.40}| {:25.25} {:30.30}"
 
+#TODO:
 previous_pulse_id = 0
 
 
@@ -27,7 +28,7 @@ class Statistics:
 def print_message_data(message_data):
 
     # Print header
-    print(message_print_format.format("NAME", "VAL", "TIMESTAMP"))
+    print(MESSAGE_PRINT_FORMAT.format("NAME", "VAL", "TIMESTAMP"))
     print("_"*80)
 
     global_timestamp = message_data.global_timestamp
@@ -51,7 +52,7 @@ def print_message_data(message_data):
         except:
             date = "None"
 
-        print(message_print_format.format(channel_name, str(channel_value), str(date)))
+        print(MESSAGE_PRINT_FORMAT.format(channel_name, str(channel_value), str(date)))
 
     print("_"*80)
 

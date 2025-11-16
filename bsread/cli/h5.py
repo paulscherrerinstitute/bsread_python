@@ -11,7 +11,6 @@ from .utils import check_and_update_uri
 from .utils.writer import Writer
 
 
-# Logger configuration
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(name)s - %(message)s")

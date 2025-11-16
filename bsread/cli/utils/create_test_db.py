@@ -62,9 +62,10 @@ def waveform(numof, size):
 
 
 def safe_eval(input):
-    # A stupid safe-ish eval
-    eval(
-        input, {"__builtins__": None, "scalar": scalar, "waveform": waveform}, {})
+    """
+    A stupid safe-ish eval
+    """
+    eval(input, {"__builtins__": None, "scalar": scalar, "waveform": waveform}, {})
 
 
 def create_db(input, filename=None):
@@ -82,6 +83,7 @@ def create_db(input, filename=None):
         f.close()
 
 
+#TODO:
 g_output_records = []
 g_total_payload_size = 0
 

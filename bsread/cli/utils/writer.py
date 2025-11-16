@@ -7,8 +7,6 @@ logger = logging.getLogger(__name__)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(name)s - %(message)s")
 
-# The latest h5py user manual is available at - http://docs.h5py.org/en/latest/
-
 
 class Writer:
     def __init__(self):

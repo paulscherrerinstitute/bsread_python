@@ -70,7 +70,9 @@ def get_current_channels(base_url=DEFAULT_DISPATCHER_URL):
 
 
 def remove_input_sources(addresses, base_url=DEFAULT_DISPATCHER_URL):
-    # Remove input source from dispatching layer
+    """
+    Remove input source from dispatching layer
+    """
 
     # Delete source
     config = {"sources": []}
