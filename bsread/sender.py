@@ -10,9 +10,9 @@ from threading import Lock
 
 import mflow
 
-from bsread import BIND, CONNECT, PUSH, PULL, PUB, SUB
-from bsread.data.helpers import get_channel_encoding, get_channel_specs, get_value_bytes
-from bsread.data.serialization import compression_provider_mapping
+from .consts import BIND, CONNECT, PUSH, PULL, PUB, SUB
+from .data.helpers import get_channel_encoding, get_channel_specs, get_value_bytes
+from .data.serialization import compression_provider_mapping
 
 
 printable_compression_provider_mapping = list(compression_provider_mapping.keys())

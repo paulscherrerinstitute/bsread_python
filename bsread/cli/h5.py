@@ -5,10 +5,10 @@ import h5py
 import mflow
 
 from bsread import BASE_DISPATCHER_URL, dispatcher
-from bsread.cli import utils
-from bsread.cli.utils import writer as wr
 from bsread.data.serialization import channel_type_deserializer_mapping
 from bsread.handlers import extended
+from .utils import writer as wr
+from . import utils
 
 
 # Logger configuration

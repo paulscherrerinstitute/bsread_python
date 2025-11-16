@@ -3,9 +3,9 @@ import mflow
 import numpy
 
 from bsread import dispatcher
-from bsread.cli import utils
-from bsread.cli.utils import tables
 from bsread.handlers.compact import Handler
+from .utils import tables
+from . import utils
 
 
 def receive(source=None, clear=False, table="auto", queue_size=100, mode=mflow.PULL, channel_filter=None):

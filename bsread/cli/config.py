@@ -2,8 +2,8 @@ import json
 import logging
 import re
 
-from bsread.cli import utils
 from bsread.utils import zmq_rpc
+from . import utils
 
 
 logger = logging.getLogger(__name__)

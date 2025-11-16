@@ -2,8 +2,8 @@ import json
 
 import mflow
 
-from bsread import BIND, CONNECT, PUSH, PULL, PUB, SUB, DEFAULT_DISPATCHER_URL
-from bsread.handlers.compact import Handler
+from .consts import BIND, CONNECT, PUSH, PULL, PUB, SUB, DEFAULT_DISPATCHER_URL
+from .handlers.compact import Handler
 
 
 class Source:

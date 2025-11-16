@@ -3,7 +3,7 @@ import re
 import click
 
 from bsread import dispatcher
-from bsread.cli import utils
+from . import utils
 
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])

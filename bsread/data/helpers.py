@@ -4,10 +4,10 @@ from logging import getLogger
 
 import numpy
 
-from bsread.data.serialization import (channel_type_deserializer_mapping,
-                                       channel_type_scalar_serializer_mapping,
-                                       compression_provider_mapping,
-                                       serialize_python_list)
+from .serialization import (channel_type_deserializer_mapping,
+                            channel_type_scalar_serializer_mapping,
+                            compression_provider_mapping,
+                            serialize_python_list)
 
 
 _logger = getLogger(__name__)

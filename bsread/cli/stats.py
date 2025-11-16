@@ -6,8 +6,8 @@ import click
 import mflow
 
 from bsread import dispatcher
-from bsread.cli import utils
 from bsread.handlers.compact import Handler
+from . import utils
 
 
 logger = logging.getLogger(__name__)

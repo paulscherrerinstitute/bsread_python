@@ -4,7 +4,7 @@ import logging
 
 import requests
 
-from bsread import DEFAULT_DISPATCHER_URL
+from .consts import DEFAULT_DISPATCHER_URL
 
 
 def add_input_sources(addresses, base_url=DEFAULT_DISPATCHER_URL):
