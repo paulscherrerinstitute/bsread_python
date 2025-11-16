@@ -15,11 +15,11 @@ def waveform(pulse_id):
 def image(pulse_id):
     image = []
     for i in range(2):
-        # line = []
-        # for index in range(0, 30, 1):
-        #     grad = (3.1415*index/float(200))+pulse_id/float(100)
-        #     line.append(math.sin(grad))
-        # image.append(line)
+#        line = []
+#        for index in range(0, 30, 1):
+#            grad = math.pi * index / 200 + pulse_id / 100
+#            line.append(math.sin(grad))
+#        image.append(line)
         image.append([1.0, 2.0, 3.0, 4.0])
     return image
 
