@@ -25,8 +25,8 @@ def image(pulse_id):
 
 
 if __name__ == "__main__":
-
     generator = Sender()
+
     generator.add_channel("ABC", lambda x: x, metadata={"type": "int32"})
     generator.add_channel("ABC_BIG", lambda x: struct.pack(">i", x), metadata={"type": "int32", "encoding": "big"})
     generator.add_channel("ABCD", lambda x: x*10.0)
@@ -36,5 +36,6 @@ if __name__ == "__main__":
     generator.add_channel("WWW", lambda x: [1.0, 2.0, 3.0, 4.0], metadata={"type": "float64", "shape": [4]})
     generator.add_channel("WAVE", waveform, metadata={"shape": [30]})
     generator.add_channel("IMAGE", image, metadata={"shape": [4, 2]})
+
     generator.generate_stream()
 
