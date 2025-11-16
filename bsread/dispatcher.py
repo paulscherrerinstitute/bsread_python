@@ -148,7 +148,7 @@ def request_stream(channels,
     logging.info(f"Stream returned: {response.text}")
 
     return response.json()["stream"]
-    # TODO stream might contain more channels than the channels requested this library should filter these channels out.
+    #TODO: stream might contain more channels than the channels requested this library should filter these channels out.
 
 
 def request_streams(base_url=DEFAULT_DISPATCHER_URL):
@@ -224,7 +224,7 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta,
             _index = -1
         default_backend = base_url.split("/")[_index]
 
-    # TODO remove async parameter in next major version of this lib
+    #TODO: remove async parameter in next major version of this lib
     # New way of doing this can be found here: https://git.psi.ch/sf_daq/ch.psi.daq.dispatcherrest/blob/master/Readme_Unofficial.md#update-ttl
 
     if not isinstance(ttl, datetime.timedelta):

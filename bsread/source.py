@@ -104,7 +104,7 @@ class Source:
                                                      verify=dispatcher_verify_request,
                                                      disable_compression = dispatcher_disable_compression)
 
-            # # TODO REMOVE Workaround
+            #TODO: remove workaround
             # import re
             # self.address = re.sub('psivpn128.psi.ch', 'localhost', self.address)
             # print(self.address)
@@ -126,7 +126,7 @@ class Source:
         try:
             self.stream.disconnect()
         finally:
-            # # TODO REMOVE Workaround
+            #TODO: remove workaround
             # import re
             # self.address = re.sub('localhost', 'psivpn128.psi.ch', self.address)
             # print(self.address)

@@ -57,7 +57,7 @@ class Handler:
 
                 return message
 
-            # TODO: Why do we need to pre-process the message? Source change?
+            #TODO: Why do we need to pre-process the message? Source change?
             for channel in data_header["channels"]:
                 # Define endianness of data
                 # > - big endian
@@ -77,7 +77,7 @@ class Handler:
         # Receiving data
         counter = 0
 
-        # Todo add some more error checking
+        #TODO: add some more error checking
         while receiver.has_more():
             channel_name, channel_endianness, channel_reader = self.channels_definitions[counter]
 
