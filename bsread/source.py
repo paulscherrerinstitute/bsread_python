@@ -2,7 +2,7 @@ import json
 
 import mflow
 
-from .consts import BIND, CONNECT, PUSH, PULL, PUB, SUB, DEFAULT_DISPATCHER_URL
+from .consts import CONNECT, PULL, SUB, DEFAULT_DISPATCHER_URL
 from .handlers.compact import Handler
 
 
