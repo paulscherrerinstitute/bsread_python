@@ -37,7 +37,6 @@ class Source:
             dispatcher_url: URL of the dispatcher api
             receive_timeout:Receive timeout in milliseconds (-1 infinite)
         """
-
         self.use_dispatching_layer = False
 
         if not config_port:
@@ -116,10 +115,12 @@ class Source:
         self.stream = None
         self.handler = Handler()
 
+
     def connect(self):
         self.stream = mflow.connect(self.address, conn_type=self.conn_type, queue_size=self.queue_size, mode=self.mode,
                                     copy=self.copy, receive_timeout=self.receive_timeout)
         return self  # Return self to be backward compatible
+
 
     def disconnect(self):
         try:
@@ -134,6 +135,7 @@ class Source:
                 from . import dispatcher
                 dispatcher.base_url = self.dispatcher_url
                 dispatcher.remove_stream(self.address)
+
 
     def receive(self, filter=None, handler=None):
         if not handler:

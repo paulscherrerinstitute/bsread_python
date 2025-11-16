@@ -9,12 +9,13 @@ logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(name)s - %(mes
 
 
 class Writer:
+
     def __init__(self):
         self.file = None
         self.dataset_groups = {}
 
-    def open_file(self, file_name):
 
+    def open_file(self, file_name):
         if self.file:
             logger.info(f"File {self.file.name} is currently open - will close it")
             self.close_file()
@@ -22,11 +23,13 @@ class Writer:
         logger.info(f"Open file {file_name}")
         self.file = h5py.File(file_name, "w")
 
+
     def close_file(self):
         self.compact_data()
 
         logger.info(f"Close file {self.file.name}")
         self.file.close()
+
 
     def add_dataset(self, dataset_name, dataset_group_name="data", shape=(1,), dtype="i8", maxshape=(None,), **kwargs):
         """
@@ -41,13 +44,13 @@ class Writer:
         :param kwargs:
         :return:
         """
-
         if dataset_group_name not in self.dataset_groups:
             self.dataset_groups[dataset_group_name] = DatasetGroup()
 
         dataset = self.file.require_dataset(dataset_name, shape, dtype=dtype, maxshape=maxshape, **kwargs)
         # chunks=True, shuffle=True, compression="lzf")
         self.dataset_groups[dataset_group_name].datasets.append(Dataset(dataset_name, dataset))
+
 
     def replace_dataset(self, dataset_group_name="data", dataset_name="dataset_stub",
                         shape=(1,), dtype="i8", maxshape=(None,), **kwargs):
@@ -63,7 +66,6 @@ class Writer:
         :param kwargs:
         :return:
         """
-
         if dataset_group_name not in self.dataset_groups:
             raise ValueError(f'Specified dataset_group_name="{dataset_group_name}" does not exist.')
 
@@ -90,12 +92,13 @@ class Writer:
         dataset.reference = self.file.require_dataset(dataset_name, shape, dtype=dtype, maxshape=maxshape, **kwargs)
         dataset.reference.resize(dataset.count + 1000, axis=0)
 
-    def add_dataset_stub(self, dataset_group_name="data", dataset_name="dataset_stub"):
 
+    def add_dataset_stub(self, dataset_group_name="data", dataset_name="dataset_stub"):
         if dataset_group_name not in self.dataset_groups:
             self.dataset_groups[dataset_group_name] = DatasetGroup()
 
         self.dataset_groups[dataset_group_name].datasets.append(Dataset(dataset_name, None))
+
 
     def write(self, data, dataset_group_name="data"):
         """
@@ -103,7 +106,6 @@ class Writer:
         :param dataset_group_name: Name of the dataset the data belongs to.
         :param data: List of values to write to the configured datasets
         """
-
         if dataset_group_name not in self.dataset_groups:
             raise RuntimeError(f"Cannot write data, dataset group {dataset_group_name} does not exist")
 
@@ -125,12 +127,13 @@ class Writer:
 
             dataset.count += 1
 
+
     def compact_data(self):
         """Compact datasets, i.e. shrink them to actual size"""
-
         for key, dataset_group in self.dataset_groups.items():
             for dataset in dataset_group.datasets:
                 self.compact_dataset(dataset)
+
 
     @staticmethod
     def compact_dataset(dataset):
@@ -143,7 +146,9 @@ class Writer:
                 dataset.reference.resize(ds_count, axis=0)
 
 
+
 class Dataset:
+
     def __init__(self, name, dataset_reference, count=0):
         self.name = name
         self.count = count
@@ -153,7 +158,9 @@ class Dataset:
         return self.reference is not None
 
 
+
 class DatasetGroup:
+
     def __init__(self):
         self.datasets = []
 

@@ -5,6 +5,7 @@ import numpy as np
 
 
 class NoCompression:
+
     @staticmethod
     def unpack_data(raw_string, dtype, shape=None):
         """
@@ -36,6 +37,7 @@ class NoCompression:
         :return: Bytes array of provided numpy array.
         """
         return numpy_array.tobytes()
+
 
 
 class BitshuffleLZ4:
@@ -99,6 +101,7 @@ class BitshuffleLZ4:
 
         return byte_array
 
+
     @staticmethod
     def pack_data(numpy_array, dtype):
         """
@@ -126,6 +129,7 @@ class BitshuffleLZ4:
     target_block_size = 8192
     minimum_block_size = 128
     block_size_multiplier = 8
+
 
     @staticmethod
     def get_compression_block_size(n_bytes_per_element):

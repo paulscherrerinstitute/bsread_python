@@ -13,7 +13,6 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 @click.option("--base_url", default=None, help="URL of dispatcher")
 @click.option("--backend", default=None, help="Backend to query")
 def avail(pattern=None, base_url=None, backend=None, metadata=False):
-
     base_url = get_base_url(base_url, backend)
 
     pattern = ".*" + pattern + ".*"

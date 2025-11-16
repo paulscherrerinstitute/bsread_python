@@ -172,7 +172,6 @@ def get_value_bytes(value, compression=None, channel_type=None):
     :param channel_type: dtype to use for channel serialization. If not specified, derive from value.
     :return: Bytes ready to be sent over the channel.
     """
-
     if compression not in compression_provider_mapping:
         error_message = f"Channel compression '{compression}' not supported."
         _logger.error(error_message)

@@ -39,7 +39,6 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 @click.option("--base_url", default=None, help="URL of dispatcher")
 @click.option("--backend", default=None, help="Backend to query")
 def receive_(channels, source, mode, clear, table, queue_size, base_url, backend):
-
     base_url = get_base_url(base_url, backend)
 
     mode = mflow.SUB if mode == "sub" else mflow.PULL

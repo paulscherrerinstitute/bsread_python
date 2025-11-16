@@ -35,6 +35,7 @@ class Struct:
         return "{" + res + "}"
 
 
+
 class StructSOnly:
     """
     Same as Struct object just that this wrapper holds that type of data instead of the actual value
@@ -52,6 +53,7 @@ class StructSOnly:
 
     def __getitem__(self, val):
         return self.__dict__[val]
+
 
 
 def print_structure(x, level):

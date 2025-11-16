@@ -13,8 +13,8 @@ class Handler:
         self.data_header = None
         self.channels_definitions = None
 
-    def receive(self, receiver):
 
+    def receive(self, receiver):
         header = receiver.next(as_json=True)
 
         # We cannot process an empty Header.
@@ -111,7 +111,7 @@ class Handler:
 
             counter += 1
 
-        # Todo need to add some more error checking
+        #TODO: need to add some more error checking
 
         return_value["header"] = header
         return_value["pulse_id_array"] = pulse_id_array

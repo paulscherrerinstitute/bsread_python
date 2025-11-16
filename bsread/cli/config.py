@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class Configuration:
+
     def __init__(self):
         self.channels = []
 
@@ -17,7 +18,9 @@ class Configuration:
         return json.dumps(self, default=lambda o: o.__dict__)
 
 
+
 class Channel:
+
     def __init__(self, name, modulo=None, offset=None):
         self.name = name
         if modulo is not None:
@@ -83,7 +86,6 @@ def configure(address, configuration_string):
 
     Returns: Result of the operation
     """
-
     logger.info("Configuring: ", address)
     logger.info("Configuration: ", configuration_string)
 
@@ -93,7 +95,6 @@ def configure(address, configuration_string):
 
 
 def read_configuration():
-
     import signal
     import sys
 

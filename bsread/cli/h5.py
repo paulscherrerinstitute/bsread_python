@@ -101,7 +101,6 @@ def process_message_compact(handler, receiver, writer, first_iteration):
 
 
 def process_message(handler, receiver, writer, first_iteration):
-
     message_data = receiver.receive(handler=handler.receive)
 
     # In case you set a receive timeout, the returned message can be None.

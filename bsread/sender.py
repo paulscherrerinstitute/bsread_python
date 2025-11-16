@@ -23,7 +23,6 @@ class Sender:
     def __init__(self, queue_size=10, port=9999, address="tcp://*", conn_type=BIND, mode=PUSH, block=True,
                  start_pulse_id=0, data_header_compression=None, send_timeout=None, data_compression=None,
                  copy=True):
-
         self.copy = copy
         self.block = block
         self.queue_size = queue_size
@@ -63,8 +62,8 @@ class Sender:
 
         self.status_stream_open = False
 
-    def add_channel(self, name, function=None, metadata=None):
 
+    def add_channel(self, name, function=None, metadata=None):
         if not metadata:
             metadata = {}
 
@@ -84,11 +83,11 @@ class Sender:
             if self.status_stream_open:
                 self._create_data_header()
 
+
     def open(self, no_client_action=None, no_client_timeout=None):
         self.stream = mflow.connect(f"{self.address}:{self.port}", queue_size=self.queue_size,
                                     conn_type=self.conn_type, mode=self.mode, no_client_action=no_client_action,
                                     no_client_timeout=no_client_timeout, copy=self.copy, send_timeout=self.send_timeout)
-
         # Main header
         self.main_header = {}
         self.main_header["htype"] = "bsr_m-1.1"
@@ -105,6 +104,7 @@ class Sender:
         # Update internal status
         self.status_stream_open = True
 
+
     def _create_data_header(self):
         self.data_header = {}
         self.data_header["htype"] = "bsr_d-1.1"
@@ -113,9 +113,11 @@ class Sender:
         self.data_header_bytes = get_value_bytes(json.dumps(self.data_header), self.data_header_compression)
         self.main_header["hash"] = hashlib.md5(self.data_header_bytes).hexdigest()
 
+
     def close(self):
         self.stream.disconnect()
         self.status_stream_open = False
+
 
     def add_channel_from_value(self, name, value):
         metadata = {}
@@ -129,13 +131,13 @@ class Sender:
 
         self.channels[name] = Channel(None, metadata)
 
+
     def send(self, *args, timestamp=None, pulse_id=None, data=None, check_data=True,  **kwargs):
         """
             data:       Data to be send with the message send. If no data is specified data will be retrieved from the
                         functions registered with each channel
             interval:   Interval in seconds to repeatedly execute this method
         """
-
         if timestamp is None:
             timestamp = time.time()
 
@@ -229,6 +231,7 @@ class Sender:
         if self.post_function:
             self.post_function()
 
+
     def generate_stream(self, n_messages=None, interval=0.01):
         """
         Send a continues stream of data.
@@ -261,6 +264,7 @@ class Sender:
 
 
 class Channel:
+
     def __init__(self, function, metadata):
         self.function = function
         self.metadata = metadata

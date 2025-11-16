@@ -19,6 +19,7 @@ previous_pulse_id = 0
 
 
 class Statistics:
+
     def __init__(self):
         self.missed_pulse_ids = 0
         self.duplicated_pulse_ids = 0
@@ -26,7 +27,6 @@ class Statistics:
 
 
 def print_message_data(message_data):
-
     # Print header
     print(MESSAGE_PRINT_FORMAT.format("NAME", "VAL", "TIMESTAMP"))
     print("_"*80)
@@ -115,7 +115,6 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
                    "messages are still received, but are not displayed. If -n 0 is passed message "
                    "display is disabled")
 def stats(channels, source, mode, clear, queue_size, base_url, backend, logfile, show_values, show_nth_value):
-
     base_url = get_base_url(base_url, backend)
 
     use_dispatching = False

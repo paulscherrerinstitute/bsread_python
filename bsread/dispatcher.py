@@ -73,7 +73,6 @@ def remove_input_sources(addresses, base_url=DEFAULT_DISPATCHER_URL):
     """
     Remove input source from dispatching layer
     """
-
     # Delete source
     config = {"sources": []}
 
@@ -111,7 +110,6 @@ def request_stream(channels,
     Returns: ZMQ endpoint to connect to for the stream
 
     """
-
     if not verify:
         logging.debug("Set inconsistency_resolution to 'keep-as-is' ")
         inconsistency_resolution = "keep-as-is"
@@ -159,7 +157,6 @@ def request_streams(base_url=DEFAULT_DISPATCHER_URL):
     Returns:    List of streams
 
     """
-
     logging.info("Request currently available streams")
     # Get streams currently requested
     response = requests.get(base_url+"/streams")
@@ -179,7 +176,6 @@ def remove_stream(stream, base_url=DEFAULT_DISPATCHER_URL):
     Returns:
 
     """
-
     logging.info(f"Remove stream: {stream}")
 
     headers = {"content-type": "text/plain"}
@@ -218,7 +214,6 @@ def update_ttl(channels, start, end, ttl: datetime.timedelta,
 
     :return:
     """
-
     if default_backend is None:
         # try to defer default backend from base_url
         base_url = base_url.strip()

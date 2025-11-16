@@ -8,13 +8,14 @@ from bsread.data.helpers import get_channel_reader, get_value_reader
 
 
 class Handler:
+
     def __init__(self):
         # Used for detecting if the data header has changed - we need to reconstruct the channel definitions.
         self.data_header_hash = None
         self.channels_definitions = None
 
-    def receive(self, receiver):
 
+    def receive(self, receiver):
         # Receive main header
         header = receiver.next(as_json=True)
 
@@ -105,7 +106,9 @@ class Handler:
         return message
 
 
+
 class Message:
+
     def __init__(self, pulse_id=None, global_timestamp=None, global_timestamp_offset=None, hash=None, data=None):
         self.pulse_id = pulse_id
         self.global_timestamp = global_timestamp
@@ -118,12 +121,15 @@ class Message:
 
         self.format_changed = False
 
+
     def __str__(self):
         message = f"pulse_id: {self.pulse_id} \ndata: {self.data}"
         return message
 
 
+
 class Value:
+
     def __init__(self, value=None, timestamp=None, timestamp_offset=None):
         self.value = value
         self.timestamp = timestamp
