@@ -7,7 +7,7 @@ import mflow
 
 from bsread import dispatcher
 from bsread.handlers.compact import Handler
-from . import utils
+from .utils import check_and_update_uri, get_base_url
 
 
 logger = logging.getLogger(__name__)
@@ -115,7 +115,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
                    "display is disabled")
 def stats(channels, source, mode, clear, queue_size, base_url, backend, logfile, show_values, show_nth_value):
 
-    base_url = utils.get_base_url(base_url, backend)
+    base_url = get_base_url(base_url, backend)
 
     use_dispatching = False
     mode = mflow.SUB if mode == "sub" else mflow.PULL
@@ -124,7 +124,7 @@ def stats(channels, source, mode, clear, queue_size, base_url, backend, logfile,
         raise click.BadArgumentUsage("No source or channels are specified")
 
     if source:
-        source = utils.check_and_update_uri(source, exception=click.BadArgumentUsage)
+        source = check_and_update_uri(source, exception=click.BadArgumentUsage)
     else:
         # Connect via the dispatching layer
         use_dispatching = True

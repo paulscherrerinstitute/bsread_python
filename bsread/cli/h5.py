@@ -7,8 +7,8 @@ import mflow
 from bsread import BASE_DISPATCHER_URL, dispatcher
 from bsread.data.serialization import channel_type_deserializer_mapping
 from bsread.handlers import extended
-from .utils import writer as wr
-from . import utils
+from .utils import check_and_update_uri
+from .utils.writer import Writer
 
 
 # Logger configuration
@@ -24,7 +24,7 @@ def receive(source, file_name, queue_size=100, mode=mflow.PULL, n_messages=None,
     if message_processor is None:
         message_processor = process_message
 
-    writer = wr.Writer()
+    writer = Writer()
     writer.open_file(file_name)
 
     first_iteration = True
@@ -204,7 +204,7 @@ def main():
 
     if address:
         try:
-            address = utils.check_and_update_uri(address, default_port=9999)
+            address = check_and_update_uri(address, default_port=9999)
         except:
             raise SystemExit(f"Invalid URI - {address}")
     else:

@@ -3,7 +3,7 @@ import logging
 import re
 
 from bsread.utils import zmq_rpc
-from . import utils
+from .utils import check_and_update_uri
 
 
 logger = logging.getLogger(__name__)
@@ -138,7 +138,7 @@ def main():
     import argparse
 
     def URI(uri):
-        return utils.check_and_update_uri(uri, default_port=10000)
+        return check_and_update_uri(uri, default_port=10000)
 
     parser = argparse.ArgumentParser(description="BSREAD configuration utility")
     parser.add_argument("ioc", type=URI, help="URL of config channel of ioc to retrieve config from")

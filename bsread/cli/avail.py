@@ -3,7 +3,7 @@ import re
 import click
 
 from bsread import dispatcher
-from . import utils
+from .utils import get_base_url
 
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
@@ -14,7 +14,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 @click.option("--backend", default=None, help="Backend to query")
 def avail(pattern=None, base_url=None, backend=None, metadata=False):
 
-    base_url = utils.get_base_url(base_url, backend)
+    base_url = get_base_url(base_url, backend)
 
     pattern = ".*" + pattern + ".*"
 

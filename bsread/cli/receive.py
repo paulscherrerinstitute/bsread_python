@@ -4,8 +4,7 @@ import numpy
 
 from bsread import dispatcher
 from bsread.handlers.compact import Handler
-from .utils import tables
-from . import utils
+from .utils import check_and_update_uri, get_base_url, tables
 
 
 def receive(source=None, clear=False, table="auto", queue_size=100, mode=mflow.PULL, channel_filter=None):
@@ -41,7 +40,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 @click.option("--backend", default=None, help="Backend to query")
 def receive_(channels, source, mode, clear, table, queue_size, base_url, backend):
 
-    base_url = utils.get_base_url(base_url, backend)
+    base_url = get_base_url(base_url, backend)
 
     mode = mflow.SUB if mode == "sub" else mflow.PULL
     use_dispatching = False
@@ -51,7 +50,7 @@ def receive_(channels, source, mode, clear, table, queue_size, base_url, backend
         raise click.BadArgumentUsage("No source or channels are specified")
 
     if source:
-        source = utils.check_and_update_uri(source, exception=click.BadArgumentUsage)
+        source = check_and_update_uri(source, exception=click.BadArgumentUsage)
         if channels:
             channel_filter = channels
     else:
