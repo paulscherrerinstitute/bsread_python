@@ -1,6 +1,6 @@
 from logging import getLogger
 
-import numpy
+import numpy as np
 
 from .compression import BitshuffleLZ4, NoCompression
 
@@ -39,7 +39,7 @@ def serialize_numpy_scalar(value, dtype=None):
     :param dtype: Ignored. Here just to have a consistent interface.
     :return: Numpy array.
     """
-    return numpy.array([value], dtype=value.dtype)
+    return np.array([value], dtype=value.dtype)
 
 
 def serialize_python_number(value, dtype):
@@ -49,7 +49,7 @@ def serialize_python_number(value, dtype):
     :param dtype: Numpy dtype of value.
     :return: Numpy array.
     """
-    return numpy.array([value], dtype=dtype)
+    return np.array([value], dtype=dtype)
 
 
 def serialize_python_string(value, dtype):
@@ -59,7 +59,7 @@ def serialize_python_string(value, dtype):
     :param dtype: Numpy dtype of UTF-8 ("u1") is assumed.
     :return: Numpy array.
     """
-    return numpy.frombuffer(value.encode(), dtype)
+    return np.frombuffer(value.encode(), dtype)
 
 
 def serialize_python_list(value, dtype):
@@ -69,7 +69,7 @@ def serialize_python_list(value, dtype):
     :param dtype: Numpy dtype of values in list.
     :return: Numpy array.
     """
-    return numpy.array(value, dtype=dtype)
+    return np.array(value, dtype=dtype)
 
 
 # Compression string to compression provider mapping.
@@ -108,16 +108,16 @@ channel_type_scalar_serializer_mapping = {
     float: ("f8", "float64", serialize_python_number, [1]),
     int: ("i8", "int64", serialize_python_number, [1]),
     str: ("u1", "string", serialize_python_string, [1]),
-    numpy.int8: ("i1", "int8", serialize_numpy_scalar, [1]),
-    numpy.uint8: ("u1", "uint8", serialize_numpy_scalar, [1]),
-    numpy.int16: ("i2", "int16", serialize_numpy_scalar, [1]),
-    numpy.uint16: ("u2", "uint16", serialize_numpy_scalar, [1]),
-    numpy.int32: ("i4", "int32", serialize_numpy_scalar, [1]),
-    numpy.uint32: ("u4", "uint32", serialize_numpy_scalar, [1]),
-    numpy.int64: ("i8", "int64", serialize_numpy_scalar, [1]),
-    numpy.uint64: ("u8", "uint64", serialize_numpy_scalar, [1]),
-    numpy.float32: ("f4", "float32", serialize_numpy_scalar, [1]),
-    numpy.float64: ("f8", "float64", serialize_numpy_scalar, [1]),
+    np.int8: ("i1", "int8", serialize_numpy_scalar, [1]),
+    np.uint8: ("u1", "uint8", serialize_numpy_scalar, [1]),
+    np.int16: ("i2", "int16", serialize_numpy_scalar, [1]),
+    np.uint16: ("u2", "uint16", serialize_numpy_scalar, [1]),
+    np.int32: ("i4", "int32", serialize_numpy_scalar, [1]),
+    np.uint32: ("u4", "uint32", serialize_numpy_scalar, [1]),
+    np.int64: ("i8", "int64", serialize_numpy_scalar, [1]),
+    np.uint64: ("u8", "uint64", serialize_numpy_scalar, [1]),
+    np.float32: ("f4", "float32", serialize_numpy_scalar, [1]),
+    np.float64: ("f8", "float64", serialize_numpy_scalar, [1]),
     bool: ("?", "bool", serialize_python_number, [1]),
-    numpy.bool_: ("?", "bool", serialize_numpy_scalar, [1])
+    np.bool_: ("?", "bool", serialize_numpy_scalar, [1])
 }

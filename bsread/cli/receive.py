@@ -1,6 +1,6 @@
 import click
 import mflow
-import numpy
+import numpy as np
 
 from bsread import dispatcher
 from bsread.handlers.compact import Handler
@@ -8,8 +8,8 @@ from .utils import check_and_update_uri, get_base_url, tables
 
 
 def receive(source=None, clear=False, table="auto", queue_size=100, mode=mflow.PULL, channel_filter=None):
-    numpy.set_printoptions(threshold=5)
-    numpy.set_printoptions(linewidth=100)
+    np.set_printoptions(threshold=5)
+    np.set_printoptions(linewidth=100)
 
     print(f"Trying to connect to {source}")
 

@@ -1,7 +1,7 @@
 import logging
 import unittest
 
-import numpy
+import numpy as np
 
 import bsread.data.helpers
 from bsread import Sender, Source
@@ -25,10 +25,10 @@ class TestGenerator(unittest.TestCase):
         pass
 
     def test__get_bytearray(self):
-        value = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
+        value = np.array([1, 2, 3, 4, 5, 6], dtype=np.uint16).reshape((2, 3))
         bytes = bsread.data.helpers.get_value_bytes(value)
 
-        new_value = numpy.frombuffer(bytes, dtype=numpy.uint16).reshape((2, 3))
+        new_value = np.frombuffer(bytes, dtype=np.uint16).reshape((2, 3))
         print(new_value)
 
     def test__get_type(self):
@@ -59,25 +59,25 @@ class TestGenerator(unittest.TestCase):
         self.assertEqual(data_type, "float64")
         self.assertEqual(shape, [4])
 
-        value = numpy.array([1, 2, 3], dtype=numpy.uint16)
+        value = np.array([1, 2, 3], dtype=np.uint16)
         data_type, shape = get_channel_specs(value)
         self.assertEqual(data_type, "uint16")
         self.assertEqual(shape, [3])
 
-        value = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
+        value = np.array([1, 2, 3, 4, 5, 6], dtype=np.uint16).reshape((2, 3))
         print(value)
         data_type, shape = get_channel_specs(value)
         self.assertEqual(data_type, "uint16")
         self.assertEqual(shape, [3, 2])
 
-        value = numpy.array([[1, 2, 3], [4, 5, 6]], dtype=numpy.uint16)
+        value = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.uint16)
         print(value)
         data_type, shape = get_channel_specs(value)
         self.assertEqual(data_type, "uint16")
         self.assertEqual(shape, [3, 2])
 
-        value = numpy.float32(1.0)
-        print(isinstance(value, numpy.generic))
+        value = np.float32(1.0)
+        print(isinstance(value, np.generic))
         data_type, shape = get_channel_specs(value)
         self.assertEqual(data_type, "float32")
         self.assertEqual(shape, [1])
@@ -85,7 +85,7 @@ class TestGenerator(unittest.TestCase):
     def test_stream(self):
         with Source(host="localhost", port=9999) as in_stream:
             with Sender(queue_size=10) as stream:
-                test_array = numpy.array([1, 2, 3, 4, 5, 6], dtype=numpy.uint16).reshape((2, 3))
+                test_array = np.array([1, 2, 3, 4, 5, 6], dtype=np.uint16).reshape((2, 3))
                 # Send Data
                 stream.send(one=1, two=2,
                             three=test_array)
@@ -104,7 +104,7 @@ class TestGenerator(unittest.TestCase):
                 self.assertEqual(message.data.data["one"].value, 3)
                 self.assertEqual(message.data.data["two"].value, 4)
 
-                self.assertTrue(numpy.array_equal(message.data.data["three"].value, test_array))
+                self.assertTrue(np.array_equal(message.data.data["three"].value, test_array))
 
                 # Check is data header hash is different as the second message contains more channels
                 self.assertTrue(hash_m1 != hash_m2, msg=f"{hash_m1} {hash_m2}")
@@ -113,7 +113,7 @@ class TestGenerator(unittest.TestCase):
         with Source(host="localhost", port=9999) as in_stream:
             with Sender(queue_size=1) as stream:
                 # Send none data
-                stream.send(one=1, two=None, three="one", four=numpy.array([]))
+                stream.send(one=1, two=None, three="one", four=np.array([]))
 
                 # Receive and check data
                 message = in_stream.receive()
@@ -174,10 +174,10 @@ class TestGenerator(unittest.TestCase):
                     "char": "a",
                     "no_char": "",
                     "test_none": None,
-                    "numpy_array": numpy.array([1., 2., 3., 4, 5., 6], dtype=numpy.float32).reshape(2, 3),
-                    "empty_numpy_array": numpy.array([], dtype=numpy.float32),
-                    "numpy_int": numpy.int64(999999),
-                    "numpy_float": numpy.float64(999999.0)
+                    "numpy_array": np.array([1., 2., 3., 4, 5., 6], dtype=np.float32).reshape(2, 3),
+                    "empty_numpy_array": np.array([], dtype=np.float32),
+                    "numpy_int": np.int64(999999),
+                    "numpy_float": np.float64(999999.0)
                 }
 
                 # Register all test values in channels.
@@ -192,20 +192,20 @@ class TestGenerator(unittest.TestCase):
                     plain_received_value = response.data.data[f"normal_{name}"].value
                     compressed_received_value = response.data.data[f"compressed_{name}"].value
 
-                    if isinstance(plain_received_value, numpy.ndarray):
-                        numpy.testing.assert_array_equal(plain_received_value, compressed_received_value)
+                    if isinstance(plain_received_value, np.ndarray):
+                        np.testing.assert_array_equal(plain_received_value, compressed_received_value)
                     else:
                         self.assertEqual(plain_received_value, compressed_received_value)
 
                     # Empty arrays are transferred as None.
-                    if plain_received_value is None and not (value.size if isinstance(value, numpy.ndarray) else value):
+                    if plain_received_value is None and not (value.size if isinstance(value, np.ndarray) else value):
                         plain_received_value = value
                         compressed_received_value = value
 
                     # Compare numpy arrays.
-                    if isinstance(plain_received_value, numpy.ndarray):
-                        numpy.testing.assert_array_equal(plain_received_value, value)
-                        numpy.testing.assert_array_equal(compressed_received_value, value)
+                    if isinstance(plain_received_value, np.ndarray):
+                        np.testing.assert_array_equal(plain_received_value, value)
+                        np.testing.assert_array_equal(compressed_received_value, value)
 
                     else:
                         self.assertEqual(plain_received_value, value, "Plain channel values not as expected")
@@ -268,11 +268,11 @@ class TestGenerator(unittest.TestCase):
 
     def test_byteorder(self):
 
-        send_data = {"test_1": numpy.ones(shape=1024, dtype=">i2"),
-                     "test_2": numpy.ones(shape=1024, dtype=">i4"),
-                     "test_3": numpy.ones(shape=1024, dtype=">i8"),
-                     "test_5": numpy.ones(shape=1024, dtype=">f4"),
-                     "test_6": numpy.ones(shape=1024, dtype=">f8")}
+        send_data = {"test_1": np.ones(shape=1024, dtype=">i2"),
+                     "test_2": np.ones(shape=1024, dtype=">i4"),
+                     "test_3": np.ones(shape=1024, dtype=">i8"),
+                     "test_5": np.ones(shape=1024, dtype=">f4"),
+                     "test_6": np.ones(shape=1024, dtype=">f8")}
 
         send_timestamp = 123456789
         send_timestamp_offset = 987654321
@@ -294,18 +294,18 @@ class TestGenerator(unittest.TestCase):
             self.assertEqual(send_timestamp_offset, received_timestamp_offset)
 
             # Use numpy comparison for ndarray types.
-            if isinstance(send_value, numpy.ndarray):
-                numpy.testing.assert_array_equal(send_value, received_value)
+            if isinstance(send_value, np.ndarray):
+                np.testing.assert_array_equal(send_value, received_value)
 
             else:
                 self.assertEqual(send_value, received_value)
 
     def test_data_compression_default(self):
-        send_data = {"test_1": numpy.ones(shape=1024, dtype=">i2"),
-                     "test_2": numpy.ones(shape=1024, dtype=">i4"),
-                     "test_3": numpy.ones(shape=1024, dtype=">i8"),
-                     "test_5": numpy.ones(shape=1024, dtype=">f4"),
-                     "test_6": numpy.ones(shape=1024, dtype=">f8")}
+        send_data = {"test_1": np.ones(shape=1024, dtype=">i2"),
+                     "test_2": np.ones(shape=1024, dtype=">i4"),
+                     "test_3": np.ones(shape=1024, dtype=">i8"),
+                     "test_5": np.ones(shape=1024, dtype=">f4"),
+                     "test_6": np.ones(shape=1024, dtype=">f8")}
 
         # Example without compression.
         compression = None
@@ -320,14 +320,14 @@ class TestGenerator(unittest.TestCase):
                 received_message = receive_stream.receive()
 
         for name in send_data:
-            numpy.testing.assert_array_equal(send_data[name], received_message.data.data[name].value)
+            np.testing.assert_array_equal(send_data[name], received_message.data.data[name].value)
 
     def test_data_compression_on_check_data(self):
-        send_data = {"test_1": numpy.ones(shape=1024, dtype=">i2"),
-                     "test_2": numpy.ones(shape=1024, dtype=">i4"),
-                     "test_3": numpy.ones(shape=1024, dtype=">i8"),
-                     "test_5": numpy.ones(shape=1024, dtype=">f4"),
-                     "test_6": numpy.ones(shape=1024, dtype=">f8")}
+        send_data = {"test_1": np.ones(shape=1024, dtype=">i2"),
+                     "test_2": np.ones(shape=1024, dtype=">i4"),
+                     "test_3": np.ones(shape=1024, dtype=">i8"),
+                     "test_5": np.ones(shape=1024, dtype=">f4"),
+                     "test_6": np.ones(shape=1024, dtype=">f8")}
 
         # Example with default data compression.
         compression = "bitshuffle_lz4"
@@ -342,7 +342,7 @@ class TestGenerator(unittest.TestCase):
                 received_message = receive_stream.receive()
 
         for name in send_data:
-            numpy.testing.assert_array_equal(send_data[name], received_message.data.data[name].value)
+            np.testing.assert_array_equal(send_data[name], received_message.data.data[name].value)
 
     def test_send_boolean(self):
         send_int_array = [[0, 1, 0, 1],
@@ -380,8 +380,8 @@ class TestGenerator(unittest.TestCase):
 
         self.assertTrue(bool(int_type))
         self.assertTrue(boolean_type)
-        numpy.testing.assert_array_equal(send_int_array, int_type_array)
-        numpy.testing.assert_array_equal(send_boolean_array, boolean_type_array)
+        np.testing.assert_array_equal(send_int_array, int_type_array)
+        np.testing.assert_array_equal(send_boolean_array, boolean_type_array)
 
 
 

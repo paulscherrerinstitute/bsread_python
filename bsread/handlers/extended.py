@@ -1,7 +1,7 @@
 import json
 import logging
 
-import numpy
+import numpy as np
 
 from bsread.data.helpers import get_channel_reader, get_value_reader
 
@@ -97,7 +97,7 @@ class Handler:
                     raw_timestamp = receiver.next()
 
                     if raw_timestamp:
-                        timestamp_array = numpy.frombuffer(raw_timestamp, dtype=channel_endianness + "u8")
+                        timestamp_array = np.frombuffer(raw_timestamp, dtype=channel_endianness + "u8")
                         timestamp.append(timestamp_array[0])  # Second past epoch
                         timestamp_offset.append(timestamp_array[1])  # Nanoseconds offset
             else:

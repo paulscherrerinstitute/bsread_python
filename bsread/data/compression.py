@@ -1,7 +1,7 @@
 import struct
 
 import bitshuffle
-import numpy
+import numpy as np
 
 
 class NoCompression:
@@ -14,7 +14,7 @@ class NoCompression:
         :param shape: Shape of the result.
         :return: Numpy array of dtype and shape.
         """
-        raw_data = numpy.frombuffer(raw_string, dtype=dtype)
+        raw_data = np.frombuffer(raw_string, dtype=dtype)
 
         # Empty data received.
         if raw_data.size == 0:
@@ -51,7 +51,7 @@ class BitshuffleLZ4:
         :return: Numpy array of dtype and shape.
         """
         # Interpret the bytes as a numpy array.
-        raw_data = numpy.frombuffer(raw_bytes, dtype=numpy.uint8)
+        raw_data = np.frombuffer(raw_bytes, dtype=np.uint8)
 
         # If the numpy array is empty, return it as such.
         if raw_data.size == 0:
@@ -65,7 +65,7 @@ class BitshuffleLZ4:
             return None
 
         # Type of the output array.
-        dtype = numpy.dtype(dtype)
+        dtype = np.dtype(dtype)
         n_bytes_per_element = dtype.itemsize
 
         # Either the unpacked length or the dtype is wrong.
@@ -83,7 +83,7 @@ class BitshuffleLZ4:
 
         # Compression block size, big endian, int32 (int). Divide by number of bytes per element.
         header_compression_block_size = struct.unpack(">i", raw_data[8:12].tobytes())[0]
-        n_bytes_per_element = numpy.dtype(dtype).itemsize
+        n_bytes_per_element = np.dtype(dtype).itemsize
         compression_block_size = header_compression_block_size / n_bytes_per_element
 
         # If shape is not provided use the original length.
@@ -110,7 +110,7 @@ class BitshuffleLZ4:
         # Uncompressed block size, big endian, int64 (long long)
         unpacked_length_bytes = struct.pack(">q", numpy_array.nbytes)
 
-        n_bytes_per_element = numpy.dtype(dtype).itemsize
+        n_bytes_per_element = np.dtype(dtype).itemsize
         compression_block_size = BitshuffleLZ4.get_compression_block_size(n_bytes_per_element)
 
         # We multiply the compression block size by the n_bytes_per_element, because the HDF5 filter does so.

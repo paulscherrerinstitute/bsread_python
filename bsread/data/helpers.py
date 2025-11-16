@@ -2,7 +2,7 @@ import sys
 import traceback
 from logging import getLogger
 
-import numpy
+import numpy as np
 
 from .serialization import (channel_type_deserializer_mapping,
                             channel_type_scalar_serializer_mapping,
@@ -19,7 +19,7 @@ def get_channel_encoding(value):
     :param value: Value to determine the byteorder of.
     :return: "little" or "big" endian.
     """
-    if isinstance(value, numpy.ndarray):
+    if isinstance(value, np.ndarray):
         if value.dtype.byteorder == ">":
             return "big"
 
@@ -48,7 +48,7 @@ def get_extended_channel_specs(value):
         _logger.debug("Channel value is None - Unable to determine type of channel - default to type=float64 shape=[1]")
 
     # Determine ndarray channel specs
-    if isinstance(value, numpy.ndarray):
+    if isinstance(value, np.ndarray):
         # dtype and shape already in ndarray.
         dtype = value.dtype.type
 
@@ -67,7 +67,7 @@ def get_extended_channel_specs(value):
         # It can be assumed that users do not hold large data as lists but properly use numpy in such cases.
         # Thus, for supposed small data, numpy can be used to figure out dtype and shape automatically via a conversion.
         #TODO: avoid converting twice
-        value_as_array = numpy.array(value)
+        value_as_array = np.array(value)
 
         dtype, channel_type, _serializer, shape = get_extended_channel_specs(value_as_array)
         serializer = serialize_python_list
