@@ -7,19 +7,7 @@ from bsread.data.helpers import get_value_reader
 logging.basicConfig(level=logging.DEBUG)
 
 
-def pre():
-    logging.info("pre")
-
-
-def post():
-    logging.info("post")
-
-
 class TestGenerator(unittest.TestCase):
-
-    def setUp(self):
-        # Enable debug logging
-        pass
 
     # def test_receive(self):
     #     from bsread import Source
@@ -33,6 +21,7 @@ class TestGenerator(unittest.TestCase):
     #             print(message.data.data['Float64Waveform'].value)
     #             # print(message.data.data['Float64'].value)
     #     print('done')
+
 
     def test_receive_timeout(self):
         from bsread import Sender, Source
@@ -52,6 +41,7 @@ class TestGenerator(unittest.TestCase):
                     print(message.data.data["one"].value)
 
                 self.assertIsNone(message)
+
 
     def test_receive_filter(self):
         from bsread import Sender, Source
@@ -76,6 +66,7 @@ class TestGenerator(unittest.TestCase):
                 # message = in_stream.receive(filter=filter_method)
                 print(message.data.data["one"].value)
                 # message = in_stream.receive(filter=filter_method)
+
 
     def test_failed_conversion(self):
         channel_type = "int32"

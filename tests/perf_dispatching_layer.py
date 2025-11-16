@@ -94,7 +94,6 @@ channels_to_save = [
 
 
 def run_tests(n_tests, n_messages, log_level="ERROR"):
-
     dispatching_layer_request_times = []
     first_message_request_times = []
     other_messages_request_times = []

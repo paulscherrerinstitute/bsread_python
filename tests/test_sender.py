@@ -11,18 +11,7 @@ from bsread.data.helpers import get_channel_specs, get_serialization_type
 logging.basicConfig(level=logging.DEBUG)  # Changeing of debug level needs to be done before the import for unit testing
 
 
-def pre():
-    logging.info("pre")
-
-
-def post():
-    logging.info("post")
-
-
 class TestGenerator(unittest.TestCase):
-    def setUp(self):
-        # Enable debug logging
-        pass
 
     def test__get_bytearray(self):
         value = np.array([1, 2, 3, 4, 5, 6], dtype=np.uint16).reshape((2, 3))
@@ -30,6 +19,7 @@ class TestGenerator(unittest.TestCase):
 
         new_value = np.frombuffer(bytes, dtype=np.uint16).reshape((2, 3))
         print(new_value)
+
 
     def test__get_type(self):
         # Integers are 64bit.
@@ -82,6 +72,7 @@ class TestGenerator(unittest.TestCase):
         self.assertEqual(data_type, "float32")
         self.assertEqual(shape, [1])
 
+
     def test_stream(self):
         with Source(host="localhost", port=9999) as in_stream:
             with Sender(queue_size=10) as stream:
@@ -109,6 +100,7 @@ class TestGenerator(unittest.TestCase):
                 # Check is data header hash is different as the second message contains more channels
                 self.assertTrue(hash_m1 != hash_m2, msg=f"{hash_m1} {hash_m2}")
 
+
     def test_send_stream(self):
         with Source(host="localhost", port=9999) as in_stream:
             with Sender(queue_size=1) as stream:
@@ -130,8 +122,8 @@ class TestGenerator(unittest.TestCase):
                 message = in_stream.receive()
                 self.assertTrue((message.data.data["one"].value == [1, 2, 3, 4, 5]).all())
 
-    def test_timestamp(self):
 
+    def test_timestamp(self):
         with Source(host="localhost", port=9999) as in_stream:
             with Sender(queue_size=10) as stream:
                 stream.send(one=1, two=2)
@@ -146,8 +138,8 @@ class TestGenerator(unittest.TestCase):
                 self.assertTrue(message_1.data.global_timestamp != message_2.data.global_timestamp or
                                 message_1.data.global_timestamp_offset != message_2.data.global_timestamp_offset)
 
-    def test_compression(self):
 
+    def test_compression(self):
         def register_channel(stream, name, value):
             channel_type, data_shape = get_channel_specs(value)
 
@@ -211,6 +203,7 @@ class TestGenerator(unittest.TestCase):
                         self.assertEqual(plain_received_value, value, "Plain channel values not as expected")
                         self.assertEqual(compressed_received_value, value, "Compressed channel values not as expected")
 
+
     def test_non_native_types(self):
         with Source(host="localhost") as receive_stream:
             with Sender() as send_stream:
@@ -237,6 +230,7 @@ class TestGenerator(unittest.TestCase):
                 extended_value = data.data.data["extended_type"].value
                 self.assertEqual(extended_value.dtype, get_serialization_type("int64"))
 
+
     def test_values_timestamps(self):
         with Source(host="localhost") as receive_stream:
             with Sender() as send_stream:
@@ -249,6 +243,7 @@ class TestGenerator(unittest.TestCase):
                                  "Global and channel timestamps have to be the same.")
                 self.assertEqual(data.data.global_timestamp_offset, data.data.data["x"].timestamp_offset,
                                  "Global and channel timestamps offset have to be the same.")
+
 
     def test_tuple_timestamp(self):
         timestamp = 123
@@ -266,8 +261,8 @@ class TestGenerator(unittest.TestCase):
                 self.assertEqual(data.data.global_timestamp_offset, data.data.data["x"].timestamp_offset,
                                  "Global and channel timestamps offset have to be the same.")
 
-    def test_byteorder(self):
 
+    def test_byteorder(self):
         send_data = {"test_1": np.ones(shape=1024, dtype=">i2"),
                      "test_2": np.ones(shape=1024, dtype=">i4"),
                      "test_3": np.ones(shape=1024, dtype=">i8"),
@@ -300,6 +295,7 @@ class TestGenerator(unittest.TestCase):
             else:
                 self.assertEqual(send_value, received_value)
 
+
     def test_data_compression_default(self):
         send_data = {"test_1": np.ones(shape=1024, dtype=">i2"),
                      "test_2": np.ones(shape=1024, dtype=">i4"),
@@ -322,6 +318,7 @@ class TestGenerator(unittest.TestCase):
         for name in send_data:
             np.testing.assert_array_equal(send_data[name], received_message.data.data[name].value)
 
+
     def test_data_compression_on_check_data(self):
         send_data = {"test_1": np.ones(shape=1024, dtype=">i2"),
                      "test_2": np.ones(shape=1024, dtype=">i4"),
@@ -343,6 +340,7 @@ class TestGenerator(unittest.TestCase):
 
         for name in send_data:
             np.testing.assert_array_equal(send_data[name], received_message.data.data[name].value)
+
 
     def test_send_boolean(self):
         send_int_array = [[0, 1, 0, 1],

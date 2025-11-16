@@ -6,19 +6,7 @@ import unittest
 logging.basicConfig(level=logging.DEBUG)
 
 
-def pre():
-    logging.info("pre")
-
-
-def post():
-    logging.info("post")
-
-
 class TestDispatcher(unittest.TestCase):
-
-    def setUp(self):
-        # Enable debug logging
-        pass
 
     def test_update_ttl(self):
         from bsread import dispatcher

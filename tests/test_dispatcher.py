@@ -10,20 +10,13 @@ import bsread.dispatcher
 logging.basicConfig(level=logging.DEBUG)  # Changing of debug level needs to be done before the import for unit testing
 
 
-def pre():
-    logging.info("pre")
-
-
-def post():
-    logging.info("post")
-
-
 def mocked_requests_post(*args, **kwargs):
     print(args, kwargs)
 
     response = mock.MagicMock()
     response.ok = "OK"
     return response
+
 
 
 class TestDispatcher(unittest.TestCase):

@@ -8,8 +8,8 @@ from bsread.handlers import extended
 
 
 class TestSimulate(unittest.TestCase):
-    def test_generate_stream(self):
 
+    def test_generate_stream(self):
         n_of_messages = 5
         generate_thread = Thread(target=simulate.generate_stream, args=(9999, n_of_messages,))
         generate_thread.start()

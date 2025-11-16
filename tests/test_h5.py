@@ -13,12 +13,13 @@ class TestWriter(unittest.TestCase):
 
     h5_test_filename = "temp_h5.h5"
 
+
     def tearDown(self):
         if os.path.exists(self.h5_test_filename):
             os.remove(self.h5_test_filename)
 
-    def test_receive(self):
 
+    def test_receive(self):
         n_messages = 5
         generate_thread = Thread(target=simulate.generate_stream, args=(9999, n_messages,))
         generate_thread.daemon = True
@@ -52,8 +53,8 @@ class TestWriter(unittest.TestCase):
 
         self.assertEqual(len(file["pulse_id"]), n_messages)
 
-    def test_receive_none(self):
 
+    def test_receive_none(self):
         n_messages = 20
         generate_thread = Thread(target=generate_real_stream, args=(9999, n_messages,))
         generate_thread.daemon = True
@@ -84,6 +85,7 @@ class TestWriter(unittest.TestCase):
 
         self.assertEqual(len(file["pulse_id"]), n_messages)
 
+
     def test_compact_processor(self):
         n_messages = 5
         generate_thread = Thread(target=simulate.generate_stream, args=(9999, n_messages,))
@@ -108,6 +110,7 @@ class TestWriter(unittest.TestCase):
 
         self.assertTrue("pulse_id" in file.keys())
         self.assertEqual(len(file["pulse_id"]), n_messages)
+
 
 
 def generate_real_stream(port, n_messages=None, interval=0.01):

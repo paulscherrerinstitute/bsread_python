@@ -5,19 +5,7 @@ import unittest
 logging.basicConfig(level=logging.DEBUG)
 
 
-def pre():
-    logging.info("pre")
-
-
-def post():
-    logging.info("post")
-
-
 class TestGenerator(unittest.TestCase):
-
-    def setUp(self):
-        # Enable debug logging
-        pass
 
     def test_data_consistency_check_increment_1(self):
         import bsread.cli.stats

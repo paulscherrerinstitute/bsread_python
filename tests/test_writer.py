@@ -10,11 +10,13 @@ class TestWriter(unittest.TestCase):
 
     TEST_FILENAME = "ignore_test.h5"
 
+
     def tearDown(self):
         try:
             os.remove(self.TEST_FILENAME)
         except:
             pass
+
 
     def test_basic_workflow(self):
         writer = Writer()
@@ -33,6 +35,7 @@ class TestWriter(unittest.TestCase):
 
         file.close()
 
+
     def test_stub_datasets(self):
         writer = Writer()
 
@@ -50,6 +53,7 @@ class TestWriter(unittest.TestCase):
         self.assertIsNotNone(file.get("/test/data"))
 
         file.close()
+
 
     def test_stub_replacement(self):
         writer = Writer()
@@ -81,6 +85,7 @@ class TestWriter(unittest.TestCase):
         self.assertListEqual(list(new_dataset[50:100]), list(range(50, 100)))
 
         file.close()
+
 
     def test_dataset_replacement(self):
         writer = Writer()
@@ -118,6 +123,7 @@ class TestWriter(unittest.TestCase):
         self.assertListEqual(list(replaced_dataset[0:50]), list(range(0, 50)))
 
         file.close()
+
 
     def test_multiple_dataset_replacements(self):
         writer = Writer()
