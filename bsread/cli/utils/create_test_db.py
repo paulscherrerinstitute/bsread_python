@@ -3,6 +3,7 @@
 import argparse
 from string import Template
 
+
 SCALAR_TEMPLATE = """
 record(calc, "$$(P):TEST_$num") {
     field(VAL,"0")
