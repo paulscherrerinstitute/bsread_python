@@ -1,7 +1,7 @@
 [![conda_publish](https://github.com/paulscherrerinstitute/bsread_python/actions/workflows/conda_publish.yaml/badge.svg)](https://github.com/paulscherrerinstitute/bsread_python/actions/workflows/conda_publish.yaml)
 
 # Overview
-This is a Python (>=3.5) package to deal with beam synchronous data. It is based on the streaming library [mflow](https://github.com/datastreaming/mflow) and provides the required message handlers to it.
+This is a Python (>=3.6) package to deal with beam synchronous data. It is based on the streaming library [mflow](https://github.com/datastreaming/mflow) and provides the required message handlers to it.
 
 
 __The bsread command line tools are based on this package. These commands are described in [ReadmeCLI.md](ReadmeCLI.md)__
