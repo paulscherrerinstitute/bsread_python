@@ -16,11 +16,11 @@ build:
 
 requirements:
     build:
-        - python
+        - python >=3.6
         - setuptools
         - pip
     run:
-        - python
+        - python >=3.6
         - mflow >=0.2.0
         - bitshuffle
         - numpy
