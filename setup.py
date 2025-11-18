@@ -9,6 +9,7 @@ setup(
     url="https://github.com/paulscherrerinstitute/bsread_python",
     description="bsread for Python",
     author="Paul Scherrer Institute",
+    license="GNU GPLv3",
     requires=["bitshuffle", "click", "mflow", "numpy", "pyzmq"],
     packages=find_packages()
 )
