@@ -239,17 +239,16 @@ class Sender:
         :param interval: Interval in seconds between messages.
         :return:
         """
-        self.open()
+        with self:
+            # Negative numbers will loop indefinitely.
+            if not n_messages:
+                n_messages = -1
 
-        # Negative numbers will loop indefinitely.
-        if not n_messages:
-            n_messages = -1
+            while n_messages != 0:
+                self.send()
+                time.sleep(interval)
 
-        while n_messages != 0:
-            self.send()
-            time.sleep(interval)
-
-            n_messages -= 1
+                n_messages -= 1
 
 
     # Support the "with" statement

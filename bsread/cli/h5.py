@@ -41,6 +41,7 @@ def receive(source, file_name, queue_size=100, mode=mflow.PULL, n_messages=None,
 
     finally:
         writer.close_file()
+        receiver.disconnect()
 
 
 def process_message_compact(handler, receiver, writer, first_iteration):
