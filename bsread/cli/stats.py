@@ -37,7 +37,7 @@ def print_message_data(message_data):
 
     try:
         date_g = datetime.datetime.fromtimestamp(global_timestamp + float(global_timestamp_ns)/1e9)
-    except:
+    except Exception:
         date_g = "None"
 
     # Print values
@@ -49,7 +49,7 @@ def print_message_data(message_data):
 
         try:
             date = datetime.datetime.fromtimestamp(timestamp + float(timestamp_ns)/1e9)
-        except:
+        except Exception:
             date = "None"
 
         print(MESSAGE_PRINT_FORMAT.format(channel_name, str(channel_value), str(date)))

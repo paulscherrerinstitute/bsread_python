@@ -34,7 +34,7 @@ def pollStream(pattern, timeout):
                 try:
                     for ch_name in message.data.data.keys():
                         ch_values[ch_name] = message.data.data[ch_name].value
-                except:
+                except Exception:
                     pass
 
                 got_all_data = True
@@ -61,14 +61,12 @@ def pollStream(pattern, timeout):
 #                in_stream.stream.receiver.socket.disconnect(in_stream.stream.address)
 #                in_stream.stream.receiver.socket.connect(in_stream.stream.address)
 
-        except KeyboardInterrupt:
-            pass
-
-        try:
-            in_stream.disconnect()
-            dispatcher.remove_stream(in_stream.address)
-        except:
-            pass
+        finally:
+            try:
+                in_stream.disconnect()
+                dispatcher.remove_stream(in_stream.address)
+            except:
+                raise
 
     except Exception as e:
         print(f"Unable to retrieve channels\nReason:\n{e}", file=sys.stderr)

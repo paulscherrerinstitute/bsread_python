@@ -14,7 +14,7 @@ class TestWriter(unittest.TestCase):
     def tearDown(self):
         try:
             os.remove(self.TEST_FILENAME)
-        except:
+        except Exception:
             pass
 
 
