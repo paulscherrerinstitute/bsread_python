@@ -1,4 +1,5 @@
 from rich.console import Console
+from rich.text import Text
 from textual.app import App
 from textual.widgets import DataTable as TableWidget
 
@@ -74,6 +75,7 @@ def get_cols(table):
 def update_row_at(table, row_index, values, update_width=False):
     for col_index, val in enumerate(values):
         coord = (row_index, col_index)
+        val = Text(val, justify="right")
         table.update_cell_at(coord, val, update_width=update_width)
 
 def remove_row_at(table, row_index):

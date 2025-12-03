@@ -41,7 +41,7 @@ def lens(seq):
     return [len(i) for i in seq]
 
 def pad(strings, lengths):
-    return [s.ljust(l) for s, l in zip(strings, lengths)]
+    return [s.rjust(l) for s, l in zip(strings, lengths)]
 
 def maxof(seq1, seq2):
     return [max(i, j) for i, j in zip(seq1, seq2)]
