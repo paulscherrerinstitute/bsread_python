@@ -16,16 +16,16 @@ def image(pulse_id):
     return image
 
 
-simulated_channels = [{"name": "ABC", "function": lambda x: x, "metadata": {"type": "int32"}},
-                      {"name": "ABCD", "function": lambda x: x * 10.0},
-                      {"name": "ABCDF", "function": lambda x: x * 100.0},
-                      {"name": "XYZ", "function": lambda x: x * 200.0},
-                      {"name": "XYZW", "function": lambda x: "hello"[:(x % 5 + 1)], "metadata": {"type": "string"}},
-                      {"name": "WWW", "function": lambda x: [1.0, 2.0, 3.0, 4.0], "metadata":
-                          {"type": "float64", "shape": [4]}
-                       },
-                      {"name": "WAVE", "function": waveform, "metadata": {"shape": [30]}},
-                      {"name": "IMAGE", "function": image, "metadata": {"shape": [4, 2]}}]
+simulated_channels = [
+    {"name": "ABC", "function": lambda x: x, "metadata": {"type": "int32"}},
+    {"name": "ABCD", "function": lambda x: x * 10.0},
+    {"name": "ABCDF", "function": lambda x: x * 100.0},
+    {"name": "XYZ", "function": lambda x: x * 200.0},
+    {"name": "XYZW", "function": lambda x: "hello"[:(x % 5 + 1)], "metadata": {"type": "string"}},
+    {"name": "WWW", "function": lambda x: [1.0, 2.0, 3.0, 4.0], "metadata": {"type": "float64", "shape": [4]}},
+    {"name": "WAVE", "function": waveform, "metadata": {"shape": [30]}},
+    {"name": "IMAGE", "function": image, "metadata": {"shape": [4, 2]}}
+]
 
 
 def generate_stream(port, n_messages=None, interval=0.01):
