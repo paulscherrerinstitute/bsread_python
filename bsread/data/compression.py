@@ -1,8 +1,18 @@
 import struct
-
-import bitshuffle
 import numpy as np
+from logging import getLogger
+_logger = getLogger(__name__)
 
+
+try:
+    import bitshuffle
+except:
+    _logger.warning("Bitshuffle not installed")
+
+try:
+    import lz4.block
+except:
+    _logger.warning("LZ4 not installed")
 
 class NoCompression:
 
@@ -37,6 +47,68 @@ class NoCompression:
         :return: Bytes array of provided numpy array.
         """
         return numpy_array.tobytes()
+
+
+class LZ4:
+    @staticmethod
+    def unpack_data(raw_bytes, dtype, shape=None):
+        """
+        Convert raw bytes into the specified numpy type.
+        :param raw_bytes: Raw bytes to convert (lz4-compressed).
+        :param dtype: dtype to use for the result.
+        :param shape: Shape of the result.
+        :return: Numpy array of dtype and shape.
+        """
+
+        # Empty data received.
+        if not raw_bytes:
+            return None
+
+        raw_data = np.frombuffer(raw_bytes, dtype=np.uint8)
+
+        # Read uncompressed size (first 4 bytes). Same endianness as the array.
+        endianness = "big" if (type(dtype) == str and dtype.startswith(">")) else "little"
+        fmt = "<I" if endianness == "little" else ">I"
+        uncompressed_size = struct.unpack(fmt, raw_data[:4])[0]
+
+        # Decompress payload
+        decompressed_bytes = lz4.block.decompress(
+            raw_data[4:],
+            uncompressed_size=uncompressed_size
+        )
+
+        # Convert bytes to numpy array
+        raw_data = np.frombuffer(decompressed_bytes, dtype=dtype)
+
+        if raw_data.size == 0:
+            return None
+
+        # Do not reshape scalars
+        if shape is not None and shape != [1]:
+            # Numpy is slowest dimension first, but bsread is fastest dimension first
+            raw_data = raw_data.reshape(shape[::-1])
+
+        return raw_data
+
+    @staticmethod
+    def pack_data(numpy_array, dtype=None):
+        """
+        Convert numpy array to byte array.
+        :param numpy_array: Numpy array to convert.
+        :param dtype: Ignored. Here just to have a consistent interface.
+        :return: LZ4-compressed bytes of provided numpy array.
+        """
+        # Convert numpy array to raw bytes
+        raw_bytes = numpy_array.tobytes()
+        uncompressed_size = len(raw_bytes)
+
+        # Compress using lz4 block
+        compressed_payload = lz4.block.compress(raw_bytes, store_size=False)
+
+        # Prepend uncompressed size (4 bytes, little-endian)
+        header = struct.pack("<I", uncompressed_size)
+
+        return header + compressed_payload
 
 
 

@@ -1,6 +1,6 @@
 import sys
 import traceback
-from logging import getLogger
+from logging import getLogger, DEBUG
 
 import numpy as np
 
@@ -158,11 +158,11 @@ def get_value_reader(channel_type, compression, shape=None, endianness="", value
         except Exception as e:
             # We do not want to throw exceptions in case we cannot decode a channel.
             _logger.warning(f'Unable to decode value_name "{value_name}" - returning None. Exception: {traceback.format_exc()}')
-            _logger.debug(f'Decoding failed: value name "{value_name}" with dtype="{channel_type}", shape="{shape}", compression="{compression}", raw_data_length="{len(raw_data)}" and raw_data="{raw_data}". Exception: {e}')
+            if _logger.isEnabledFor(DEBUG):
+                _logger.debug(f'Decoding failed: value name "{value_name}" with dtype="{channel_type}", shape="{shape}", compression="{compression}", raw_data_length="{len(raw_data)}" and raw_data="{raw_data}". Exception: {e}')
             return None
 
     return value_reader
-
 
 def get_value_bytes(value, compression=None, channel_type=None):
     """

@@ -2,8 +2,7 @@ from logging import getLogger
 
 import numpy as np
 
-from .compression import BitshuffleLZ4, NoCompression
-
+from .compression import BitshuffleLZ4, NoCompression, LZ4
 
 _logger = getLogger(__name__)
 
@@ -76,6 +75,7 @@ def serialize_python_list(value, dtype):
 compression_provider_mapping = {
     None: NoCompression,
     "none": NoCompression,
+    "lz4": LZ4,
     "bitshuffle_lz4": BitshuffleLZ4
 }
 
