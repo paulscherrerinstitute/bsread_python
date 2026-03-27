@@ -10,7 +10,7 @@ from threading import Lock
 
 import mflow
 
-from .consts import BIND, PUSH
+from .consts import BIND, CONNECT, PUSH, PUB
 from .data.helpers import get_channel_encoding, get_channel_specs, get_value_bytes
 from .data.serialization import compression_provider_mapping
 
