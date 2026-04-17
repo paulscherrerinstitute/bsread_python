@@ -69,6 +69,41 @@ def get_current_channels(base_url=DEFAULT_DISPATCHER_URL):
     return channel_list
 
 
+def get_channel_status(channels, base_url=DEFAULT_DISPATCHER_URL):
+    """ Get status of channels """
+    if isinstance(channels, str):
+        channels = [channels]
+
+    channels = sorted(set(channels))
+    channels = [{"name": name, "queryLatest": True} for name in channels]
+
+    data = {"channels": channels}
+    data = json.dumps(data)
+
+    headers = {"content-type": "application/json"}
+
+    response = requests.post(base_url + "/channels/state", data=data, headers=headers)
+
+    if not response.ok:
+        raise Exception(f"Unable to retrieve status of channels - {response.text}")
+
+    states = response.json()
+
+    keys_to_copy = ("configured", "connected", "recording")
+
+    res = {}
+    for i in states:
+        name = i["channel"]["name"]
+        data = {k: i[k] for k in keys_to_copy}
+        last_event = i.get("latestEventDate")
+        if last_event:
+            last_event = datetime.datetime.fromisoformat(last_event)
+        data["last event"] = last_event
+        res[name] = data
+
+    return res
+
+
 def remove_input_sources(addresses, base_url=DEFAULT_DISPATCHER_URL):
     """
     Remove input source from dispatching layer
