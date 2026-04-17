@@ -9,7 +9,8 @@ COMMANDS = {
     "h5":       "Dump stream into HDF5 file",
     "create":   "Create a test softioc",
     "simulate": "Provide a test stream",
-    "avail":    "Show currently available beam synchronous channels"
+    "avail":    "Show currently available beam synchronous channels",
+    "status":   "Show status of beam synchronous channels"
 }
 
 HEADER = "Usage: bs COMMAND [OPTIONS]"
