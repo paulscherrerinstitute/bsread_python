@@ -8,7 +8,7 @@ def read(fname):
 
 setup(
     name="psi-bsread",
-    version="2.0.1",
+    version='2.0.2',
     url="https://github.com/paulscherrerinstitute/bsread_python",
     description="bsread for Python",
     author="Paul Scherrer Institute",
