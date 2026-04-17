@@ -20,7 +20,7 @@ def status(channel, base_url=None, backend=None):
 
 
 def table(d):
-    cols = ["configured", "connected", "recording", "last event"]
+    cols = ["configured", "connected", "recording", "last event", "time since"]
     headers = ["name"] + cols
 
     rows = [

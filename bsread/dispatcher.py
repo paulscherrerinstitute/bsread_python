@@ -71,6 +71,8 @@ def get_current_channels(base_url=DEFAULT_DISPATCHER_URL):
 
 def get_channel_status(channels, base_url=DEFAULT_DISPATCHER_URL):
     """ Get status of channels """
+    now = datetime.datetime.now()
+
     if isinstance(channels, str):
         channels = [channels]
 
@@ -96,9 +98,12 @@ def get_channel_status(channels, base_url=DEFAULT_DISPATCHER_URL):
         name = i["channel"]["name"]
         data = {k: i[k] for k in keys_to_copy}
         last_event = i.get("latestEventDate")
+        time_since = None
         if last_event:
             last_event = datetime.datetime.fromisoformat(last_event)
+            time_since = now - last_event.replace(tzinfo=None)
         data["last event"] = last_event
+        data["time since"] = time_since
         res[name] = data
 
     return res
